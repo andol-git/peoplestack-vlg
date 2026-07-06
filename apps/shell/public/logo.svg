@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 100" fill="none">
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="55%" stop-color="#6366f1"/>
+      <stop offset="100%" stop-color="#7c3aed"/>
+    </linearGradient>
+    <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#60a5fa"/>
+      <stop offset="100%" stop-color="#818cf8"/>
+    </linearGradient>
+  </defs>
+
+  <!-- ── P Letter Shape (chat bubble style) ── -->
+  <!-- Vertical stem of P -->
+  <rect x="8" y="4" width="16" height="82" rx="8" fill="url(#grad1)"/>
+
+  <!-- D curve of P (the bowl) -->
+  <!-- Outer D shape -->
+  <path d="M16 4 H38 C62 4 80 20 80 44 C80 68 62 84 38 84 H16 Z" fill="url(#grad1)"/>
+
+  <!-- Inner cutout of D (white space) -->
+  <path d="M28 18 H38 C52 18 64 30 64 44 C64 58 52 70 38 70 H28 Z" fill="white"/>
+
+  <!-- Chat bubble tail at bottom left -->
+  <path d="M8 72 L8 86 L22 78" fill="url(#grad1)"/>
+
+  <!-- ── 3 People inside the P bowl ── -->
+  <!-- Left person (smaller, blue) -->
+  <circle cx="37" cy="34" r="6" fill="url(#grad2)" opacity="0.85"/>
+  <path d="M28 58 C28 50 32 47 37 47 C42 47 46 50 46 58 Z" fill="url(#grad2)" opacity="0.85"/>
+
+  <!-- Center person (larger, purple - dominant) -->
+  <circle cx="50" cy="30" r="8" fill="url(#grad1)"/>
+  <path d="M39 58 C39 48 44 44 50 44 C56 44 61 48 61 58 Z" fill="url(#grad1)"/>
+
+  <!-- Right person (smaller, indigo) -->
+  <circle cx="63" cy="34" r="6" fill="#818cf8" opacity="0.85"/>
+  <path d="M54 58 C54 50 58 47 63 47 C68 47 72 50 72 58 Z" fill="#818cf8" opacity="0.85"/>
+
+  <!-- ── Wordmark ── -->
+  <!-- "People" in grey -->
+  <text x="96" y="58"
+        font-family="Inter, Arial, sans-serif"
+        font-size="36"
+        font-weight="300"
+        fill="#94a3b8"
+        letter-spacing="-1">People</text>
+
+  <!-- "Stack" in gradient purple -->
+  <text x="210" y="58"
+        font-family="Inter, Arial, sans-serif"
+        font-size="36"
+        font-weight="800"
+        fill="#6366f1"
+        letter-spacing="-1">Stack</text>
+
+  <!-- Tagline with lines -->
+  <line x1="96" y1="74" x2="108" y2="74" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="112" y="78"
+        font-family="Inter, Arial, sans-serif"
+        font-size="8"
+        font-weight="600"
+        fill="#94a3b8"
+        letter-spacing="2.5">MANAGE. EMPOWER. PERFORM.</text>
+  <line x1="296" y1="74" x2="310" y2="74" stroke="#cbd5e1" stroke-width="1"/>
+</svg>

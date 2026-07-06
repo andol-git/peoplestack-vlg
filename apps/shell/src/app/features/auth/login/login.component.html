@@ -1,0 +1,220 @@
+<div class="min-h-screen flex overflow-hidden relative" style="background:#0f172a">
+
+  <!-- Background -->
+  <div class="absolute inset-0 overflow-hidden pointer-events-none">
+    <div class="absolute inset-0 opacity-5"
+      style="background-image:linear-gradient(#6366f1 1px,transparent 1px),linear-gradient(90deg,#6366f1 1px,transparent 1px);background-size:40px 40px;">
+    </div>
+    <div class="absolute -top-40 -right-40 w-96 h-96 rounded-full opacity-20"
+      style="background:radial-gradient(circle,#6366f1 0%,transparent 70%);"></div>
+    <div class="absolute -bottom-40 -left-20 w-80 h-80 rounded-full opacity-10"
+      style="background:radial-gradient(circle,#818cf8 0%,transparent 70%);"></div>
+    <div class="absolute top-1/4 left-1/4 w-2 h-2 rounded-full bg-indigo-500 opacity-60 animate-pulse"></div>
+    <div class="absolute top-3/4 right-2/4 w-1.5 h-1.5 rounded-full bg-indigo-400 opacity-40 animate-pulse"
+      style="animation-delay:1s"></div>
+  </div>
+
+  <!-- Left Panel -->
+  <div class="hidden lg:flex lg:w-7/12 flex-col justify-between p-10 relative z-10">
+    <div class="flex items-center">
+      <!-- PeopleStack Logo inline -->
+      <svg width="300" height="80" viewBox="0 0 360 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="lg1" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#38bdf8" />
+            <stop offset="55%" stop-color="#6366f1" />
+            <stop offset="100%" stop-color="#7c3aed" />
+          </linearGradient>
+          <linearGradient id="lg2" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#60a5fa" />
+            <stop offset="100%" stop-color="#818cf8" />
+          </linearGradient>
+        </defs>
+        <rect x="8" y="4" width="16" height="82" rx="8" fill="url(#lg1)" />
+        <path d="M16 4 H38 C62 4 80 20 80 44 C80 68 62 84 38 84 H16 Z" fill="url(#lg1)" />
+        <path d="M28 18 H38 C52 18 64 30 64 44 C64 58 52 70 38 70 H28 Z" fill="white" />
+        <path d="M8 72 L8 86 L22 78" fill="url(#lg1)" />
+        <circle cx="37" cy="34" r="6" fill="url(#lg2)" opacity="0.85" />
+        <path d="M28 58 C28 50 32 47 37 47 C42 47 46 50 46 58 Z" fill="url(#lg2)" opacity="0.85" />
+        <circle cx="50" cy="30" r="8" fill="url(#lg1)" />
+        <path d="M39 58 C39 48 44 44 50 44 C56 44 61 48 61 58 Z" fill="url(#lg1)" />
+        <circle cx="63" cy="34" r="6" fill="#818cf8" opacity="0.85" />
+        <path d="M54 58 C54 50 58 47 63 47 C68 47 72 50 72 58 Z" fill="#818cf8" opacity="0.85" />
+        <text x="96" y="50" font-family="Inter,Arial,sans-serif" font-size="30" font-weight="300" fill="#94a3b8"
+          letter-spacing="-1">People</text>
+        <text x="193" y="50" font-family="Inter,Arial,sans-serif" font-size="30" font-weight="800" fill="#6366f1"
+          letter-spacing="-1">Stack</text>
+        <line x1="96" y1="66" x2="108" y2="66" stroke="#334155" stroke-width="1" />
+        <text x="112" y="70" font-family="Inter,Arial,sans-serif" font-size="8" font-weight="600" fill="#475569"
+          letter-spacing="2.2">MANAGE. EMPOWER. PERFORM.</text>
+        <line x1="292" y1="66" x2="304" y2="66" stroke="#334155" stroke-width="1" />
+      </svg>
+    </div>
+
+    <div class="max-w-2xl">
+      <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-5"
+        style="border:1px solid rgba(99,102,241,0.3);background:rgba(99,102,241,0.1)">
+        <span class="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse"></span>
+        <span class="text-indigo-300 text-xs font-medium tracking-wider uppercase">Enterprise Platform</span>
+      </div>
+      <h1 class="font-display text-5xl xl:text-6xl font-bold text-white mb-6" style="line-height:1.1">
+        Manage Your<br />
+        <span class="text-indigo-400">Workforce</span><br />
+        Seamlessly
+      </h1>
+      <p class="text-slate-400 text-lg leading-relaxed mb-10">
+        Complete workforce management solution for security staff, loaders, and utility teams.
+        Track employees, compliance, and operations — all in one place.
+      </p>
+      <div class="flex flex-wrap gap-3">
+        @for (feat of features; track feat.label) {
+        <div class="flex items-center gap-2 px-3.5 py-2 rounded-xl"
+          style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08)">
+          <span class="text-sm">{{ feat.icon }}</span>
+          <span class="text-slate-300 text-sm font-medium">{{ feat.label }}</span>
+        </div>
+        }
+      </div>
+    </div>
+
+    <p class="text-slate-600 text-sm">© {{ currentYear }} PeopleStack. All rights reserved.</p>
+  </div>
+
+  <!-- Right Panel -->
+  <div class="w-full lg:w-5/12 flex items-center justify-center p-6 lg:p-12 relative z-10">
+    <div class="w-full max-w-md">
+
+      <div class="rounded-3xl p-8"
+        style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);backdrop-filter:blur(24px);box-shadow:0 25px 50px rgba(0,0,0,0.4)">
+
+        <!-- Mobile Logo -->
+        <div class="flex items-center justify-center mb-8 lg:hidden">
+          <svg width="160" height="48" viewBox="0 0 360 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="mlg1" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#38bdf8" />
+                <stop offset="55%" stop-color="#6366f1" />
+                <stop offset="100%" stop-color="#7c3aed" />
+              </linearGradient>
+              <linearGradient id="mlg2" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#60a5fa" />
+                <stop offset="100%" stop-color="#818cf8" />
+              </linearGradient>
+            </defs>
+            <rect x="8" y="4" width="16" height="82" rx="8" fill="url(#mlg1)" />
+            <path d="M16 4 H38 C62 4 80 20 80 44 C80 68 62 84 38 84 H16 Z" fill="url(#mlg1)" />
+            <path d="M28 18 H38 C52 18 64 30 64 44 C64 58 52 70 38 70 H28 Z" fill="white" />
+            <path d="M8 72 L8 86 L22 78" fill="url(#mlg1)" />
+            <circle cx="37" cy="34" r="6" fill="url(#mlg2)" opacity="0.85" />
+            <path d="M28 58 C28 50 32 47 37 47 C42 47 46 50 46 58 Z" fill="url(#mlg2)" opacity="0.85" />
+            <circle cx="50" cy="30" r="8" fill="url(#mlg1)" />
+            <path d="M39 58 C39 48 44 44 50 44 C56 44 61 48 61 58 Z" fill="url(#mlg1)" />
+            <circle cx="63" cy="34" r="6" fill="#818cf8" opacity="0.85" />
+            <path d="M54 58 C54 50 58 47 63 47 C68 47 72 50 72 58 Z" fill="#818cf8" opacity="0.85" />
+            <text x="96" y="50" font-family="Inter,Arial,sans-serif" font-size="30" font-weight="300" fill="#94a3b8"
+              letter-spacing="-1">People</text>
+            <text x="193" y="50" font-family="Inter,Arial,sans-serif" font-size="30" font-weight="800" fill="#6366f1"
+              letter-spacing="-1">Stack</text>
+          </svg>
+        </div>
+
+        <h2 class="font-display text-2xl font-bold text-white mb-1.5">Welcome back</h2>
+        <p class="text-slate-400 text-sm mb-8">Sign in to your PeopleStack portal</p>
+
+        <!-- Error Alert -->
+        @if (auth.authError()) {
+        <div class="mb-5 flex items-start gap-3 px-4 py-3 rounded-xl"
+          style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2)">
+          <svg class="w-4 h-4 text-red-400 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+            stroke-width="2">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="16" x2="12.01" y2="16" />
+          </svg>
+          <p class="text-red-300 text-sm">{{ auth.authError() }}</p>
+        </div>
+        }
+
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+
+          <!-- Username -->
+          <div class="mb-5">
+            <label class="block text-slate-300 text-sm font-medium mb-2">Username</label>
+            <div class="relative">
+              <div class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
+              </div>
+              <input formControlName="username" type="text" autocomplete="username" placeholder="Enter your username"
+                class="w-full pl-10 pr-4 py-3 rounded-xl text-sm text-white outline-none transition-all duration-200 placeholder-slate-500"
+                [style.background]="'rgba(255,255,255,0.06)'"
+                [style.border]="usernameError ? '1px solid rgba(239,68,68,0.6)' : '1px solid rgba(255,255,255,0.1)'" />
+            </div>
+            @if (usernameError) {
+            <p class="mt-1.5 text-red-400 text-xs">{{ usernameError }}</p>
+            }
+          </div>
+
+          <!-- Password -->
+          <div class="mb-6">
+            <label class="block text-slate-300 text-sm font-medium mb-2">Password</label>
+            <div class="relative">
+              <div class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                  <path d="M7 11V7a5 5 0 0110 0v4" />
+                </svg>
+              </div>
+              <input formControlName="password" [type]="showPassword() ? 'text' : 'password'"
+                autocomplete="current-password" placeholder="Enter your password"
+                class="w-full pl-10 pr-12 py-3 rounded-xl text-sm text-white outline-none transition-all duration-200 placeholder-slate-500"
+                [style.background]="'rgba(255,255,255,0.06)'"
+                [style.border]="passwordError ? '1px solid rgba(239,68,68,0.6)' : '1px solid rgba(255,255,255,0.1)'" />
+              <button type="button" (click)="togglePassword()"
+                class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors">
+                @if (showPassword()) {
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path
+                    d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24" />
+                  <line x1="1" y1="1" x2="23" y2="23" />
+                </svg>
+                } @else {
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+                }
+              </button>
+            </div>
+            @if (passwordError) {
+            <p class="mt-1.5 text-red-400 text-xs">{{ passwordError }}</p>
+            }
+          </div>
+
+          <!-- Submit -->
+          <button type="submit" [disabled]="auth.isLoading()"
+            class="w-full py-3 rounded-xl text-sm font-semibold text-white transition-all duration-200 flex items-center justify-center gap-2.5 disabled:opacity-60 disabled:cursor-not-allowed active:scale-95"
+            style="background:#4f46e5">
+            @if (auth.isLoading()) {
+            <svg class="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+            </svg>
+            <span>Signing in...</span>
+            } @else {
+            <span>Sign In</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+            }
+          </button>
+
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+</div>

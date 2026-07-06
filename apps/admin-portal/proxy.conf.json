@@ -1,0 +1,8 @@
+{
+  "/vlg_service_v1": {
+    "target": "http://68.183.93.212:8080",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  }
+}

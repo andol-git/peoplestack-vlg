@@ -1,0 +1,310 @@
+<div class="flex h-screen overflow-hidden" style="background:var(--surface-card)">
+
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="flex flex-col flex-shrink-0 transition-all duration-300 overflow-hidden"
+    [style.width]="sidebarOpen() ? '240px' : '64px'" style="background:var(--sidebar-bg)">
+
+    <!-- Logo Row -->
+    <div class="flex items-center h-16 px-3 border-b shrink-0" style="border-color:rgba(255,255,255,0.06)">
+      @if (sidebarOpen()) {
+      <div class="flex items-center gap-2.5">
+        <!-- VLG Logo inline -->
+        <svg width="38" height="38" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"
+          class="shrink-0">
+          <polygon points="60,4 108,30 108,82 60,108 12,82 12,30" fill="none" stroke="#FFD700" stroke-width="5" />
+          <text x="10" y="85" font-family="Arial Black,Arial,sans-serif" font-size="64" font-weight="900"
+            fill="#1a6b2e">V</text>
+          <text x="56" y="85" font-family="Arial Black,Arial,sans-serif" font-size="64" font-weight="900"
+            fill="#cc1111">G</text>
+          <polygon points="32,46 98,10 66,54" fill="#FFD700" />
+          <polygon points="32,46 98,10 60,48" fill="#cc1111" />
+          <polygon points="32,46 40,58 56,50" fill="#111" opacity="0.45" />
+        </svg>
+        <div>
+          <p class="text-white font-bold text-sm leading-tight">{{ config.appShortName }}</p>
+          <p class="text-slate-500 text-[10px]">The Best Services</p>
+        </div>
+      </div>
+      } @else {
+      <svg width="36" height="36" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="60,4 108,30 108,82 60,108 12,82 12,30" fill="none" stroke="#FFD700" stroke-width="5" />
+        <text x="10" y="85" font-family="Arial Black,Arial,sans-serif" font-size="64" font-weight="900"
+          fill="#1a6b2e">V</text>
+        <text x="56" y="85" font-family="Arial Black,Arial,sans-serif" font-size="64" font-weight="900"
+          fill="#cc1111">G</text>
+        <polygon points="32,46 98,10 66,54" fill="#FFD700" />
+        <polygon points="32,46 98,10 60,48" fill="#cc1111" />
+        <polygon points="32,46 40,58 56,50" fill="#111" opacity="0.45" />
+      </svg>
+      }
+    </div>
+
+    <!-- Section Label -->
+    @if (sidebarOpen()) {
+    <div class="px-4 pt-5 pb-2">
+      <span class="text-slate-600 text-[10px] font-semibold uppercase tracking-widest">Main Menu</span>
+    </div>
+    } @else {
+    <div class="pt-4"></div>
+    }
+
+    <!-- Nav Items -->
+    <nav class="flex-1 px-2 overflow-y-auto overflow-x-hidden">
+
+      <!-- Dashboard -->
+      <a routerLink="/dashboard" routerLinkActive="nav-active" [routerLinkActiveOptions]="{exact:true}"
+        class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl mb-0.5 cursor-pointer transition-all duration-150"
+        [title]="!sidebarOpen() ? 'Dashboard' : ''">
+        <i class="fa-solid fa-gauge-high text-base w-5 text-center shrink-0"></i>
+        @if (sidebarOpen()) { <span class="text-sm font-medium whitespace-nowrap">Dashboard</span> }
+      </a>
+
+      <!-- Employees -->
+      <a routerLink="/employees" routerLinkActive="nav-active"
+        class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl mb-0.5 cursor-pointer transition-all duration-150"
+        [title]="!sidebarOpen() ? 'Employees' : ''">
+        <i class="fa-solid fa-users text-base w-5 text-center shrink-0"></i>
+        @if (sidebarOpen()) { <span class="text-sm font-medium whitespace-nowrap">Employees</span> }
+      </a>
+
+      <!-- Customers Dropdown -->
+      <div>
+        <button (click)="toggleCustomers()"
+          class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl mb-0.5 cursor-pointer transition-all duration-150"
+          [class.nav-active]="router.url.includes('/customers') || router.url.includes('/assignments')"
+          [title]="!sidebarOpen() ? 'Customers' : ''">
+          <i class="fa-solid fa-briefcase text-base w-5 text-center shrink-0"></i>
+          @if (sidebarOpen()) {
+          <span class="text-sm font-medium whitespace-nowrap flex-1 text-left">Customers</span>
+          <i class="fa-solid fa-chevron-right text-xs transition-transform duration-300"
+            [style.transform]="customersOpen() ? 'rotate(90deg)' : 'rotate(0deg)'"></i>
+          }
+        </button>
+
+        @if (sidebarOpen()) {
+        <div class="overflow-hidden transition-all duration-300 ease-in-out"
+          [style.max-height]="customersOpen() ? '300px' : '0px'" [style.opacity]="customersOpen() ? '1' : '0'">
+          <div class="ml-4 pl-3 border-l py-1" style="border-color:rgba(255,255,255,0.1)">
+
+            <a routerLink="/customers" routerLinkActive="nav-active" [routerLinkActiveOptions]="{exact:true}"
+              class="nav-item flex items-center gap-3 px-3 py-2 rounded-xl mb-0.5 cursor-pointer transition-all duration-150">
+              <i class="fa-solid fa-circle text-[6px] w-5 text-center shrink-0"></i>
+              <span class="text-sm font-medium whitespace-nowrap">Customers</span>
+            </a>
+
+            <a routerLink="/customers/new" routerLinkActive="nav-active"
+              class="nav-item flex items-center gap-3 px-3 py-2 rounded-xl mb-0.5 cursor-pointer transition-all duration-150">
+              <i class="fa-solid fa-circle text-[6px] w-5 text-center shrink-0"></i>
+              <span class="text-sm font-medium whitespace-nowrap">Add Customer</span>
+            </a>
+
+            <a routerLink="/assignments" routerLinkActive="nav-active"
+              class="nav-item flex items-center gap-3 px-3 py-2 rounded-xl mb-0.5 cursor-pointer transition-all duration-150">
+              <i class="fa-solid fa-circle text-[6px] w-5 text-center shrink-0"></i>
+              <span class="text-sm font-medium whitespace-nowrap">Assign Staff</span>
+            </a>
+
+          </div>
+        </div>
+        }
+      </div>
+
+
+
+      <!-- Users — Super Admin only -->
+      @if (auth.isSuperAdmin()) {
+      <a routerLink="/users" routerLinkActive="nav-active"
+        class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl mb-0.5 cursor-pointer transition-all duration-150"
+        [title]="!sidebarOpen() ? 'Users' : ''">
+        <i class="fa-solid fa-user-gear text-base w-5 text-center shrink-0"></i>
+        @if (sidebarOpen()) { <span class="text-sm font-medium whitespace-nowrap">Users</span> }
+      </a>
+      }
+
+      <!-- Attendance Dropdown -->
+      <div>
+        <button (click)="toggleAttendance()"
+          class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl mb-0.5 cursor-pointer transition-all duration-150"
+          [class.nav-active]="router.url.includes('/attendance')" [title]="!sidebarOpen() ? 'Attendance' : ''">
+          <i class="fa-solid fa-calendar-check text-base w-5 text-center shrink-0"></i>
+          @if (sidebarOpen()) {
+          <span class="text-sm font-medium whitespace-nowrap flex-1 text-left">Attendance</span>
+          <i class="fa-solid fa-chevron-right text-xs transition-transform duration-300"
+            [style.transform]="attendanceOpen() ? 'rotate(90deg)' : 'rotate(0deg)'"></i>
+          }
+        </button>
+
+        <!-- Sub items — CSS animated -->
+        @if (sidebarOpen()) {
+        <div class="overflow-hidden transition-all duration-300 ease-in-out"
+          [style.max-height]="attendanceOpen() ? '300px' : '0px'" [style.opacity]="attendanceOpen() ? '1' : '0'">
+          <div class="ml-4 pl-3 border-l py-1" style="border-color:rgba(255,255,255,0.1)">
+
+            <a routerLink="/attendance/today" routerLinkActive="nav-active"
+              class="nav-item flex items-center gap-3 px-3 py-2 rounded-xl mb-0.5 cursor-pointer transition-all duration-150">
+              <i class="fa-solid fa-circle text-[6px] w-5 text-center shrink-0"></i>
+              <span class="text-sm font-medium whitespace-nowrap">Today's Attendance</span>
+            </a>
+
+            <a routerLink="/attendance/sheet" routerLinkActive="nav-active"
+              class="nav-item flex items-center gap-3 px-3 py-2 rounded-xl mb-0.5 cursor-pointer transition-all duration-150">
+              <i class="fa-solid fa-circle text-[6px] w-5 text-center shrink-0"></i>
+              <span class="text-sm font-medium whitespace-nowrap">Attendance Sheet</span>
+            </a>
+
+            <a routerLink="/attendance/timesheets" routerLinkActive="nav-active"
+              class="nav-item flex items-center gap-3 px-3 py-2 rounded-xl mb-0.5 cursor-pointer transition-all duration-150">
+              <i class="fa-solid fa-circle text-[6px] w-5 text-center shrink-0"></i>
+              <span class="text-sm font-medium whitespace-nowrap">Timesheets</span>
+            </a>
+
+            <a routerLink="/attendance/overtime" routerLinkActive="nav-active"
+              class="nav-item flex items-center gap-3 px-3 py-2 rounded-xl mb-0.5 cursor-pointer transition-all duration-150">
+              <i class="fa-solid fa-circle text-[6px] w-5 text-center shrink-0"></i>
+              <span class="text-sm font-medium whitespace-nowrap">Overtime Requests</span>
+            </a>
+
+            <a routerLink="/attendance/shifts" routerLinkActive="nav-active"
+              class="nav-item flex items-center gap-3 px-3 py-2 rounded-xl mb-0.5 cursor-pointer transition-all duration-150">
+              <i class="fa-solid fa-circle text-[6px] w-5 text-center shrink-0"></i>
+              <span class="text-sm font-medium whitespace-nowrap">Shift Planning</span>
+            </a>
+
+          </div>
+        </div>
+        }
+      </div>
+
+
+
+    </nav>
+
+
+
+    <!-- User Card -->
+    <div class="p-3 border-t shrink-0" style="border-color:rgba(255,255,255,0.06)">
+      <div class="flex items-center gap-3 px-2 py-2 rounded-xl" style="background:rgba(255,255,255,0.04)">
+        <div
+          class="w-7 h-7 rounded-lg bg-indigo-600/60 border border-indigo-500/30 flex items-center justify-center shrink-0">
+          <span class="text-white text-xs font-bold">{{ (auth.username() || 'A').charAt(0).toUpperCase() }}</span>
+        </div>
+        @if (sidebarOpen()) {
+        <div class="overflow-hidden flex-1 min-w-0">
+          <p class="text-white text-xs font-semibold truncate">{{ auth.username() || 'Admin' }}</p>
+          <p class="text-slate-500 text-[10px] truncate">Administrator</p>
+        </div>
+        }
+      </div>
+    </div>
+  </aside>
+
+  <!-- ══ MAIN AREA ══ -->
+  <div class="flex flex-col flex-1 overflow-hidden">
+
+    <!-- TOPBAR -->
+    <header class="flex items-center justify-between h-16 px-5 border-b shrink-0 bg-[var(--surface)]"
+      style="border-color:var(--border)">
+
+      <!-- Left -->
+      <div class="flex items-center gap-3">
+        <button (click)="toggleSidebar()"
+          class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors text-[var(--ink-muted)] hover:bg-[var(--surface-hover)]">
+          <i class="fa-solid fa-bars text-sm"></i>
+        </button>
+        <div
+          class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl border text-sm cursor-pointer transition-colors"
+          style="border-color:var(--border);background:var(--surface-card);min-width:220px">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            class="text-[var(--ink-subtle)]">
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+          <span class="text-xs text-[var(--ink-subtle)]">Search employees, IDs...</span>
+        </div>
+      </div>
+
+      <!-- Right -->
+      <div class="flex items-center gap-2">
+        <!-- Bell -->
+        <button
+          class="relative w-8 h-8 rounded-lg flex items-center justify-center transition-colors text-[var(--ink-muted)] hover:bg-[var(--surface-hover)]">
+          <i class="fa-solid fa-bell text-sm"></i>
+          <span
+            class="absolute top-1 right-1 w-2 h-2 rounded-full bg-indigo-500 border-2 border-[var(--surface)]"></span>
+        </button>
+
+        <div class="w-px h-6 mx-1" style="background:var(--border)"></div>
+
+        <!-- Profile -->
+        <div class="relative">
+          <button data-profile-trigger (click)="toggleProfile()"
+            class="flex items-center gap-2.5 px-2.5 py-1.5 rounded-xl transition-colors hover:bg-[var(--surface-hover)] cursor-pointer">
+            <div class="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center">
+              <span class="text-white text-xs font-bold">{{ (auth.username() || 'A').charAt(0).toUpperCase() }}</span>
+            </div>
+            <div class="hidden sm:block text-left">
+              <p class="text-xs font-semibold text-[var(--ink)] leading-tight">{{ auth.username() || 'Admin' }}</p>
+              <p class="text-[10px] text-[var(--ink-subtle)]">Administrator</p>
+            </div>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              class="text-[var(--ink-subtle)] transition-transform" [class.rotate-180]="profileOpen()">
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </button>
+
+          <!-- Dropdown -->
+          @if (profileOpen()) {
+          <div data-profile-menu
+            class="absolute right-0 top-full mt-2 w-56 rounded-2xl border shadow-lg z-50 bg-[var(--surface)]"
+            style="border-color:var(--border)">
+            <div class="px-4 py-3.5 border-b" style="border-color:var(--border)">
+              <p class="text-sm font-semibold text-[var(--ink)]">{{ auth.username() || 'Admin' }}</p>
+              <p class="text-xs text-[var(--ink-muted)] mt-0.5">{{ config.companyName }}</p>
+            </div>
+            <div class="p-1.5">
+              <button
+                class="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-[var(--ink-muted)] hover:bg-[var(--surface-hover)] transition-colors">
+                <i class="fa-solid fa-user w-4 text-center"></i>
+                My Profile
+              </button>
+              <button
+                class="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-[var(--ink-muted)] hover:bg-[var(--surface-hover)] transition-colors">
+                <i class="fa-solid fa-gear w-4 text-center"></i>
+                Settings
+              </button>
+            </div>
+            <div class="p-1.5 border-t" style="border-color:var(--border)">
+              <button (click)="logout()"
+                class="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-red-500 hover:bg-red-50 transition-colors">
+                <i class="fa-solid fa-right-from-bracket w-4 text-center"></i>
+                Sign Out
+              </button>
+            </div>
+          </div>
+          }
+        </div>
+      </div>
+    </header>
+
+    <!-- PAGE CONTENT -->
+    <main class="flex-1 overflow-y-auto p-6">
+      <router-outlet />
+    </main>
+  </div>
+</div>
+
+<style>
+  .nav-item {
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .nav-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: white;
+  }
+
+  .nav-active {
+    background: rgba(99, 102, 241, 0.25) !important;
+    color: white !important;
+  }
+</style>

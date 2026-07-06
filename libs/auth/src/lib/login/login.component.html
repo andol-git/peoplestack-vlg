@@ -1,0 +1,65 @@
+<div class="ps-login-page">
+  <div class="ps-login-left d-none d-lg-flex">
+    <div class="ps-brand-content">
+      <div class="ps-logo-mark"><span>PS</span></div>
+      <h1 class="ps-brand-name">PeopleStack</h1>
+      <p class="ps-brand-tagline">Enterprise Workforce &amp; Facility Management</p>
+      <div class="ps-brand-features">
+        <div class="ps-feature-item"><span>👥</span><span>Employee Lifecycle Management</span></div>
+        <div class="ps-feature-item"><span>🏢</span><span>Multi-Site Operations</span></div>
+        <div class="ps-feature-item"><span>🔐</span><span>Compliance &amp; Legal Tracking</span></div>
+        <div class="ps-feature-item"><span>📊</span><span>Real-time Dashboard &amp; Reports</span></div>
+        <div class="ps-feature-item"><span>🖐️</span><span>Biometric Attendance Integration</span></div>
+      </div>
+    </div>
+    <div class="ps-brand-footer">© 2025 PeopleStack · Enterprise Edition</div>
+  </div>
+
+  <div class="ps-login-right">
+    <div class="ps-login-card">
+      <div class="ps-mobile-logo d-flex d-lg-none">
+        <div class="ps-logo-sm"><span>PS</span></div>
+        <span class="ps-brand-name-sm">PeopleStack</span>
+      </div>
+      <h2 class="ps-card-title">Welcome back</h2>
+      <p class="ps-card-sub">Sign in to your admin workspace</p>
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+        <div class="mb-4">
+          <label class="ps-label">Username</label>
+          <div class="ps-input-wrap">
+            <span class="ps-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+            <input type="text" class="ps-input" [class.is-invalid]="u.invalid&&u.touched" formControlName="username" placeholder="Enter username" autocomplete="username"/>
+          </div>
+          @if(u.touched && u.hasError('required')){ <div class="ps-err">Username is required</div> }
+        </div>
+
+        <div class="mb-4">
+          <label class="ps-label">Password</label>
+          <div class="ps-input-wrap">
+            <span class="ps-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+            <input [type]="showPass()?'text':'password'" class="ps-input ps-input-pass" [class.is-invalid]="p.invalid&&p.touched" formControlName="password" placeholder="Enter password" autocomplete="current-password"/>
+            <button type="button" class="ps-eye" (click)="showPass.update(v=>!v)">
+              @if(showPass()){ <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+              } @else { <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> }
+            </button>
+          </div>
+          @if(p.touched && p.hasError('required')){ <div class="ps-err">Password is required</div> }
+        </div>
+
+        @if(facade.error()){
+          <div class="ps-error-alert">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            {{ facade.error() }}
+          </div>
+        }
+
+        <button type="submit" class="ps-submit w-100" [disabled]="facade.loading()">
+          @if(facade.loading()){ <span class="spinner-border spinner-border-sm me-2"></span>Signing in... }
+          @else { Sign In }
+        </button>
+      </form>
+      <div class="ps-footer-text">PeopleStack Admin · v1.0</div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,193 @@
+<!-- <div class="ps-page">
+  <div class="ps-page-header">
+    <div><h1 class="ps-page-title">Dashboard</h1><p class="ps-page-sub">Welcome back, Admin</p></div>
+    <a routerLink="/employees/new" class="ps-btn-primary"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add Employee</a>
+  </div>
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-md-3"><div class="ps-stat-card ps-card-blue"><div class="ps-stat-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><div class="ps-stat-value">{{ empFacade.totalActive() }}</div><div class="ps-stat-label">Active Employees</div></div></div>
+    <div class="col-6 col-md-3"><div class="ps-stat-card ps-card-green"><div class="ps-stat-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div><div class="ps-stat-value">0</div><div class="ps-stat-label">Present Today</div></div></div>
+    <div class="col-6 col-md-3"><div class="ps-stat-card ps-card-amber"><div class="ps-stat-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="ps-stat-value">0</div><div class="ps-stat-label">On Leave</div></div></div>
+    <div class="col-6 col-md-3"><div class="ps-stat-card ps-card-red"><div class="ps-stat-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div class="ps-stat-value">{{ empFacade.totalInactive() }}</div><div class="ps-stat-label">Inactive</div></div></div>
+  </div>
+  <div class="row g-3">
+    <div class="col-md-8"><div class="ps-card"><div class="ps-card-header"><span>Recent Employees</span><a routerLink="/employees" class="ps-link">View all →</a></div><div class="ps-card-body"><div class="ps-placeholder">Employee list loads here</div></div></div></div>
+    <div class="col-md-4"><div class="ps-card"><div class="ps-card-header"><span>Quick Actions</span></div><div class="ps-card-body"><div class="ps-quick-actions"><a routerLink="/employees/new" class="ps-qa-item"><div class="ps-qa-icon ps-qa-blue"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg></div><span>Add Employee</span></a><a routerLink="/assignments" class="ps-qa-item"><div class="ps-qa-icon ps-qa-purple"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></div><span>Assign Staff</span></a><a routerLink="/attendance" class="ps-qa-item"><div class="ps-qa-icon ps-qa-green"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><span>Attendance</span></a></div></div></div></div>
+  </div>
+</div> -->
+
+
+
+<!-- libs/feature-customer/src/lib/customer-list/customer-list.html -->
+<div class="ps-page">
+
+  <!-- Header -->
+  <div class="ps-page-header">
+    <div>
+      <h1 class="ps-page-title">Customers</h1>
+      <p class="ps-page-sub">Manage customers and assign staff to sites</p>
+    </div>
+    <button class="ps-btn-primary">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <line x1="12" y1="5" x2="12" y2="19" />
+        <line x1="5" y1="12" x2="19" y2="12" />
+      </svg>
+      Add Customer
+    </button>
+  </div>
+
+  <!-- Stats -->
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+      <div class="ps-stat-card">
+        <div class="ps-stat-icon ps-blue">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="7" width="20" height="14" rx="2" />
+            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+          </svg>
+        </div>
+        <div>
+          <div class="ps-stat-value">{{ facade.customers().length }}</div>
+          <div class="ps-stat-label">Total Customers</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="ps-stat-card">
+        <div class="ps-stat-icon ps-green">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+          </svg>
+        </div>
+        <div>
+          <div class="ps-stat-value">{{ facade.totalAssigned() }}</div>
+          <div class="ps-stat-label">Staff Assigned</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table Card -->
+  <div class="ps-card">
+
+    <!-- Toolbar -->
+    <div class="ps-toolbar">
+      <div class="ps-search-box">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8" />
+          <line x1="21" y1="21" x2="16.65" y2="16.65" />
+        </svg>
+        <input type="text" placeholder="Search customers..." [(ngModel)]="searchTerm" />
+      </div>
+    </div>
+
+    <!-- Bootstrap Table -->
+    <div class="table-responsive">
+      @if (facade.loading()) {
+      <div class="ps-loading">
+        <div class="spinner-border text-primary" role="status"></div>
+        <span>Loading customers...</span>
+      </div>
+      } @else {
+      <table class="table ps-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Customer</th>
+            <th>Site</th>
+            <th>Contact</th>
+            <th>Staff Count</th>
+            <th>Status</th>
+            <th class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (c of filteredCustomers(); track c.id; let i = $index) {
+          <tr>
+            <td class="ps-td-index">{{ i + 1 }}</td>
+            <td>
+              <div class="ps-cust-cell">
+                <div class="ps-cust-avatar">
+                  {{ c.name?.charAt(0) ?? 'C' }}
+                </div>
+                <div>
+                  <div class="ps-cust-name">{{ c.name }}</div>
+                  <div class="ps-cust-code">{{ c.code }}</div>
+                </div>
+              </div>
+            </td>
+            <td>{{ c.site ?? '—' }}</td>
+            <td class="ps-td-mono">{{ c.contactNumber ?? '—' }}</td>
+            <td>
+              <span class="ps-staff-count">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                  <circle cx="9" cy="7" r="4" />
+                </svg>
+                {{ c.assignedStaffCount ?? 0 }}
+              </span>
+            </td>
+            <td>
+              @if (c.isActive) {
+              <span class="ps-badge ps-badge-success">Active</span>
+              } @else {
+              <span class="ps-badge ps-badge-danger">Inactive</span>
+              }
+            </td>
+
+            <!-- ✅ Last column: Actions with Assign Staff button -->
+            <td>
+              <div class="ps-action-btns">
+                <!-- Assign Staff button (from your sketch) -->
+                <button class="ps-btn-assign" (click)="openAssignModal(c.id!, c.name!)" title="Assign Staff">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                    <circle cx="8.5" cy="7" r="4" />
+                    <line x1="20" y1="8" x2="20" y2="14" />
+                    <line x1="23" y1="11" x2="17" y2="11" />
+                  </svg>
+                  Assign Staff
+                </button>
+
+                <!-- Edit -->
+                <button class="ps-action-btn ps-action-edit" title="Edit">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+          } @empty {
+          <tr>
+            <td colspan="7">
+              <div class="ps-empty">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="1.5">
+                  <rect x="2" y="7" width="20" height="14" rx="2" />
+                  <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+                </svg>
+                <p>No customers found</p>
+              </div>
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+      }
+    </div>
+
+    <div class="ps-table-footer">
+      <span>Showing {{ filteredCustomers().length }} of {{ facade.customers().length }} customers</span>
+    </div>
+
+  </div>
+</div>
+
+<!-- ✅ Assign Staff Modal -->
+@if (showAssignModal()) {
+<ps-assign-staff-modal [customerId]="selectedCustomerId()!" [customerName]="selectedCustomerName()"
+  [visible]="showAssignModal()" (close)="onModalClose()" (assigned)="onAssigned()" />
+}

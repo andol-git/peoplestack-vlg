@@ -1,0 +1,631 @@
+<div class="animate-fade-in max-w-6xl mx-auto">
+
+  <!-- Header -->
+  <div class="flex items-center gap-3 mb-6">
+    <a routerLink="/employees"
+      class="w-8 h-8 rounded-lg flex items-center justify-center border border-slate-200 text-slate-500 hover:bg-slate-50 transition-colors">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="15 18 9 12 15 6" />
+      </svg>
+    </a>
+    <div>
+      <h1 class="page-title">{{ isEditMode() ? 'Edit Employee' : 'Add New Employee' }}</h1>
+      <p class="page-subtitle">Step {{ currentStep() }} of {{ totalSteps }} — {{ steps[currentStep()-1].description }}
+      </p>
+    </div>
+  </div>
+
+  <!-- Step Progress -->
+  <div class="ps-card p-4 mb-6">
+    <div class="h-1.5 bg-slate-200 rounded-full mb-4 overflow-hidden">
+      <div class="h-full bg-indigo-500 rounded-full transition-all duration-500" [style.width.%]="progress()"></div>
+    </div>
+    <div class="flex items-center justify-between overflow-x-auto gap-1">
+      @for (step of steps; track step.id) {
+      <button (click)="goToStep(step.id)"
+        class="flex flex-col items-center gap-1 px-2 py-1.5 rounded-xl transition-all min-w-[60px]">
+        <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-all border"
+          [style.background]="currentStep() === step.id ? '#4f46e5' : isStepDone(step.id) ? '#d1fae5' : '#f8fafc'"
+          [style.color]="currentStep() === step.id ? 'white' : isStepDone(step.id) ? '#065f46' : '#94a3b8'"
+          [style.border-color]="currentStep() === step.id ? '#4f46e5' : '#e2e8f0'">
+          @if (isStepDone(step.id)) {
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+          } @else {
+          {{ step.id }}
+          }
+        </div>
+        <span class="text-[10px] font-medium whitespace-nowrap hidden sm:block"
+          [style.color]="currentStep() === step.id ? '#4f46e5' : isStepDone(step.id) ? '#059669' : '#94a3b8'">
+          {{ step.label }}
+        </span>
+      </button>
+      @if (step.id < totalSteps) { <div class="flex-1 h-px min-w-[8px]"
+        [style.background]="isStepDone(step.id) ? '#a5b4fc' : '#e2e8f0'">
+    </div>
+    }
+    }
+  </div>
+</div>
+
+<!-- Form -->
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div class="ps-card p-6 mb-4">
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!-- STEP 1 — Employee Info                                      -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    @if (currentStep() === 1) {
+
+    <!-- Site selector — drives conditional sections -->
+    <div class="mb-6 p-4 rounded-xl border-2 flex items-center gap-4"
+      [style.border-color]="siteValue() ? '#4f46e5' : '#e2e8f0'"
+      [style.background]="siteValue() ? '#f5f3ff' : '#f8fafc'">
+      <div class="flex-1" [formGroup]="workDetailsGroup">
+        <label class="ps-label font-semibold text-indigo-700">CLIENT / SITE <span class="req">*</span></label>
+        <select formControlName="site" class="ps-input mt-1">
+          <option value="">Select Client / Site</option>
+          @for (group of clientGroups; track group.type) {
+          <optgroup [label]="group.label">
+            @for (c of group.clients; track c) { <option>{{ c }}</option> }
+          </optgroup>
+          }
+        </select>
+      </div>
+      @if (siteValue() && !isAirportSite()) {
+      <div class="text-xs text-slate-500 bg-white border border-slate-200 rounded-lg px-3 py-2 max-w-[220px]">
+        <span class="font-semibold capitalize">{{ clientType() }}</span> client — AEP, AVSEC, PVC &amp; background checks not applicable.
+      </div>
+      }
+      @if (isAirportSite()) {
+      <div class="text-xs text-indigo-600 bg-indigo-50 border border-indigo-200 rounded-lg px-3 py-2 max-w-[220px]">
+        Airport client — AEP, AVSEC, PVC &amp; background check fields enabled.
+      </div>
+      }
+    </div>
+
+    <!-- Basic Information -->
+    <h2 class="text-base font-bold text-slate-700 mb-6 flex items-center gap-2 pb-3 border-b border-slate-100">
+      <span class="w-7 h-7 rounded-lg bg-indigo-100 flex items-center justify-center text-indigo-600 text-sm">👤</span>
+      Basic Information
+    </h2>
+    <div class="form-grid">
+      <div>
+        <label class="ps-label">ID NO <span class="req">*</span></label>
+        <input formControlName="idNo" type="text" placeholder="e.g. 1427" class="ps-input" />
+        @if (fieldError('idNo')) { <p class="text-red-500 text-xs mt-1">{{ fieldError('idNo') }}</p> }
+      </div>
+      <div formGroupName="personalDetails">
+        <label class="ps-label">NAME <span class="req">*</span></label>
+        <input formControlName="name" type="text" placeholder="e.g. BOLEDDULA SUNDAR" class="ps-input" />
+        @if (fieldError('personalDetails.name')) {
+        <p class="text-red-500 text-xs mt-1">{{ fieldError('personalDetails.name') }}</p>
+        }
+      </div>
+      <div formGroupName="personalDetails">
+        <label class="ps-label">GENDER <span class="req">*</span></label>
+        <select formControlName="gender" class="ps-input">
+          @for (g of genderOptions; track g) { <option [value]="g">{{ g }}</option> }
+        </select>
+      </div>
+      <div>
+        <label class="ps-label">PHONE NO <span class="req">*</span></label>
+        <input formControlName="phoneNo" type="tel" placeholder="e.g. 9010865893" maxlength="10" class="ps-input" />
+        @if (fieldError('phoneNo')) { <p class="text-red-500 text-xs mt-1">{{ fieldError('phoneNo') }}</p> }
+      </div>
+      <div>
+        <label class="ps-label">SERIAL NUMBER ASSIGNED</label>
+        <input formControlName="serialNumberAssigned" type="text" placeholder="e.g. 1081" class="ps-input" />
+      </div>
+      <div formGroupName="personalDetails">
+        <label class="ps-label">DATE OF BIRTH <span class="req">*</span></label>
+        <input formControlName="dateOfBirth" type="date" class="ps-input" />
+      </div>
+      <div formGroupName="personalDetails">
+        <label class="ps-label">HEIGHT (ft)</label>
+        <input formControlName="height" type="number" step="0.1" placeholder="e.g. 5.3" class="ps-input" />
+      </div>
+      <div formGroupName="personalDetails">
+        <label class="ps-label">WEIGHT (kg)</label>
+        <input formControlName="weight" type="number" placeholder="e.g. 56" class="ps-input" />
+      </div>
+      <div formGroupName="personalDetails">
+        <label class="ps-label">CHEST</label>
+        <input formControlName="chest" type="number" placeholder="e.g. 34" class="ps-input" />
+      </div>
+      <div formGroupName="personalDetails">
+        <label class="ps-label">BLOOD GROUP</label>
+        <select formControlName="bloodGroup" class="ps-input">
+          <option value="">Select</option>
+          @for (bg of bloodGroupOptions; track bg) { <option [value]="bg">{{ bg }}</option> }
+        </select>
+      </div>
+      <div formGroupName="personalDetails">
+        <label class="ps-label">MARITAL STATUS</label>
+        <select formControlName="maritalStatus" class="ps-input">
+          @for (m of maritalOptions; track m) { <option [value]="m">{{ m }}</option> }
+        </select>
+      </div>
+      <div formGroupName="personalDetails">
+        <label class="ps-label">NATIONALITY <span class="req">*</span></label>
+        <input formControlName="nationality" type="text" placeholder="Indian" class="ps-input" />
+      </div>
+      <div class="col-span-2" formGroupName="personalDetails">
+        <label class="ps-label">IDENTIFICATION MARKS</label>
+        <input formControlName="identificationMarks" type="text" placeholder="e.g. A MOLE ON THE RIGHT HAND"
+          class="ps-input" />
+      </div>
+    </div>
+
+    <div class="border-t border-slate-200 my-8"></div>
+
+    <!-- Career Details -->
+    <h2 class="text-base font-bold text-slate-700 mb-6 flex items-center gap-2 pb-3 border-b border-slate-100">
+      <span class="w-7 h-7 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600 text-sm">💼</span>
+      Career Details
+    </h2>
+    <div class="form-grid" formGroupName="careerDetails">
+      <div>
+        <label class="ps-label">JOINING DATE <span class="req">*</span></label>
+        <input formControlName="joiningDate" type="date" class="ps-input" />
+      </div>
+      <div>
+        <label class="ps-label">DATE OF INTERVIEW</label>
+        <input formControlName="dateOfInterview" type="date" class="ps-input" />
+      </div>
+      <div>
+        <label class="ps-label">RE-JOINING DATE</label>
+        <input formControlName="reJoiningDate" type="date" class="ps-input" />
+      </div>
+      <div>
+        <label class="ps-label">DESIGNATION / POST OFFERED</label>
+        <input formControlName="designation" type="text" list="designationList" placeholder="Select or type designation"
+          class="ps-input" />
+        <datalist id="designationList">
+          @for (d of designationOptions; track d) { <option [value]="d">{{ d }}</option> }
+        </datalist>
+      </div>
+      <div>
+        <label class="ps-label">ORGANISATION</label>
+        <select formControlName="organisation" class="ps-input">
+          <option value="">Select</option>
+          @for (o of organisationOptions; track o) { <option [value]="o">{{ o }}</option> }
+        </select>
+      </div>
+      <div>
+        <label class="ps-label">NATURE OF EMPLOYMENT</label>
+        <select formControlName="natureOfEmployment" class="ps-input">
+          <option value="">Select</option>
+          @for (e of employmentOptions; track e) { <option [value]="e">{{ e }}</option> }
+        </select>
+      </div>
+      <div>
+        <label class="ps-label">REASON FOR LEAVING</label>
+        <input formControlName="reasonForLeaving" type="text" placeholder="NA" class="ps-input" />
+      </div>
+      <div>
+        <label class="ps-label">FULL &amp; FINAL SETTLEMENT</label>
+        <input formControlName="stayingFrom" type="text" placeholder="NA" class="ps-input" />
+      </div>
+      <div>
+        <label class="ps-label">PRESENT ADDRESS</label>
+        <input formControlName="presentAddress" type="text" placeholder="e.g. SHAMSHABAD" class="ps-input" />
+      </div>
+      <div>
+        <label class="ps-label">FROM DATE</label>
+        <input formControlName="fromDate" type="date" class="ps-input" />
+      </div>
+      <div>
+        <label class="ps-label">TO TILL DATE</label>
+        <input formControlName="tillDate" type="date" class="ps-input" />
+      </div>
+      <div>
+        <label class="ps-label">AGE AT MATRICULATION</label>
+        <input formControlName="ageAtMatriculation" type="text" placeholder="NA" class="ps-input" />
+      </div>
+      <div class="col-span-2">
+        <label class="ps-label">NAME OF SCHOOL/COLLEGE WITH FULL ADDRESS</label>
+        <input formControlName="schoolCollegeName" type="text" placeholder="NA" class="ps-input" />
+      </div>
+    </div>
+
+    <div class="border-t border-slate-200 my-8"></div>
+
+    <!-- Address Details -->
+    <h2 class="text-base font-bold text-slate-700 mb-6 flex items-center gap-2 pb-3 border-b border-slate-100">
+      <span class="w-7 h-7 rounded-lg bg-orange-100 flex items-center justify-center text-orange-600 text-sm">📍</span>
+      Address Details
+    </h2>
+    <div formArrayName="addresses">
+      @for (addrCtrl of addressesArray.controls; track $index) {
+      <div [formGroupName]="$index" class="mb-8">
+        <div class="flex items-center gap-2 mb-4">
+          <div class="w-2 h-2 rounded-full" [style.background]="$index === 0 ? '#4f46e5' : '#94a3b8'"></div>
+          <h3 class="font-bold text-sm text-slate-700 uppercase tracking-wide">
+            {{ $index === 0 ? 'Permanent Address' : 'Temporary / Current Address' }}
+          </h3>
+        </div>
+        <div class="form-grid" style="background:#f8fafc;padding:20px;border-radius:12px;border:1px solid #e2e8f0">
+          <div class="col-span-3">
+            <label class="ps-label">ADDRESS LINE 1 <span class="req">*</span></label>
+            <input formControlName="line1" type="text" placeholder="House no, Street, Area..." class="ps-input" />
+          </div>
+          <div>
+            <label class="ps-label">DISTRICT</label>
+            <input formControlName="district" type="text" placeholder="e.g. MAHABUBNAGAR" class="ps-input" />
+          </div>
+          <div>
+            <label class="ps-label">STATE <span class="req">*</span></label>
+            <select formControlName="state" class="ps-input">
+              <option value="">Select State</option>
+              @for (s of stateOptions; track s) { <option [value]="s">{{ s }}</option> }
+            </select>
+          </div>
+          <div>
+            <label class="ps-label">PINCODE <span class="req">*</span></label>
+            <input formControlName="pincode" type="text" placeholder="e.g. 509131" class="ps-input" />
+          </div>
+        </div>
+      </div>
+      }
+    </div>
+
+    @if (!siteValue() || isAirportSite()) {
+    <div class="border-t border-slate-200 my-8"></div>
+
+    <!-- Legal Background — Airport sites only -->
+    <h2 class="text-base font-bold text-slate-700 mb-4 flex items-center gap-2 pb-3 border-b border-slate-100">
+      <span class="w-7 h-7 rounded-lg bg-amber-100 flex items-center justify-center text-amber-600 text-sm">⚖️</span>
+      Legal Background
+      <span class="text-xs font-normal text-amber-600 ml-1">(Airport sites only)</span>
+    </h2>
+    <p class="text-xs text-amber-700 mb-5 p-3 rounded-lg bg-amber-50 border border-amber-200">
+      ⚠️ All fields are mandatory. Please answer honestly — this is part of the official verification process.
+    </p>
+    <div formGroupName="legalBackground">
+      <div class="space-y-3">
+        @for (question of [
+        { key: 'everDetained', label: 'Have you ever been kept under detention?' },
+        { key: 'everBoundDown', label: 'Have you ever been bound down?' },
+        { key: 'everFined', label: 'Have you ever been fined by a court of law?' },
+        { key: 'everConvicted', label: 'Have you ever been convicted by a court of law?' },
+        { key: 'anyCasePending', label: 'Is any case pending against you in any court of law?' },
+        { key: 'dischargedFromTraining', label: 'Whether discharged/expelled/withdrawn from any training institution under the Govt. or otherwise?' },
+        { key: 'dismissedOrRemoved', label: 'Have you ever been removed/dismissed from service on any disciplinary proceedings?' },
+        { key: 'everArrested', label: 'Have you ever been arrested?' },
+        { key: 'everProsecuted', label: 'Have you ever been prosecuted?' }
+        ]; track question.key) {
+        <div
+          class="flex items-center justify-between gap-4 px-4 py-3 rounded-lg border border-slate-200 bg-white hover:border-indigo-300 transition-colors">
+          <label class="text-sm font-medium text-slate-700 flex-1">{{ question.label }}</label>
+          <select [formControlName]="question.key" class="ps-input" style="width:100px;flex-shrink:0">
+            <option [ngValue]="false">No</option>
+            <option [ngValue]="true">Yes</option>
+          </select>
+        </div>
+        }
+      </div>
+      <div class="mt-4">
+        <label class="ps-label">NAMES &amp; ADDRESS OF TWO RESPONSIBLE PERSONS (OTHER THAN RELATIVES)</label>
+        <input formControlName="responsiblePersonsInfo" type="text" placeholder="NA" class="ps-input" />
+      </div>
+    </div>
+    } <!-- end isAirportSite -->
+
+    } <!-- end step 1 -->
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!-- STEP 2 — Compliance & Work                                  -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    @if (currentStep() === 2) {
+
+    <!-- Compliance & Documents -->
+    <h2 class="text-base font-bold text-slate-700 mb-6 flex items-center gap-2 pb-3 border-b border-slate-100">
+      <span class="w-7 h-7 rounded-lg bg-purple-100 flex items-center justify-center text-purple-600 text-sm">🔐</span>
+      Compliance &amp; Documents
+    </h2>
+    <div class="form-grid" formGroupName="complianceDetails">
+      <div>
+        <label class="ps-label">AADHAAR NUMBER</label>
+        <input formControlName="aadhar" type="text" placeholder="e.g. 255711412281" class="ps-input" />
+      </div>
+      <div>
+        <label class="ps-label">PAN</label>
+        <input formControlName="pan" type="text" placeholder="e.g. NUQPS8223A" class="ps-input" />
+      </div>
+      <div>
+        <label class="ps-label">BANK ACCOUNT NUMBER</label>
+        <input formControlName="bankAccountNumber" type="text" placeholder="e.g. 62450136731" class="ps-input" />
+      </div>
+      <div>
+        <label class="ps-label">IFSC CODE</label>
+        <input formControlName="ifscCode" type="text" placeholder="e.g. SBIN0007081" class="ps-input" />
+      </div>
+      <div>
+        <label class="ps-label">PF NO</label>
+        <input formControlName="pfNo" type="text" placeholder="NA" class="ps-input" />
+      </div>
+      <div>
+        <label class="ps-label">ESIC NO</label>
+        <input formControlName="esicNo" type="text" placeholder="NA" class="ps-input" />
+      </div>
+      <div>
+        <label class="ps-label">PASSPORT NUMBER</label>
+        <input formControlName="passportNumber" type="text" placeholder="NA" class="ps-input" />
+      </div>
+      <div>
+        <label class="ps-label">PASSPORT VALID FROM</label>
+        <input formControlName="passportValidFrom" type="date" class="ps-input" />
+      </div>
+      <div>
+        <label class="ps-label">PASSPORT VALID TO</label>
+        <input formControlName="passportValidTo" type="date" class="ps-input" />
+      </div>
+      @if (!siteValue() || isAirportSite()) {
+      <div class="col-span-2">
+        <label class="ps-label">AEP APPLICATION STATUS</label>
+        <select formControlName="aepApplicationStatus" class="ps-input">
+          @for (s of statusOptions; track s) { <option>{{ s }}</option> }
+        </select>
+      </div>
+      <div>
+        <label class="ps-label">AEP TYPE</label>
+        <select formControlName="aepType" class="ps-input">
+          @for (t of aepTypeOptions; track t) { <option>{{ t }}</option> }
+        </select>
+      </div>
+      <div>
+        <label class="ps-label">AEP NUMBER</label>
+        <input formControlName="aepNumber" type="text" placeholder="NA" class="ps-input" />
+      </div>
+      <div>
+        <label class="ps-label">AEP DATE</label>
+        <input formControlName="aepValidity" type="date" class="ps-input" />
+      </div>
+      <div>
+        <label class="ps-label">AVSEC STATUS</label>
+        <select formControlName="avsecStatus" class="ps-input">
+          @for (s of statusOptions; track s) { <option>{{ s }}</option> }
+        </select>
+      </div>
+      <div>
+        <label class="ps-label">AVSEC VALID FROM</label>
+        <input formControlName="avsecValidFrom" type="date" class="ps-input" />
+      </div>
+      <div>
+        <label class="ps-label">AVSEC VALID TO</label>
+        <input formControlName="avsecValidTo" type="date" class="ps-input" />
+      </div>
+      } <!-- end isAirportSite compliance -->
+    </div>
+
+    <div class="border-t border-slate-200 my-8"></div>
+
+    <!-- Nominee Details -->
+    <h2 class="text-base font-bold text-slate-700 mb-6 flex items-center gap-2 pb-3 border-b border-slate-100">
+      <span
+        class="w-7 h-7 rounded-lg bg-emerald-100 flex items-center justify-center text-emerald-600 text-sm">👤</span>
+      Nominee Details
+    </h2>
+    <div class="form-grid" formGroupName="familyDetails">
+      <div>
+        <label class="ps-label">NOMINEE NAME <span class="req">*</span></label>
+        <input formControlName="fathersName" type="text" placeholder="Full name of nominee" class="ps-input" />
+      </div>
+      <div>
+        <label class="ps-label">RELATIONSHIP WITH EMPLOYEE</label>
+        <select formControlName="relation" class="ps-input">
+          <option value="">Select Relationship</option>
+          <option>WIFE</option>
+          <option>HUSBAND</option>
+          <option>SON</option>
+          <option>DAUGHTER</option>
+          <option>FATHER</option>
+          <option>MOTHER</option>
+          <option>BROTHER</option>
+          <option>SISTER</option>
+        </select>
+      </div>
+      <div>
+        <label class="ps-label">DATE OF BIRTH</label>
+        <input formControlName="motherName" type="date" class="ps-input" />
+      </div>
+      <div>
+        <label class="ps-label">AGE</label>
+        <input formControlName="fatherPlaceOfBirth" type="number" placeholder="e.g. 32" class="ps-input" />
+      </div>
+      <div>
+        <label class="ps-label">CONTACT NUMBER</label>
+        <input formControlName="alternativeMobileNumber" type="tel" placeholder="e.g. 9876543210" class="ps-input" />
+      </div>
+      <div>
+        <label class="ps-label">NOMINEE ADDRESS</label>
+        <input formControlName="wifeName" type="text" placeholder="Nominee's address" class="ps-input" />
+      </div>
+    </div>
+
+    <div class="border-t border-slate-200 my-8"></div>
+
+    <!-- Work Details -->
+    <h2 class="text-base font-bold text-slate-700 mb-6 flex items-center gap-2 pb-3 border-b border-slate-100">
+      <span class="w-7 h-7 rounded-lg bg-teal-100 flex items-center justify-center text-teal-600 text-sm">🏢</span>
+      Work Details
+    </h2>
+    <div class="form-grid" formGroupName="workDetails">
+      @if (!siteValue() || isGmrSite()) {
+      <div>
+        <label class="ps-label">SHIFT</label>
+        <select formControlName="shift" class="ps-input">
+          <option value="">Select Shift</option>
+          @for (s of shiftOptions; track s) { <option>{{ s }}</option> }
+        </select>
+      </div>
+      }
+
+
+      <div>
+        <label class="ps-label">ORGANISATION</label>
+        <select formControlName="organisation" class="ps-input">
+          <option value="">Select</option>
+          @for (o of organisationOptions; track o) { <option>{{ o }}</option> }
+        </select>
+      </div>
+      <div>
+        <label class="ps-label">UNIFORM</label>
+        <select formControlName="uniform" class="ps-input">
+          <option value="">Select Uniform</option>
+          @for (u of uniformOptions; track u) { <option>{{ u }}</option> }
+        </select>
+      </div>
+      <div>
+        <label class="ps-label">SHOES</label>
+        <select formControlName="shoes" class="ps-input">
+          <option value="">Select</option>
+          @for (s of shoesOptions; track s) { <option>{{ s }}</option> }
+        </select>
+      </div>
+      <div>
+        <label class="ps-label">CERTIFICATES</label>
+        <select formControlName="certificates" class="ps-input">
+          <option value="">Select</option>
+          @for (c of certificateOptions; track c) { <option>{{ c }}</option> }
+        </select>
+      </div>
+      <div>
+        <label class="ps-label">DOCUMENT GIVEN</label>
+        <select formControlName="documentGiven" class="ps-input">
+          <option value="">Select</option>
+          @for (d of documentOptions; track d) { <option>{{ d }}</option> }
+        </select>
+      </div>
+      <div>
+        <label class="ps-label">TRANSPORT</label>
+        <select formControlName="transport" class="ps-input">
+          @for (t of transportOptions; track t) { <option>{{ t }}</option> }
+        </select>
+      </div>
+      <div>
+        <label class="ps-label">HOSTEL</label>
+        <select formControlName="hostelJoiningDate" class="ps-input">
+          @for (h of hostelOptions; track h) { <option>{{ h }}</option> }
+        </select>
+      </div>
+      @if (!siteValue() || isAirportSite()) {
+      <div>
+        <label class="ps-label">PVC STATUS</label>
+        <select formControlName="pvcStatus" class="ps-input">
+          @for (p of pvcStatusOptions; track p) { <option>{{ p }}</option> }
+        </select>
+      </div>
+      }
+      <div>
+        <label class="ps-label">BROKER NAME</label>
+        <input formControlName="brokerName" type="text" placeholder="e.g. BUDDULA MAHESH" class="ps-input" />
+      </div>
+      <div>
+        <label class="ps-label">PREVIOUS EXPERIENCE IN SECURITY / UTILITY STAFF</label>
+        <input formControlName="previousExperience" type="text" placeholder="NA" class="ps-input" />
+      </div>
+      <div>
+        <label class="ps-label">REASON FOR LEAVING PREVIOUS SERVICES</label>
+        <input formControlName="noticeReason" type="text" placeholder="NA" class="ps-input" />
+      </div>
+      <div>
+        <label class="ps-label">LEAVE FROM DATE</label>
+        <input formControlName="leaveFromDate" type="date" class="ps-input" />
+      </div>
+      <div>
+        <label class="ps-label">LEAVE TO DATE</label>
+        <input formControlName="leaveToDate" type="date" class="ps-input" />
+      </div>
+      <div>
+        <label class="ps-label">NOTICE DATE</label>
+        <input formControlName="noticeDate" type="date" class="ps-input" />
+      </div>
+      <div>
+        <label class="ps-label">EXIT DATE</label>
+        <input formControlName="exitDate" type="date" class="ps-input" />
+      </div>
+      <div>
+        <label class="ps-label">EXIT STATUS</label>
+        <select formControlName="exitStatus" class="ps-input">
+          @for (s of exitStatusOptions; track s) { <option>{{ s }}</option> }
+        </select>
+      </div>
+      <div class="col-span-2">
+        <label class="ps-label">REMARKS</label>
+        <textarea formControlName="remarks" rows="3" placeholder="Any additional notes..."
+          class="ps-input resize-none"></textarea>
+      </div>
+    </div>
+
+    } <!-- end step 2 -->
+
+  </div>
+
+  <!-- Validation Error Banner -->
+  @if (stepError()) {
+  <div
+    class="flex items-center gap-3 px-4 py-3 mb-4 rounded-xl text-sm font-medium text-red-700 bg-red-50 border border-red-200">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+      class="shrink-0 text-red-500">
+      <circle cx="12" cy="12" r="10" />
+      <line x1="12" y1="8" x2="12" y2="12" />
+      <line x1="12" y1="16" x2="12.01" y2="16" />
+    </svg>
+    Please fill in all required fields before proceeding to the next step.
+  </div>
+  }
+
+  <!-- Navigation Buttons -->
+  <div class="flex items-center justify-between">
+    <div>
+      @if (currentStep() > 1) {
+      <button type="button" (click)="prevStep()" class="ps-btn-secondary">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="15 18 9 12 15 6" />
+        </svg>
+        Prev
+      </button>
+      } @else {
+      <a routerLink="/employees" class="ps-btn-secondary">Cancel</a>
+      }
+    </div>
+    <div class="flex items-center gap-3">
+      <div class="flex items-center gap-1.5">
+        @for (step of steps; track step.id) {
+        <div class="rounded-full transition-all duration-300 h-1.5"
+          [style.width]="currentStep() === step.id ? '20px' : '6px'"
+          [style.background]="currentStep() === step.id ? (stepError() ? '#ef4444' : '#4f46e5') : isStepDone(step.id) ? '#34d399' : '#e2e8f0'">
+        </div>
+        }
+      </div>
+      @if (currentStep() < totalSteps) { <button type="button" (click)="nextStep()" class="ps-btn-primary"
+        [style.background]="stepError() ? '#ef4444' : '#4f46e5'">
+        Next
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="9 18 15 12 9 6" />
+        </svg>
+        </button>
+        } @else {
+        <button type="submit" [disabled]="facade.isSaving()" class="ps-btn-primary">
+          @if (facade.isSaving()) {
+          <svg class="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+          </svg>
+          Saving...
+          } @else {
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+          {{ isEditMode() ? 'Update Employee' : 'Save Employee' }}
+          }
+        </button>
+        }
+    </div>
+  </div>
+
+</form>
+</div>
