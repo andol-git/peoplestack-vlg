@@ -40,6 +40,11 @@ export class AuthFacade {
   readonly sessionMessage  = computed(() => this._state().sessionMessage);
   readonly isSuperAdmin    = computed(() => this._state().role === 'ROLE_SUPER_ADMIN');
 
+  hasAnyRole(...roles: string[]): boolean {
+    const current = this._state().role;
+    return !!current && roles.includes(current);
+  }
+
   login(credentials: LoginRequest): Observable<LoginResponse> {
     this._patch({ isLoading: true, error: null });
 

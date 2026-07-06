@@ -1,0 +1,7 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "feature-employee",
+  "projectType": "library",
+  "sourceRoot": "libs/feature-employee/src",
+  "prefix": "ps"
+}

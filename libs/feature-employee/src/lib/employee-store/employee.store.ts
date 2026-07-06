@@ -1,5 +1,5 @@
 import { Injectable, signal, computed } from '@angular/core';
-import { Employee } from '@people-stack/shared-ui';
+import { Employee } from '@ps/shared-ui';
 
 interface State { employees:Employee[]; inactive:Employee[]; selected:Employee|null; loading:boolean; saving:boolean; error:string|null; }
 

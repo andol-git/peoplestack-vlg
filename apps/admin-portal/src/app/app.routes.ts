@@ -5,7 +5,7 @@ export const routes: Routes = [
   {
     path: "login",
     loadComponent: () =>
-      import("@people-stack/auth").then((m) => m.LoginComponent),
+      import("@ps/auth").then((m) => m.LoginComponent),
     title: "PeopleStack — Sign In",
   },
   {
@@ -17,7 +17,7 @@ export const routes: Routes = [
       {
         path: "dashboard",
         loadComponent: () =>
-          import("@people-stack/feature-dashboard").then(
+          import("@ps/feature-dashboard").then(
             (m) => m.DashboardComponent,
           ),
         title: "Dashboard",
@@ -25,7 +25,7 @@ export const routes: Routes = [
       {
         path: "employees",
         loadComponent: () =>
-          import("@people-stack/feature-employee").then(
+          import("@ps/feature-employee").then(
             (m) => m.EmployeeListComponent,
           ),
         title: "Employees",
@@ -33,7 +33,7 @@ export const routes: Routes = [
       {
         path: "employees/new",
         loadComponent: () =>
-          import("@people-stack/feature-employee").then(
+          import("@ps/feature-employee").then(
             (m) => m.EmployeeFormComponent,
           ),
         title: "New Employee",
@@ -41,7 +41,7 @@ export const routes: Routes = [
       {
         path: "employees/:id",
         loadComponent: () =>
-          import("@people-stack/feature-employee").then(
+          import("@ps/feature-employee").then(
             (m) => m.EmployeeFormComponent,
           ),
         title: "Edit Employee",
@@ -49,7 +49,7 @@ export const routes: Routes = [
       {
         path: "customers",
         loadComponent: () =>
-          import("@people-stack/feature-customer").then(
+          import("@ps/feature-customer").then(
             (m) => m.CustomerListComponent,
           ),
         title: "Customers",
@@ -57,7 +57,7 @@ export const routes: Routes = [
       {
         path: "assignments",
         loadComponent: () =>
-          import("@people-stack/feature-customer").then(
+          import("@ps/feature-customer").then(
             (m) => m.AssignStaffPageComponent,
           ),
         title: "PeopleStack — Assign Staff",
@@ -65,7 +65,7 @@ export const routes: Routes = [
       {
         path: "attendance",
         loadComponent: () =>
-          import("@people-stack/feature-attendance").then(
+          import("@ps/feature-attendance").then(
             (m) => m.AttendanceDashboardComponent,
           ),
         title: "Attendance",

@@ -1,0 +1,182 @@
+<div class="ps-page">
+  <div class="ps-page-header">
+    <div>
+      <h1 class="ps-page-title">{{ isEditMode() ? 'Edit Employee' : 'New Employee' }}</h1>
+      <p class="ps-page-sub">{{ isEditMode() ? 'Update workforce record' : 'Add a new workforce record' }}</p>
+    </div>
+    <a routerLink="/employees" class="ps-btn-outline">Back to list</a>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+    <div class="ps-card mb-3">
+      <div class="ps-card-header"><span>Basic Info</span></div>
+      <div class="ps-card-body">
+        <div class="row g-3">
+          <div class="col-md-3">
+            <label class="form-label">ID No *</label>
+            <input class="form-control" formControlName="idNo" />
+            @if (fieldError('idNo')) { <div class="ps-field-error">{{ fieldError('idNo') }}</div> }
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Serial Number</label>
+            <input class="form-control" formControlName="serialNumberAssigned" />
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Email *</label>
+            <input class="form-control" formControlName="emailId" />
+            @if (fieldError('emailId')) { <div class="ps-field-error">{{ fieldError('emailId') }}</div> }
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Phone *</label>
+            <input class="form-control" formControlName="phoneNo" />
+            @if (fieldError('phoneNo')) { <div class="ps-field-error">{{ fieldError('phoneNo') }}</div> }
+          </div>
+          <div class="col-md-3">
+            <div class="form-check">
+              <input type="checkbox" class="form-check-input" formControlName="isActive" id="isActive" />
+              <label class="form-check-label" for="isActive">Active</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ps-card mb-3" formGroupName="personalDetails">
+      <div class="ps-card-header"><span>Personal Details</span></div>
+      <div class="ps-card-body">
+        <div class="row g-3">
+          <div class="col-md-3">
+            <label class="form-label">Name *</label>
+            <input class="form-control" formControlName="name" />
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Gender</label>
+            <select class="form-select" formControlName="gender">
+              @for (g of genderOptions; track g) { <option [value]="g">{{ g }}</option> }
+            </select>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Date of Birth *</label>
+            <input type="date" class="form-control" formControlName="dateOfBirth" />
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Marital Status</label>
+            <select class="form-select" formControlName="maritalStatus">
+              @for (m of maritalOptions; track m) { <option [value]="m">{{ m }}</option> }
+            </select>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Blood Group</label>
+            <input class="form-control" formControlName="bloodGroup" />
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Nationality</label>
+            <input class="form-control" formControlName="nationality" />
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Identification Marks</label>
+            <input class="form-control" formControlName="identificationMarks" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ps-card mb-3" formGroupName="familyDetails">
+      <div class="ps-card-header"><span>Family Details</span></div>
+      <div class="ps-card-body">
+        <div class="row g-3">
+          <div class="col-md-3"><label class="form-label">Father's Name *</label><input class="form-control" formControlName="fathersName" /></div>
+          <div class="col-md-3"><label class="form-label">Father's Occupation</label><input class="form-control" formControlName="fathersOccupation" /></div>
+          <div class="col-md-3"><label class="form-label">Mother's Name *</label><input class="form-control" formControlName="motherName" /></div>
+          <div class="col-md-3"><label class="form-label">Alternate Mobile</label><input class="form-control" formControlName="alternativeMobileNumber" /></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ps-card mb-3" formGroupName="careerDetails">
+      <div class="ps-card-header"><span>Career Details</span></div>
+      <div class="ps-card-body">
+        <div class="row g-3">
+          <div class="col-md-3"><label class="form-label">Date of Interview</label><input type="date" class="form-control" formControlName="dateOfInterview" /></div>
+          <div class="col-md-3"><label class="form-label">Joining Date *</label><input type="date" class="form-control" formControlName="joiningDate" /></div>
+          <div class="col-md-3"><label class="form-label">Re-Joining Date</label><input type="date" class="form-control" formControlName="reJoiningDate" /></div>
+          <div class="col-md-3"><label class="form-label">Present Address</label><input class="form-control" formControlName="presentAddress" /></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ps-card mb-3" formGroupName="assignmentDetails">
+      <div class="ps-card-header"><span>Assignment Details</span></div>
+      <div class="ps-card-body">
+        <div class="row g-3">
+          <div class="col-md-3"><label class="form-label">Site</label><input class="form-control" formControlName="site" /></div>
+          <div class="col-md-3"><label class="form-label">Shift</label><input class="form-control" formControlName="shift" /></div>
+          <div class="col-md-3"><label class="form-label">Category</label><input class="form-control" formControlName="category" /></div>
+          <div class="col-md-3"><label class="form-label">Designation</label><input class="form-control" formControlName="designationPostOffered" /></div>
+          <div class="col-md-3"><label class="form-label">Organisation</label><input class="form-control" formControlName="organisation" /></div>
+          <div class="col-md-3"><label class="form-label">Nature of Employment</label><input class="form-control" formControlName="natureOfEmployment" /></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ps-card mb-3" formGroupName="complianceDetails">
+      <div class="ps-card-header"><span>Compliance Details</span></div>
+      <div class="ps-card-body">
+        <div class="row g-3">
+          <div class="col-md-3"><label class="form-label">PF No</label><input class="form-control" formControlName="pfNo" /></div>
+          <div class="col-md-3"><label class="form-label">PF Status</label>
+            <select class="form-select" formControlName="pfStatus">
+              @for (s of statusOptions; track s) { <option [value]="s">{{ s }}</option> }
+            </select>
+          </div>
+          <div class="col-md-3"><label class="form-label">ESIC No</label><input class="form-control" formControlName="esicNo" /></div>
+          <div class="col-md-3"><label class="form-label">PAN</label><input class="form-control" formControlName="pan" /></div>
+          <div class="col-md-3"><label class="form-label">Bank Account Number</label><input class="form-control" formControlName="bankAccountNumber" /></div>
+          <div class="col-md-3"><label class="form-label">IFSC Code</label><input class="form-control" formControlName="ifscCode" /></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ps-card mb-3" formArrayName="addresses">
+      <div class="ps-card-header"><span>Addresses</span></div>
+      <div class="ps-card-body">
+        @for (addr of addressesArray.controls; track $index) {
+          <div [formGroupName]="$index" class="row g-3 mb-2">
+            <div class="col-12"><strong>{{ addr.value.addressType }}</strong></div>
+            <div class="col-md-6"><label class="form-label">Address Line 1 *</label><input class="form-control" formControlName="line1" /></div>
+            <div class="col-md-3"><label class="form-label">District</label><input class="form-control" formControlName="district" /></div>
+            <div class="col-md-3"><label class="form-label">State *</label><input class="form-control" formControlName="state" /></div>
+            <div class="col-md-3"><label class="form-label">Pincode *</label><input class="form-control" formControlName="pincode" /></div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="ps-card mb-3" formGroupName="exitDetails">
+      <div class="ps-card-header"><span>Exit Details</span></div>
+      <div class="ps-card-body">
+        <div class="row g-3">
+          <div class="col-md-3"><label class="form-label">Exit Status</label>
+            <select class="form-select" formControlName="exitStatus">
+              @for (s of exitStatusOptions; track s) { <option [value]="s">{{ s }}</option> }
+            </select>
+          </div>
+          <div class="col-md-3"><label class="form-label">Exit Date</label><input type="date" class="form-control" formControlName="exitDate" /></div>
+          <div class="col-md-6"><label class="form-label">Remarks</label><input class="form-control" formControlName="remarks" /></div>
+        </div>
+      </div>
+    </div>
+
+    @if (facade.error()) {
+      <div class="ps-form-error">{{ facade.error() }}</div>
+    }
+
+    <div class="ps-form-actions">
+      <button type="button" class="ps-btn-outline" (click)="cancel()">Cancel</button>
+      <button type="submit" class="ps-btn-primary" [disabled]="facade.saving()">
+        {{ facade.saving() ? 'Saving...' : (isEditMode() ? 'Update Employee' : 'Create Employee') }}
+      </button>
+    </div>
+  </form>
+</div>

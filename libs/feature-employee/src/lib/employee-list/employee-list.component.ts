@@ -1,13 +1,12 @@
 import { Component, inject, OnInit, computed, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { NgClass } from '@angular/common';
 import { EmployeeFacade } from '../employee-facade/employee.facade';
 
 @Component({
   selector: 'ps-employee-list',
   standalone: true,
-  imports: [RouterLink, FormsModule, NgClass],
+  imports: [RouterLink, FormsModule],
   templateUrl: './employee-list.component.html',
   styleUrl: './employee-list.component.scss'
 })

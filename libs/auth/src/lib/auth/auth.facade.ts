@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
 import { AuthService } from './auth.service';
 import { AuthStore } from './auth.store';
-import { LoginRequest } from '@people-stack/shared-ui';
+import { LoginRequest } from '@ps/shared-ui';
 
 @Injectable({ providedIn: 'root' })
 export class AuthFacade {
@@ -15,6 +15,13 @@ export class AuthFacade {
   readonly loading         = this.store.loading;
   readonly error           = this.store.error;
   readonly accessToken     = this.store.accessToken;
+  readonly role            = this.store.role;
+  readonly username        = this.store.username;
+
+  hasAnyRole(...roles: string[]): boolean {
+    const current = this.store.role();
+    return !!current && roles.includes(current);
+  }
 
   login(creds: LoginRequest): void {
     this.store.setLoading(true);

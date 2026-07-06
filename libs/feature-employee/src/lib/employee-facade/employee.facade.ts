@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
 import { EmployeeService } from '../employee-service/employee.service';
 import { EmployeeStore } from '../employee-store/employee.store';
-import { Employee } from '@people-stack/shared-ui';
+import { Employee } from '@ps/shared-ui';
 
 @Injectable({ providedIn: 'root' })
 export class EmployeeFacade {

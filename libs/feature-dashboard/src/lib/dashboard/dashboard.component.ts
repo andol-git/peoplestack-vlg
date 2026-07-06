@@ -1,7 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { EmployeeFacade } from '@people-stack/feature-employee';
+import { EmployeeFacade } from '@ps/feature-employee';
 
 @Component({
   selector: 'ps-dashboard',

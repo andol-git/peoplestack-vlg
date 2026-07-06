@@ -1,0 +1,7 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "feature-attendance",
+  "projectType": "library",
+  "sourceRoot": "libs/feature-attendance/src",
+  "prefix": "ps"
+}

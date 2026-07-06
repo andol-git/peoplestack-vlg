@@ -2,7 +2,7 @@ import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
-import { AuthStore } from '@people-stack/auth';
+import { AuthStore } from '@ps/auth';
 
 export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
   const store  = inject(AuthStore);

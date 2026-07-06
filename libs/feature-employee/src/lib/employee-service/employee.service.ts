@@ -1,13 +1,14 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Employee } from '@people-stack/shared-ui';
-import { environment } from '../../../../../apps/admin-portal/src/environments/environment';
+import { Employee } from '@ps/shared-ui';
+import { APP_CONFIG } from '@ps/shared/data-access';
 
 @Injectable({ providedIn: 'root' })
 export class EmployeeService {
   private http = inject(HttpClient);
-  private base = `${environment.apiBase}/employees`;
+  private config = inject(APP_CONFIG);
+  private get base(): string { return `${this.config.apiBaseUrl}/api/employees`; }
   getAll():            Observable<Employee[]> { return this.http.get<Employee[]>(this.base); }
   getAllInactive():    Observable<Employee[]> { return this.http.get<Employee[]>(`${this.base}/inactive`); }
   getById(id:number): Observable<Employee>   { return this.http.get<Employee>(`${this.base}/${id}`); }

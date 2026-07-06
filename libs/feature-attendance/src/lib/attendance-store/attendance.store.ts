@@ -1,5 +1,5 @@
 import { Injectable, signal, computed } from '@angular/core';
-import { AttendanceLog } from '@people-stack/shared-ui';
+import { AttendanceLog } from '@ps/shared-ui';
 @Injectable({ providedIn: 'root' })
 export class AttendanceStore {
   private _logs    = signal<AttendanceLog[]>([]);

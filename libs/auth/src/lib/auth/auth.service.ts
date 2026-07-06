@@ -1,16 +1,18 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { LoginRequest, AuthTokens } from '@people-stack/shared-ui';
-import { environment } from '../../../../apps/admin-portal/src/environments/environment';
+import { LoginRequest, AuthTokens } from '@ps/shared-ui';
+import { APP_CONFIG } from '@ps/shared/data-access';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private http = inject(HttpClient);
+  private config = inject(APP_CONFIG);
+
   login(b: LoginRequest): Observable<AuthTokens> {
-    return this.http.post<AuthTokens>(`${environment.apiBase}/auth/login`, b);
+    return this.http.post<AuthTokens>(`${this.config.apiBaseUrl}/api/auth/login`, b);
   }
   logout(): Observable<string> {
-    return this.http.post<string>(`${environment.apiBase}/auth/logout`, null, { responseType: 'text' as 'json' });
+    return this.http.post<string>(`${this.config.apiBaseUrl}/api/auth/logout`, null, { responseType: 'text' as 'json' });
   }
 }

@@ -15,6 +15,14 @@ interface NavItem {
   badge?: number;
 }
 
+const ROLE_LABELS: Record<string, string> = {
+  ROLE_SUPER_ADMIN: "Super Admin",
+  ROLE_ADMIN: "Admin",
+  ROLE_MANAGER: "Manager",
+  ROLE_AGENT: "Supervisor",
+  ROLE_EMPLOYEE: "User",
+};
+
 @Component({
   selector: "app-shell-layout",
   standalone: true,
@@ -25,6 +33,21 @@ export class ShellLayoutComponent {
   readonly auth = inject(AuthFacade);
   readonly config = inject(APP_CONFIG);
   readonly router = inject(Router);
+
+  // ─── Role-based nav visibility ─────────────────────────────────────────
+  readonly employeesRoles = ["ROLE_SUPER_ADMIN", "ROLE_ADMIN", "ROLE_MANAGER", "ROLE_AGENT"];
+  readonly customersRoles = ["ROLE_SUPER_ADMIN", "ROLE_ADMIN", "ROLE_MANAGER"];
+  readonly usersRoles = ["ROLE_SUPER_ADMIN", "ROLE_ADMIN"];
+  readonly attendancePlanningRoles = ["ROLE_SUPER_ADMIN", "ROLE_ADMIN", "ROLE_MANAGER", "ROLE_AGENT"];
+
+  hasAccess(roles: string[]): boolean {
+    return this.auth.hasAnyRole(...roles);
+  }
+
+  roleLabel(): string {
+    const role = this.auth.role();
+    return (role && ROLE_LABELS[role]) || "User";
+  }
 
 sidebarOpen = signal(true);
   profileOpen = signal(false);
