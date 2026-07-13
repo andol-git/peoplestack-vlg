@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
+
+  <!-- Hexagon outline (yellow) -->
+  <polygon points="60,4 108,30 108,82 60,108 12,82 12,30"
+           fill="none" stroke="#FFD700" stroke-width="5"/>
+
+  <!-- Yellow fill background shape (partial - bottom half) -->
+  <polygon points="60,4 108,30 108,82 60,108 12,82 12,30"
+           fill="#FFF9C4" opacity="0.15"/>
+
+  <!-- Yellow L bar (horizontal + vertical forming L) -->
+  <rect x="38" y="68" width="48" height="10" rx="1" fill="#FFD700"/>
+  <rect x="76" y="38" width="10" height="40" rx="1" fill="#FFD700"/>
+
+  <!-- V letter (dark green) -->
+  <text x="14" y="85"
+        font-family="Arial Black, Arial, sans-serif"
+        font-size="62"
+        font-weight="900"
+        fill="#1a6b2e">V</text>
+
+  <!-- G letter (red) -->
+  <text x="58" y="85"
+        font-family="Arial Black, Arial, sans-serif"
+        font-size="62"
+        font-weight="900"
+        fill="#cc1111">G</text>
+
+  <!-- Paper plane / arrow (red + yellow) -->
+  <!-- Yellow wing -->
+  <polygon points="34,44 100,8 68,52" fill="#FFD700"/>
+  <!-- Red wing -->
+  <polygon points="34,44 100,8 62,46" fill="#cc1111"/>
+  <!-- Dark edge -->
+  <polygon points="34,44 42,56 58,48" fill="#111" opacity="0.5"/>
+
+  <!-- Tagline -->
+  <text x="60" y="112"
+        font-family="Arial, sans-serif"
+        font-size="8"
+        font-weight="700"
+        fill="#cc1111"
+        text-anchor="middle"
+        letter-spacing="0.3">The Best Services</text>
+</svg>

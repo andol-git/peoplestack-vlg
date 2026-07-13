@@ -1,0 +1,12 @@
+export const ROLE_LABELS: Record<string, string> = {
+  ROLE_SUPER_ADMIN: 'Super Admin',
+  ROLE_ADMIN: 'Admin',
+  ROLE_MANAGER: 'Manager',
+  ROLE_AGENT: 'Supervisor',
+  ROLE_EMPLOYEE: 'User',
+};
+
+export const EMPLOYEES_ROLES = ['ROLE_SUPER_ADMIN', 'ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_AGENT'];
+export const CUSTOMERS_ROLES = ['ROLE_SUPER_ADMIN', 'ROLE_ADMIN', 'ROLE_MANAGER'];
+export const USERS_ROLES = ['ROLE_SUPER_ADMIN', 'ROLE_ADMIN'];
+export const ATTENDANCE_PLANNING_ROLES = ['ROLE_SUPER_ADMIN', 'ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_AGENT'];

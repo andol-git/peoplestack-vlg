@@ -1,0 +1,64 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: 'DM Sans', -apple-system, sans-serif;
+}
+
+/* Bold labels & headings across the app */
+.ant-form-item-label > label {
+  font-weight: 600;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+}
+
+.ant-card-head-title {
+  font-weight: 700;
+}
+
+.ant-steps-item-title {
+  font-weight: 600;
+}
+
+.ant-descriptions-item-label {
+  font-weight: 600;
+}
+
+/* Sidebar nav items */
+.ant-menu-item, .ant-menu-submenu-title {
+  font-weight: 600;
+}
+
+/* Sub-menu items: small dot marker instead of a full icon, to read as a child of the group */
+.ant-menu-sub .ant-menu-item .ant-menu-title-content {
+  display: flex;
+  align-items: center;
+}
+.ant-menu-sub .ant-menu-item .ant-menu-title-content::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.5;
+  margin-right: 10px;
+  flex-shrink: 0;
+}
+
+/* Shared avatar style: light indigo chip instead of a solid brand-color fill */
+.ps-avatar {
+  background-color: rgb(224 231 255 / var(--tw-bg-opacity, 1));
+  color: #4f46e5;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
