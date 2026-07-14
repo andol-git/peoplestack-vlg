@@ -1,7 +1,0 @@
-{
-  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-  "name": "shared-models",
-  "projectType": "library",
-  "sourceRoot": "libs/shared/models/src",
-  "prefix": "ps"
-}

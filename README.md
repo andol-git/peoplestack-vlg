@@ -1,67 +1,42 @@
 # PeopleStack — Enterprise Workforce Management
 
+React + Vite + TypeScript + Ant Design frontend for the PeopleStack facility management platform (Employees, Customers, Assignments, Users, Attendance), talking to a Spring Boot backend.
+
 ## Quick Start
 
 ```bash
-# 1. Install dependencies
 npm install
-
-# 2. Run admin portal
-npx nx serve admin-portal
-
-# Opens at http://localhost:4200
-# Login with your Spring Boot credentials
+npm run dev
 ```
+
+Opens at **http://localhost:4400**. The dev server proxies `/vlg_service_v1/*` to the backend (see `vite.config.ts`), so there's no CORS setup needed locally.
 
 ## Project Structure
 
 ```
-apps/
-  admin-portal/     → HR/Ops admin app (http://localhost:4200)
-
-libs/
-  auth/             → Login, AuthFacade, AuthStore, AuthService
-  feature-dashboard/→ Dashboard with stats
-  feature-employee/ → Employee list + 9-step form + facade
-  feature-customer/ → Customer list + Assign Staff
-  feature-attendance/ → Biometric attendance dashboard
-  shared-ui/        → Shared models/interfaces
+src/
+  api/          → axios wrappers per resource (auth, employee, customer, user, attendance)
+  hooks/        → TanStack Query hooks wrapping the api layer
+  store/        → Zustand auth store (tokens, role, username)
+  lib/http.ts   → axios instance + JWT request/response interceptors (refresh-and-retry)
+  layout/       → ShellLayout (sidebar + topbar, role-based nav)
+  pages/        → one folder per feature area
+  routes.tsx    → route tree + auth guards
+  constants/    → role labels/permissions, company list
+  types/models.ts → shared TypeScript types matching the backend API shapes
 ```
 
-## API Config
+## Config
 
-Edit `apps/admin-portal/src/environments/environment.ts`:
-```typescript
-export const environment = {
-  production: false,
-  apiBase: 'http://YOUR_SERVER_IP:8080/vlg_service_v1/api'
-};
-```
+Backend URL and white-label branding live in `src/config/app-config.ts`. The dev proxy target is in `vite.config.ts`.
 
-## CORS Fix (Spring Boot)
+## Roles
 
-Add to your Spring Boot:
-```java
-@Bean
-public CorsFilter corsFilter() {
-    CorsConfiguration config = new CorsConfiguration();
-    config.addAllowedOrigin("http://localhost:4200");
-    config.addAllowedHeader("*");
-    config.addAllowedMethod("*");
-    config.setAllowCredentials(true);
-    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-    source.registerCorsConfiguration("/**", config);
-    return new CorsFilter(source);
-}
-```
+Role-based sidebar visibility (Super Admin / Admin / Manager / Supervisor / User) is defined in `src/constants/roles.ts`.
 
-## Features
-- ✅ JWT Login → Dashboard
-- ✅ Employee List (Bootstrap table)
-- ✅ 9-step Employee Form (all 16 screens)
-- ✅ Shell with collapsible sidebar
-- ✅ Assign Staff to Customers
-- ✅ Attendance dashboard (ZKTeco K40 Pro ready)
-- ✅ Auth guard + JWT interceptor
-- ✅ Angular Signals state management
-- ✅ Facade pattern throughout
+## Scripts
+
+- `npm run dev` — start the dev server
+- `npm run build` — type-check + production build
+- `npm run lint` — oxlint
+- `npm run preview` — preview the production build locally

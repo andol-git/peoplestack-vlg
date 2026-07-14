@@ -1,7 +1,0 @@
-{
-  "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "name": "feature-customer",
-  "projectType": "library",
-  "sourceRoot": "libs/feature-customer/src",
-  "prefix": "ps"
-}
