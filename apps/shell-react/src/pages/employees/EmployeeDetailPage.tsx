@@ -27,7 +27,7 @@ export function EmployeeDetailPage() {
               {employee.personalDetails?.name ?? '—'}
             </h1>
             <div style={{ color: '#9ca3af' }}>
-              {employee.idNo} {employee.isActive ? <Tag color="success">Active</Tag> : <Tag>Inactive</Tag>}
+              {employee.idNo} {employee.isActive ? <Tag color="success">Active</Tag> : <Tag color="error">Inactive</Tag>}
             </div>
           </div>
         </div>

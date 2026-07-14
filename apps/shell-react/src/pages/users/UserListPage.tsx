@@ -1,7 +1,14 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Avatar, Button, Input, Popconfirm, Select, Space, Table, Tag } from 'antd';
-import { PlusOutlined, SearchOutlined } from '@ant-design/icons';
+import {
+  CheckCircleOutlined,
+  EditOutlined,
+  EyeOutlined,
+  MinusCircleOutlined,
+  PlusOutlined,
+  SearchOutlined,
+} from '@ant-design/icons';
 import { useUpdateUserStatus, useUsersQuery } from '../../hooks/useUsers';
 import type { User } from '../../types/models';
 
@@ -59,22 +66,33 @@ export function UserListPage() {
     {
       title: 'Status',
       key: 'status',
-      render: (_: unknown, u: User) => (u.isActive ? <Tag color="success">Active</Tag> : <Tag>Inactive</Tag>),
+      render: (_: unknown, u: User) => (u.isActive ? <Tag color="success">Active</Tag> : <Tag color="error">Inactive</Tag>),
     },
     {
       title: 'Actions',
       key: 'actions',
       align: 'right' as const,
       render: (_: unknown, u: User) => (
-        <Space>
-          <Link to={`/users/${u.id}/edit`}>Edit</Link>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 4 }}>
+          <Link to={`/users/${u.id}`}>
+            <Button type="text" size="small" icon={<EyeOutlined />} style={{ color: '#3b82f6' }} title="View" />
+          </Link>
+          <Link to={`/users/${u.id}/edit`}>
+            <Button type="text" size="small" icon={<EditOutlined />} style={{ color: '#22c55e' }} title="Edit" />
+          </Link>
           <Popconfirm
             title={u.isActive ? 'Deactivate this user?' : 'Activate this user?'}
             onConfirm={() => updateStatusMutation.mutate({ id: u.id!, payload: { isActive: !u.isActive } })}
           >
-            <a>{u.isActive ? 'Deactivate' : 'Activate'}</a>
+            <Button
+              type="text"
+              size="small"
+              icon={u.isActive ? <MinusCircleOutlined /> : <CheckCircleOutlined />}
+              style={{ color: u.isActive ? '#f59e0b' : '#22c55e' }}
+              title={u.isActive ? 'Deactivate' : 'Activate'}
+            />
           </Popconfirm>
-        </Space>
+        </div>
       ),
     },
   ];

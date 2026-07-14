@@ -18,7 +18,7 @@ export function CustomerDetailPage() {
           <div>
             <h1 style={{ margin: 0, fontSize: 20, fontWeight: 700 }}>{customer.name}</h1>
             <div style={{ color: '#9ca3af' }}>
-              {customer.code} {customer.isActive ? <Tag color="success">Active</Tag> : <Tag>Inactive</Tag>}
+              {customer.code} {customer.isActive ? <Tag color="success">Active</Tag> : <Tag color="error">Inactive</Tag>}
             </div>
           </div>
         </div>

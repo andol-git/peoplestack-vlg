@@ -10,7 +10,16 @@ body,
 }
 
 body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.font-display {
   font-family: 'DM Sans', -apple-system, sans-serif;
+  letter-spacing: -0.02em;
+}
+
+.font-mono {
+  font-family: 'JetBrains Mono', monospace;
 }
 
 /* Bold labels & headings across the app */
@@ -20,6 +29,12 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   font-weight: 700;
+}
+
+/* Page titles (h1) use the display font, matching the Angular app's .page-title style */
+h1 {
+  font-family: 'DM Sans', -apple-system, sans-serif;
+  letter-spacing: -0.02em;
 }
 
 .ant-card-head-title {

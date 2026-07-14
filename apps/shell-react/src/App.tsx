@@ -23,7 +23,7 @@ function App() {
         token: {
           colorPrimary: APP_CONFIG.primaryColor,
           borderRadius: 8,
-          fontFamily: "'DM Sans', -apple-system, sans-serif",
+          fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
           colorBgLayout: '#f8fafc',
           colorBorderSecondary: '#e5e7eb',
           colorTextBase: '#1e293b',

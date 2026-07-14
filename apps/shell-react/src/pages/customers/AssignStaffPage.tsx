@@ -34,7 +34,7 @@ export function AssignStaffPage() {
     {
       title: 'Status',
       key: 'status',
-      render: (_: unknown, c: Customer) => (c.isActive ? <Tag color="success">Active</Tag> : <Tag>Inactive</Tag>),
+      render: (_: unknown, c: Customer) => (c.isActive ? <Tag color="success">Active</Tag> : <Tag color="error">Inactive</Tag>),
     },
     {
       title: 'Actions',

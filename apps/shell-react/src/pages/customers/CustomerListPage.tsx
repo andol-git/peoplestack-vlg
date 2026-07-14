@@ -1,7 +1,16 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Avatar, Button, Card, Col, Input, Popconfirm, Row, Space, Statistic, Table, Tag } from 'antd';
-import { PlusOutlined, SearchOutlined, TeamOutlined, ShopOutlined } from '@ant-design/icons';
+import {
+  DeleteOutlined,
+  EditOutlined,
+  EyeOutlined,
+  PlusOutlined,
+  SearchOutlined,
+  TeamOutlined,
+  ShopOutlined,
+  UsergroupAddOutlined,
+} from '@ant-design/icons';
 import { useCustomersQuery, useDeleteCustomer } from '../../hooks/useCustomers';
 import type { Customer } from '../../types/models';
 
@@ -46,13 +55,20 @@ export function CustomerListPage() {
       key: 'actions',
       align: 'right' as const,
       render: (_: unknown, c: Customer) => (
-        <Space>
-          <Link to={`/assignments?customerId=${c.id}`}>Assign Staff</Link>
-          <Link to={`/customers/${c.id}/edit`}>Edit</Link>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 4 }}>
+          <Link to={`/customers/${c.id}`}>
+            <Button type="text" size="small" icon={<EyeOutlined />} style={{ color: '#3b82f6' }} title="View" />
+          </Link>
+          <Link to={`/assignments?customerId=${c.id}`}>
+            <Button type="text" size="small" icon={<UsergroupAddOutlined />} style={{ color: '#8b5cf6' }} title="Assign Staff" />
+          </Link>
+          <Link to={`/customers/${c.id}/edit`}>
+            <Button type="text" size="small" icon={<EditOutlined />} style={{ color: '#22c55e' }} title="Edit" />
+          </Link>
           <Popconfirm title="Delete this customer?" onConfirm={() => deleteMutation.mutate(c.id!)}>
-            <a style={{ color: '#ef4444' }}>Delete</a>
+            <Button type="text" size="small" icon={<DeleteOutlined />} style={{ color: '#ef4444' }} title="Delete" />
           </Popconfirm>
-        </Space>
+        </div>
       ),
     },
   ];
