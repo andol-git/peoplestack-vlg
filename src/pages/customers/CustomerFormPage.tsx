@@ -39,11 +39,11 @@ export function CustomerFormPage() {
 
   return (
     <div>
-      <h1 style={{ margin: '0 0 16px', fontSize: 22, fontWeight: 700 }}>
+      <h1 style={{ margin: '0 0 16px', fontSize: 22, fontWeight: 700, maxWidth: 640 }}>
         {isEditMode ? 'Edit Customer' : 'New Customer'}
       </h1>
 
-      <Form form={form} layout="vertical" initialValues={{ isActive: true }}>
+      <Form form={form} layout="vertical" initialValues={{ isActive: true }} style={{ maxWidth: 640 }}>
         <Card>
           <Row gutter={16}>
             <Col span={12}>
@@ -66,7 +66,7 @@ export function CustomerFormPage() {
                 <Input />
               </Form.Item>
             </Col>
-            <Col span={6}>
+            <Col span={12}>
               <Form.Item label="Active" name="isActive" valuePropName="checked">
                 <Switch />
               </Form.Item>
@@ -77,7 +77,7 @@ export function CustomerFormPage() {
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 24 }}>
           <Button onClick={() => navigate('/customers')}>Cancel</Button>
           <Button type="primary" loading={saving} onClick={handleSubmit}>
-            {isEditMode ? 'Update Customer' : 'Create Customer'}
+            {isEditMode ? 'Update' : 'Create'}
           </Button>
         </div>
       </Form>

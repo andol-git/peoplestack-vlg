@@ -18,7 +18,6 @@ import { useAuth } from '../hooks/useAuth';
 import { APP_CONFIG } from '../config/app-config';
 import { UploadAttendanceDrawer } from '../components/UploadAttendanceDrawer';
 import {
-  ATTENDANCE_PLANNING_ROLES,
   CUSTOMERS_ROLES,
   EMPLOYEES_ROLES,
   ROLE_LABELS,
@@ -41,10 +40,6 @@ export function ShellLayout() {
       { key: '/dashboard', icon: <DashboardOutlined />, label: 'Dashboard' },
     ];
 
-    if (hasAnyRole(...EMPLOYEES_ROLES)) {
-      items.push({ key: '/employees', icon: <TeamOutlined />, label: 'Employees' });
-    }
-
     if (hasAnyRole(...CUSTOMERS_ROLES)) {
       items.push({
         key: 'customers-group',
@@ -58,29 +53,26 @@ export function ShellLayout() {
       });
     }
 
-    if (hasAnyRole(...USERS_ROLES)) {
-      items.push({ key: '/users', icon: <UserOutlined />, label: 'Users' });
+    if (hasAnyRole(...EMPLOYEES_ROLES)) {
+      items.push({ key: '/employees', icon: <TeamOutlined />, label: 'Employees' });
     }
 
     const attendanceChildren: NonNullable<MenuProps['items']> = [
-      { key: 'upload-attendance', label: 'Upload Attendance' },
       { type: 'divider' },
-      { key: '/attendance/today', label: "Today's Attendance" },
+      { key: '/attendance/today', label: "Attendance" },
       { key: '/attendance/sheet', label: 'Attendance Sheet' },
-      { key: '/attendance/timesheets', label: 'Timesheets' },
     ];
-    if (hasAnyRole(...ATTENDANCE_PLANNING_ROLES)) {
-      attendanceChildren.push(
-        { key: '/attendance/overtime', label: 'Overtime Requests' },
-        { key: '/attendance/shifts', label: 'Shift Planning' }
-      );
-    }
+   
     items.push({
       key: 'attendance-group',
       icon: <ClockCircleOutlined />,
       label: 'Attendance',
       children: attendanceChildren,
     });
+
+    if (hasAnyRole(...USERS_ROLES)) {
+      items.push({ key: '/users', icon: <UserOutlined />, label: 'Users' });
+    }
 
     return items;
   }, [role]);
@@ -173,10 +165,7 @@ export function ShellLayout() {
           onOpenChange={setOpenKeys}
           items={menuItems}
           onClick={({ key }) => {
-            if (key === 'upload-attendance') {
-              setUploadDrawerOpen(true);
-              return;
-            }
+           
             navigate(key);
           }}
           style={{ border: 'none', padding: '8px' }}

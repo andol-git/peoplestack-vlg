@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Avatar, Button, Card, Input, Popconfirm, Table, Tag } from 'antd';
+import { Avatar, Button, Card, Input, Popconfirm, Select, Table, Tag } from 'antd';
 import {
   DeleteOutlined,
   DownloadOutlined,
@@ -44,9 +44,12 @@ function exportCsv(rows: Employee[]) {
   URL.revokeObjectURL(url);
 }
 
+const CATEGORY_OPTIONS = ['All', 'Resigned', 'On Leave', 'Left'] as const;
+
 export function EmployeeListPage() {
   const [tab, setTab] = useState<'active' | 'inactive'>('active');
   const [search, setSearch] = useState('');
+  const [category, setCategory] = useState<(typeof CATEGORY_OPTIONS)[number]>('All');
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
   const { data: activeEmployees = [] } = useEmployeesQuery(true);
@@ -58,16 +61,22 @@ export function EmployeeListPage() {
   const deleteMutation = useDeleteEmployee();
 
   const filtered = useMemo(() => {
+    let data = employees;
+    if (category !== 'All') {
+      data = data.filter((e) => e.workDetails?.exitStatus === category);
+    }
     const q = search.toLowerCase();
-    if (!q) return employees;
-    return employees.filter(
-      (e) =>
-        e.idNo?.toLowerCase().includes(q) ||
-        e.personalDetails?.name?.toLowerCase().includes(q) ||
-        e.phoneNo?.includes(q) ||
-        e.workDetails?.site?.toLowerCase()?.includes(q)
-    );
-  }, [employees, search]);
+    if (q) {
+      data = data.filter(
+        (e) =>
+          e.idNo?.toLowerCase().includes(q) ||
+          e.personalDetails?.name?.toLowerCase().includes(q) ||
+          e.phoneNo?.includes(q) ||
+          e.workDetails?.site?.toLowerCase()?.includes(q)
+      );
+    }
+    return data;
+  }, [employees, search, category]);
 
   const columns = [
     {
@@ -203,6 +212,12 @@ export function EmployeeListPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               style={{ width: 260, borderRadius: 20 }}
+            />
+            <Select
+              value={category}
+              onChange={setCategory}
+              style={{ width: 140 }}
+              options={CATEGORY_OPTIONS.map((c) => ({ value: c, label: c }))}
             />
             <Button icon={<DownloadOutlined />} onClick={() => exportCsv(filtered)}>
               Export

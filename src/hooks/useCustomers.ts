@@ -2,53 +2,23 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { customerApi } from '../api/customer-api';
 import type { Customer } from '../types/models';
 
-// Temporary demo data — remove once backend /api/customers is fixed (ported from customer.facade.ts)
-const DEMO_CUSTOMERS: Customer[] = [
-  {
-    id: 1,
-    name: 'GMR Hyderabad Airport',
-    code: 'CUST001',
-    site: 'GMR',
-    contactNumber: '9876543210',
-    isActive: true,
-    assignedStaffCount: 0,
-  },
-  {
-    id: 2,
-    name: 'BIAL Bangalore Airport',
-    code: 'CUST002',
-    site: 'BIAL',
-    contactNumber: '9123456780',
-    isActive: true,
-    assignedStaffCount: 0,
-  },
-];
-
-// Falls back to demo data on failure instead of surfacing an error, matching customer.facade.ts.
 export function useCustomersQuery() {
   const query = useQuery({
     queryKey: ['customers'],
     queryFn: () => customerApi.getAll(),
-    retry: false,
   });
   return {
     ...query,
-    data: query.isError ? DEMO_CUSTOMERS : query.data ?? [],
+    data: query.data ?? [],
   };
 }
 
 export function useCustomerQuery(id: number | undefined) {
-  const query = useQuery({
+  return useQuery({
     queryKey: ['customer', id],
     queryFn: () => customerApi.getById(id as number),
     enabled: id !== undefined,
-    retry: false,
   });
-  if (query.isError) {
-    const demo = DEMO_CUSTOMERS.find((c) => c.id === id);
-    return { ...query, data: demo };
-  }
-  return query;
 }
 
 export function useCreateCustomer() {

@@ -1,13 +1,45 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Button, Card, Col, DatePicker, Divider, Form, Input, Row, Select, Steps, Switch, message } from 'antd';
+import { Button, Card, Col, DatePicker, Divider, Form, Input, InputNumber, Row, Select, Steps, Switch, message } from 'antd';
 import dayjs from 'dayjs';
 import { useCreateEmployee, useEmployeeQuery, useUpdateEmployee } from '../../hooks/useEmployees';
+import { useCustomersQuery } from '../../hooks/useCustomers';
 import type { Employee } from '../../types/models';
 
 const GENDER_OPTIONS = ['Male', 'Female', 'Other'];
-const MARITAL_OPTIONS = ['Single', 'Married', 'Divorced', 'Widowed'];
+const MARITAL_OPTIONS = ['Married', 'Single'];
 const STATUS_OPTIONS = ['Not Applied', 'Applied', 'Completed'];
+const EXIT_STATUS_OPTIONS = ['Resigned', 'On Leave', 'Left', 'Not Joined'];
+const STATE_OPTIONS = [
+  'Andhra Pradesh', 'Telangana', 'Karnataka', 'Tamil Nadu', 'Maharashtra', 'Delhi',
+  'Uttar Pradesh', 'West Bengal', 'Bihar', 'Rajasthan', 'Gujarat', 'Odisha',
+  'Madhya Pradesh', 'Assam', 'Kerala', 'Jharkhand', 'Other',
+];
+const DESIGNATION_OPTIONS = ['LOADER', 'SECURITY GUARD', 'UTILITY STAFF', 'SUPERVISOR', 'MANAGER', 'HOUSE KEEPING'];
+const SITE_OPTIONS = ['GMR', 'BIAL', 'IGI', 'CSIA', 'MAA', 'TSGIRD', 'NOVOTEL', 'CBIT', 'MGIT'];
+const OPTED_OPTIONS = ['Opted', 'Not Opted'];
+const AEP_TYPE_OPTIONS = ['TAEP', 'BAEP', 'NA'];
+
+// Nested date fields that need dayjs <-> 'YYYY-MM-DD' string conversion around the antd Form.
+const CAREER_DATE_FIELDS = ['dateOfInterview', 'joiningDate', 'reJoiningDate', 'fromDate', 'tillDate'] as const;
+const COMPLIANCE_DATE_FIELDS = ['passportValidFrom', 'passportValidTo', 'aepDate', 'avsecValidFrom', 'avsecValidTo'] as const;
+const WORK_DATE_FIELDS = ['hostelJoiningDate', 'leaveFromDate', 'leaveToDate', 'noticeDate', 'exitDate'] as const;
+
+function toDayjsFields(obj: Record<string, any> | undefined, fields: readonly string[]) {
+  const result: Record<string, any> = { ...obj };
+  for (const f of fields) {
+    if (result[f]) result[f] = dayjs(result[f]);
+  }
+  return result;
+}
+
+function toStringFields(obj: Record<string, any> | undefined, fields: readonly string[]) {
+  const result: Record<string, any> = { ...obj };
+  for (const f of fields) {
+    if (result[f] && typeof result[f].format === 'function') result[f] = result[f].format('YYYY-MM-DD');
+  }
+  return result;
+}
 
 export function EmployeeFormPage() {
   const { id } = useParams();
@@ -15,8 +47,11 @@ export function EmployeeFormPage() {
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const [step, setStep] = useState(0);
+  const site = Form.useWatch(['workDetails', 'site'], form);
+  const isGmr = site === 'GMR';
 
   const { data: employee } = useEmployeeQuery(isEditMode ? +id! : undefined);
+  const { data: customers = [] } = useCustomersQuery();
   const createMutation = useCreateEmployee();
   const updateMutation = useUpdateEmployee();
   const saving = createMutation.isPending || updateMutation.isPending;
@@ -29,10 +64,9 @@ export function EmployeeFormPage() {
           ...employee.personalDetails,
           dateOfBirth: employee.personalDetails?.dateOfBirth ? dayjs(employee.personalDetails.dateOfBirth) : undefined,
         },
-        careerDetails: {
-          ...employee.careerDetails,
-          joiningDate: employee.careerDetails?.joiningDate ? dayjs(employee.careerDetails.joiningDate) : undefined,
-        },
+        careerDetails: toDayjsFields(employee.careerDetails, CAREER_DATE_FIELDS),
+        complianceDetails: toDayjsFields(employee.complianceDetails, COMPLIANCE_DATE_FIELDS),
+        workDetails: toDayjsFields(employee.workDetails, WORK_DATE_FIELDS),
         addresses: employee.addresses?.length
           ? employee.addresses
           : [{ addressType: 'PERMANENT' }, { addressType: 'TEMPORARY' }],
@@ -51,10 +85,9 @@ export function EmployeeFormPage() {
           ...values.personalDetails,
           dateOfBirth: values.personalDetails?.dateOfBirth?.format('YYYY-MM-DD'),
         },
-        careerDetails: {
-          ...values.careerDetails,
-          joiningDate: values.careerDetails?.joiningDate?.format('YYYY-MM-DD'),
-        },
+        careerDetails: toStringFields(values.careerDetails, CAREER_DATE_FIELDS),
+        complianceDetails: toStringFields(values.complianceDetails, COMPLIANCE_DATE_FIELDS),
+        workDetails: toStringFields(values.workDetails, WORK_DATE_FIELDS),
       };
 
       if (isEditMode) {
@@ -95,6 +128,16 @@ export function EmployeeFormPage() {
             <Divider titlePlacement="left" style={{ marginTop: 0 }}>Basic Info</Divider>
             <Row gutter={16}>
               <Col span={6}>
+                <Form.Item label="Company / Customer" name="customerId">
+                  <Select
+                    allowClear
+                    showSearch={{ optionFilterProp: 'label' }}
+                    placeholder="Optional"
+                    options={customers.map((c) => ({ value: c.id, label: c.name }))}
+                  />
+                </Form.Item>
+              </Col>
+              <Col span={6}>
                 <Form.Item label="ID No" name="idNo" rules={[{ required: true }]}>
                   <Input />
                 </Form.Item>
@@ -105,7 +148,7 @@ export function EmployeeFormPage() {
                 </Form.Item>
               </Col>
               <Col span={6}>
-                <Form.Item label="Email" name="emailId" rules={[{ required: true, type: 'email' }]}>
+                <Form.Item label="Email" name="emailId" rules={[{ type: 'email' }]}>
                   <Input />
                 </Form.Item>
               </Col>
@@ -124,7 +167,8 @@ export function EmployeeFormPage() {
                 </Form.Item>
               </Col>
             </Row>
-          <Divider titlePlacement="left">Personal Details</Divider>
+
+            <Divider titlePlacement="left">Personal Details</Divider>
             <Row gutter={16}>
               <Col span={6}>
                 <Form.Item label="Name" name={['personalDetails', 'name']} rules={[{ required: true }]}>
@@ -156,13 +200,29 @@ export function EmployeeFormPage() {
                   <Input />
                 </Form.Item>
               </Col>
+              <Col span={6}>
+                <Form.Item label="Height (ft)" name={['personalDetails', 'height']}>
+                  <InputNumber style={{ width: '100%' }} step={0.1} />
+                </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item label="Weight (kg)" name={['personalDetails', 'weight']}>
+                  <InputNumber style={{ width: '100%' }} />
+                </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item label="Chest" name={['personalDetails', 'chest']}>
+                  <InputNumber style={{ width: '100%' }} />
+                </Form.Item>
+              </Col>
               <Col span={12}>
                 <Form.Item label="Identification Marks" name={['personalDetails', 'identificationMarks']}>
                   <Input />
                 </Form.Item>
               </Col>
             </Row>
-          <Divider titlePlacement="left">Family Details</Divider>
+
+            <Divider titlePlacement="left">Nominee Details</Divider>
             <Row gutter={16}>
               <Col span={6}>
                 <Form.Item label="Father's Name" name={['familyDetails', 'fathersName']} rules={[{ required: true }]}>
@@ -170,7 +230,17 @@ export function EmployeeFormPage() {
                 </Form.Item>
               </Col>
               <Col span={6}>
+                <Form.Item label="Father Place of Birth" name={['familyDetails', 'fatherPlaceOfBirth']}>
+                  <Input />
+                </Form.Item>
+              </Col>
+              <Col span={6}>
                 <Form.Item label="Mother's Name" name={['familyDetails', 'motherName']} rules={[{ required: true }]}>
+                  <Input />
+                </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item label="Wife Name" name={['familyDetails', 'wifeName']}>
                   <Input />
                 </Form.Item>
               </Col>
@@ -185,16 +255,32 @@ export function EmployeeFormPage() {
                 </Form.Item>
               </Col>
             </Row>
-          <Divider titlePlacement="left">Career Details</Divider>
+
+            <Divider titlePlacement="left">Career Details</Divider>
             <Row gutter={16}>
+              <Col span={6}>
+                <Form.Item label="Date of Interview" name={['careerDetails', 'dateOfInterview']}>
+                  <DatePicker style={{ width: '100%' }} />
+                </Form.Item>
+              </Col>
               <Col span={6}>
                 <Form.Item label="Joining Date" name={['careerDetails', 'joiningDate']} rules={[{ required: true }]}>
                   <DatePicker style={{ width: '100%' }} />
                 </Form.Item>
               </Col>
               <Col span={6}>
+                <Form.Item label="Re-Joining Date" name={['careerDetails', 'reJoiningDate']}>
+                  <DatePicker style={{ width: '100%' }} />
+                </Form.Item>
+              </Col>
+              <Col span={6}>
                 <Form.Item label="Designation" name={['careerDetails', 'designation']}>
-                  <Input />
+                  <Select
+                    mode="tags"
+                    maxCount={1}
+                    placeholder="Select or type a designation"
+                    options={DESIGNATION_OPTIONS.map((d) => ({ value: d, label: d }))}
+                  />
                 </Form.Item>
               </Col>
               <Col span={6}>
@@ -207,8 +293,64 @@ export function EmployeeFormPage() {
                   <Input />
                 </Form.Item>
               </Col>
+              <Col span={6}>
+                <Form.Item label="Reason for Leaving" name={['careerDetails', 'reasonForLeaving']}>
+                  <Input />
+                </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item label="Present Address" name={['careerDetails', 'presentAddress']}>
+                  <Input />
+                </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item label="Present Address 2" name={['careerDetails', 'presentAddress2']}>
+                  <Input />
+                </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item label="From Date" name={['careerDetails', 'fromDate']}>
+                  <DatePicker style={{ width: '100%' }} />
+                </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item label="Till Date" name={['careerDetails', 'tillDate']}>
+                  <DatePicker style={{ width: '100%' }} />
+                </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item label="Age at Matriculation" name={['careerDetails', 'ageAtMatriculation']}>
+                  <Input />
+                </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item label="Examination Passed" name={['careerDetails', 'examinationPassed']}>
+                  <Input />
+                </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item label="Educational Qualifications" name={['careerDetails', 'educationalQualifications']}>
+                  <Input />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item label="Name of School/College with Full Address" name={['careerDetails', 'schoolCollegeName']}>
+                  <Input />
+                </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item label="Staying From" name={['careerDetails', 'stayingFrom']}>
+                  <Input />
+                </Form.Item>
+              </Col>
+              <Col span={18}>
+                <Form.Item label="Reference with Full Address" name={['careerDetails', 'referenceWithFullAddress']}>
+                  <Input />
+                </Form.Item>
+              </Col>
             </Row>
-          <Divider titlePlacement="left">Addresses</Divider>
+
+            <Divider titlePlacement="left">Addresses</Divider>
             <Form.List name="addresses">
               {(fields) => (
                 <>
@@ -233,7 +375,7 @@ export function EmployeeFormPage() {
                       </Col>
                       <Col span={6}>
                         <Form.Item label="State" name={[field.name, 'state']} rules={[{ required: true }]}>
-                          <Input />
+                          <Select options={STATE_OPTIONS.map((s) => ({ value: s, label: s }))} />
                         </Form.Item>
                       </Col>
                       <Col span={6}>
@@ -250,7 +392,8 @@ export function EmployeeFormPage() {
                 </>
               )}
             </Form.List>
-          <Divider titlePlacement="left">Legal Background</Divider>
+
+            <Divider titlePlacement="left">Legal Background</Divider>
             <Row gutter={16}>
               {(
                 [
@@ -262,6 +405,9 @@ export function EmployeeFormPage() {
                   ['everArrested', 'Ever Arrested'],
                   ['everProsecuted', 'Ever Prosecuted'],
                   ['dismissedOrRemoved', 'Dismissed or Removed'],
+                  ['dischargedFromTraining', 'Discharged from Training'],
+                  ['previousEmploymentUnderGovt', 'Previous Employment under Govt.'],
+                  ['undertakingOwnedByGovt', 'Undertaking Owned/Controlled by Govt.'],
                 ] as const
               ).map(([field, label]) => (
                 <Col span={6} key={field}>
@@ -270,6 +416,14 @@ export function EmployeeFormPage() {
                   </Form.Item>
                 </Col>
               ))}
+              <Col span={24}>
+                <Form.Item
+                  label="Names & Address of Two Responsible Persons (other than relatives)"
+                  name={['legalBackground', 'responsiblePersonsInfo']}
+                >
+                  <Input.TextArea rows={2} />
+                </Form.Item>
+              </Col>
             </Row>
           </Card>
         </div>
@@ -281,11 +435,6 @@ export function EmployeeFormPage() {
               <Col span={6}>
                 <Form.Item label="PF No" name={['complianceDetails', 'pfNo']}>
                   <Input />
-                </Form.Item>
-              </Col>
-              <Col span={6}>
-                <Form.Item label="PF Status" name={['complianceDetails', 'pfStatus']}>
-                  <Select options={STATUS_OPTIONS.map((s) => ({ value: s, label: s }))} />
                 </Form.Item>
               </Col>
               <Col span={6}>
@@ -318,26 +467,91 @@ export function EmployeeFormPage() {
                   <Input />
                 </Form.Item>
               </Col>
+              <Col span={6}>
+                <Form.Item label="Passport Submitted" name={['complianceDetails', 'passportSubmitted']}>
+                  <Input />
+                </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item label="Passport Valid From" name={['complianceDetails', 'passportValidFrom']}>
+                  <DatePicker style={{ width: '100%' }} />
+                </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item label="Passport Valid To" name={['complianceDetails', 'passportValidTo']}>
+                  <DatePicker style={{ width: '100%' }} />
+                </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item label="AEP Application Status" name={['complianceDetails', 'aepApplicationStatus']}>
+                  <Select options={STATUS_OPTIONS.map((s) => ({ value: s, label: s }))} />
+                </Form.Item>
+              </Col>
+              {isGmr && (
+                <Col span={6}>
+                  <Form.Item label="AEP Type" name={['complianceDetails', 'aepType']}>
+                    <Select options={AEP_TYPE_OPTIONS.map((t) => ({ value: t, label: t }))} />
+                  </Form.Item>
+                </Col>
+              )}
+              <Col span={6}>
+                <Form.Item label="AEP Number" name={['complianceDetails', 'aepNumber']}>
+                  <Input />
+                </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item label="AEP Validity" name={['complianceDetails', 'aepValidity']}>
+                  <Input />
+                </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item label="AEP Date" name={['complianceDetails', 'aepDate']}>
+                  <DatePicker style={{ width: '100%' }} />
+                </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item label="AVSEC Status" name={['complianceDetails', 'avsecStatus']}>
+                  <Select options={STATUS_OPTIONS.map((s) => ({ value: s, label: s }))} />
+                </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item label="AVSEC Valid From" name={['complianceDetails', 'avsecValidFrom']}>
+                  <DatePicker style={{ width: '100%' }} />
+                </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item label="AVSEC Valid To" name={['complianceDetails', 'avsecValidTo']}>
+                  <DatePicker style={{ width: '100%' }} />
+                </Form.Item>
+              </Col>
             </Row>
-          <Divider titlePlacement="left">Work Details</Divider>
+
+            <Divider titlePlacement="left">Work Details</Divider>
             <Row gutter={16}>
               <Col span={6}>
                 <Form.Item label="Site" name={['workDetails', 'site']}>
-                  <Input />
+                  <Select options={SITE_OPTIONS.map((s) => ({ value: s, label: s }))} />
                 </Form.Item>
               </Col>
-              <Col span={6}>
-                <Form.Item label="Shift" name={['workDetails', 'shift']}>
-                  <Input />
-                </Form.Item>
-              </Col>
+              {isGmr && (
+                <Col span={6}>
+                  <Form.Item label="Shift" name={['workDetails', 'shift']}>
+                    <Input />
+                  </Form.Item>
+                </Col>
+              )}
               <Col span={6}>
                 <Form.Item label="Category" name={['workDetails', 'category']}>
-                  <Input />
+                  <Select options={OPTED_OPTIONS.map((o) => ({ value: o, label: o }))} />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="Uniform" name={['workDetails', 'uniform']}>
+                  <Input />
+                </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item label="Uniform Size" name={['workDetails', 'uniformSize']}>
                   <Input />
                 </Form.Item>
               </Col>
@@ -347,8 +561,13 @@ export function EmployeeFormPage() {
                 </Form.Item>
               </Col>
               <Col span={6}>
-                <Form.Item label="Transport" name={['workDetails', 'transport']}>
+                <Form.Item label="Shoes Size" name={['workDetails', 'shoesSize']}>
                   <Input />
+                </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item label="Transport" name={['workDetails', 'transport']}>
+                  <Select options={OPTED_OPTIONS.map((o) => ({ value: o, label: o }))} />
                 </Form.Item>
               </Col>
               <Col span={6}>
@@ -357,6 +576,68 @@ export function EmployeeFormPage() {
                 </Form.Item>
               </Col>
               <Col span={6}>
+                <Form.Item label="Certificates" name={['workDetails', 'certificates']}>
+                  <Input />
+                </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item label="Document Given" name={['workDetails', 'documentGiven']}>
+                  <Input />
+                </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item label="Broker Name" name={['workDetails', 'brokerName']}>
+                  <Input />
+                </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item label="Hostel Joining Date" name={['workDetails', 'hostelJoiningDate']}>
+                  <DatePicker style={{ width: '100%' }} />
+                </Form.Item>
+              </Col>
+              {isGmr && (
+                <Col span={6}>
+                  <Form.Item label="PVC Status" name={['workDetails', 'pvcStatus']}>
+                    <Select options={STATUS_OPTIONS.map((s) => ({ value: s, label: s }))} />
+                  </Form.Item>
+                </Col>
+              )}
+              <Col span={6}>
+                <Form.Item label="Leave From Date" name={['workDetails', 'leaveFromDate']}>
+                  <DatePicker style={{ width: '100%' }} />
+                </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item label="Leave To Date" name={['workDetails', 'leaveToDate']}>
+                  <DatePicker style={{ width: '100%' }} />
+                </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item label="Notice Date" name={['workDetails', 'noticeDate']}>
+                  <DatePicker style={{ width: '100%' }} />
+                </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item label="Notice Reason" name={['workDetails', 'noticeReason']}>
+                  <Input />
+                </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item label="Exit Date" name={['workDetails', 'exitDate']}>
+                  <DatePicker style={{ width: '100%' }} />
+                </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item label="Exit Status" name={['workDetails', 'exitStatus']}>
+                  <Select options={EXIT_STATUS_OPTIONS.map((s) => ({ value: s, label: s }))} />
+                </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item label="Full & Final Settlement" name={['workDetails', 'fullFinalSettlement']}>
+                  <Input />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
                 <Form.Item label="Remarks" name={['workDetails', 'remarks']}>
                   <Input />
                 </Form.Item>

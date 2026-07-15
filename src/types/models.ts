@@ -51,11 +51,15 @@ export interface CareerDetails {
   natureOfEmployment?: string;
   reasonForLeaving?: string;
   presentAddress?: string;
+  presentAddress2?: string;
   fromDate?: string;
   tillDate?: string;
   ageAtMatriculation?: string;
+  examinationPassed?: string;
+  educationalQualifications?: string;
   schoolCollegeName?: string;
   stayingFrom?: string;
+  referenceWithFullAddress?: string;
 }
 
 export interface LegalBackground {
@@ -69,6 +73,8 @@ export interface LegalBackground {
   everProsecuted: boolean;
   dismissedOrRemoved: boolean;
   dischargedFromTraining?: boolean;
+  previousEmploymentUnderGovt?: boolean;
+  undertakingOwnedByGovt?: boolean;
   responsiblePersonsInfo?: string;
 }
 
@@ -84,14 +90,10 @@ export interface Address {
 export interface ComplianceDetails {
   id?: number;
   pfNo?: string;
-  pfStatus?: 'Applied' | 'Completed' | 'Not Applied';
   esicNo?: string;
-  esicStatus?: 'Applied' | 'Completed' | 'Not Applied';
   ifscCode?: string;
   bankAccountNumber?: string;
-  bankAccountStatus?: 'Applied' | 'Completed' | 'Not Applied';
   pan?: string;
-  panStatus?: 'Applied' | 'Completed' | 'Not Applied';
   aadhar?: string;
   passportNumber?: string;
   passportValidFrom?: string;
@@ -101,8 +103,7 @@ export interface ComplianceDetails {
   aepType?: string;
   aepValidity?: string;
   aepNumber?: string;
-  aepValidFrom?: string;
-  aepValidTo?: string;
+  aepDate?: string;
   avsecValidFrom?: string;
   avsecValidTo?: string;
   avsecStatus?: 'Applied' | 'Completed' | 'Not Applied';
@@ -114,7 +115,9 @@ export interface WorkDetails {
   shift?: string;
   category?: string;
   uniform?: string;
+  uniformSize?: string;
   shoes?: string;
+  shoesSize?: string;
   certificates?: string;
   documentGiven?: string;
   previousExperience?: string;
@@ -134,6 +137,7 @@ export interface WorkDetails {
 
 export interface Employee {
   id?: number;
+  customerId?: number;
   idNo: string;
   serialNumberAssigned?: string;
   emailId: string;
