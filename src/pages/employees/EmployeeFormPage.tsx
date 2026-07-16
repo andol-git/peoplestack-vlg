@@ -128,7 +128,7 @@ export function EmployeeFormPage() {
             <Divider titlePlacement="left" style={{ marginTop: 0 }}>Basic Info</Divider>
             <Row gutter={16}>
               <Col span={6}>
-                <Form.Item label="Company / Customer" name="customerId">
+                <Form.Item label="Company" name="customerId">
                   <Select
                     allowClear
                     showSearch={{ optionFilterProp: 'label' }}
