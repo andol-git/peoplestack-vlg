@@ -86,18 +86,30 @@ export function UserFormPage() {
             </Col>
             <Col span={12}>
               <Form.Item label="Role" name="role" rules={[{ required: true }]}>
-                <Select placeholder="Select role" options={ROLES.map((r) => ({ value: r.id, label: r.label }))} />
+                <Select
+                  placeholder="Select role"
+                  showSearch={{ optionFilterProp: 'label' }}
+                  options={ROLES.map((r) => ({ value: r.id, label: r.label }))}
+                />
               </Form.Item>
             </Col>
             <Col span={12}>
               <Form.Item label="Company" name="company">
-                <Select placeholder="Select company" options={COMPANIES.map((c) => ({ value: c, label: c }))} />
+                <Select
+                  placeholder="Select company"
+                  showSearch={{ optionFilterProp: 'label' }}
+                  options={COMPANIES.map((c) => ({ value: c, label: c }))}
+                />
               </Form.Item>
             </Col>
             {isEditMode && (
               <Col span={12}>
                 <Form.Item label="Status" name="status">
-                  <Select placeholder="Select status" options={['Active', 'Inactive'].map((s) => ({ value: s, label: s }))} />
+                  <Select
+                    placeholder="Select status"
+                    showSearch={{ optionFilterProp: 'label' }}
+                    options={['Active', 'Inactive'].map((s) => ({ value: s, label: s }))}
+                  />
                 </Form.Item>
               </Col>
             )}

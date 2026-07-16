@@ -116,6 +116,7 @@ export function TodayAttendancePage() {
               value={pending.companyId || undefined}
               onChange={(v) => setPending((p) => ({ ...p, companyId: v }))}
               style={{ width: 160 }}
+              showSearch={{ optionFilterProp: 'label' }}
               options={companyOptions}
             />
           </div>
@@ -162,6 +163,7 @@ export function TodayAttendancePage() {
             value={status}
             onChange={setStatus}
             style={{ width: 160 }}
+            showSearch={{ optionFilterProp: 'label' }}
             options={['All', 'Present', 'Absent'].map((s) => ({ value: s, label: s }))}
           />
         </div>

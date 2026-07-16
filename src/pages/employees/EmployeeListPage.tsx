@@ -217,6 +217,7 @@ export function EmployeeListPage() {
               value={category}
               onChange={setCategory}
               style={{ width: 140 }}
+              showSearch={{ optionFilterProp: 'label' }}
               options={CATEGORY_OPTIONS.map((c) => ({ value: c, label: c }))}
             />
             <Button icon={<DownloadOutlined />} onClick={() => exportCsv(filtered)}>
