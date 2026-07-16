@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Button, DatePicker, Drawer, Form, Select, Upload, message } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import type { UploadFile } from 'antd/es/upload/interface';
 import dayjs from 'dayjs';
 import { useUploadAttendance } from '../hooks/useAttendance';
-import { COMPANIES } from '../constants/companies';
+import { useCustomersQuery } from '../hooks/useCustomers';
 
 interface Props {
   open: boolean;
@@ -15,6 +15,18 @@ export function UploadAttendanceDrawer({ open, onClose }: Props) {
   const [form] = Form.useForm();
   const [file, setFile] = useState<UploadFile | null>(null);
   const uploadMutation = useUploadAttendance();
+  const { data: customers = [] } = useCustomersQuery();
+
+  const companyOptions = useMemo(
+    () => customers.filter((c) => !!c.code).map((c) => ({ value: c.code as string, label: c.name })),
+    [customers]
+  );
+
+  useEffect(() => {
+    if (companyOptions.length > 0 && !form.getFieldValue('companyId')) {
+      form.setFieldValue('companyId', companyOptions[0].value);
+    }
+  }, [companyOptions, form]);
 
   function handleClose() {
     form.resetFields();
@@ -54,13 +66,13 @@ export function UploadAttendanceDrawer({ open, onClose }: Props) {
         </div>
       }
     >
-      <Form form={form} layout="vertical" initialValues={{ date: dayjs(), companyId: COMPANIES[0]?.id }}>
+      <Form form={form} layout="vertical" initialValues={{ date: dayjs() }}>
         <Form.Item label="Company" name="companyId" rules={[{ required: true, message: 'Please select a company' }]}>
-          <Select options={COMPANIES.map((c) => ({ value: c.id, label: c.label }))} />
+          <Select placeholder="Select company" showSearch={{ optionFilterProp: 'label' }} options={companyOptions} />
         </Form.Item>
 
         <Form.Item label="Attendance Date" name="date" rules={[{ required: true, message: 'Please select a date' }]}>
-          <DatePicker style={{ width: '100%' }} />
+          <DatePicker style={{ width: '100%' }} placeholder="Select date" />
         </Form.Item>
 
         <Form.Item label="Attendance File" required>

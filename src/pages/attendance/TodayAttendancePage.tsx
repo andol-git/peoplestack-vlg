@@ -1,10 +1,10 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Avatar, Button, Card, DatePicker, Input, Select, Table, Tag } from 'antd';
 import { SearchOutlined, UploadOutlined } from '@ant-design/icons';
 import dayjs, { type Dayjs } from 'dayjs';
 import { useAttendanceQuery } from '../../hooks/useAttendance';
-import { DEFAULT_COMPANY_ID, type AttendanceFilters } from '../../api/attendance-api';
-import { COMPANIES } from '../../constants/companies';
+import { useCustomersQuery } from '../../hooks/useCustomers';
+import type { AttendanceFilters } from '../../api/attendance-api';
 import type { AttendanceRecord } from '../../types/models';
 import { UploadAttendanceDrawer } from '../../components/UploadAttendanceDrawer';
 
@@ -23,7 +23,7 @@ export function TodayAttendancePage() {
   const [uploadOpen, setUploadOpen] = useState(false);
   const today = dayjs();
   const initial: PendingFilters = {
-    companyId: DEFAULT_COMPANY_ID,
+    companyId: '',
     employeeId: '',
     dateFrom: today,
     dateTo: today,
@@ -31,6 +31,20 @@ export function TodayAttendancePage() {
   const [pending, setPending] = useState<PendingFilters>(initial);
   const [applied, setApplied] = useState<PendingFilters>(initial);
   const [status, setStatus] = useState<'All' | 'Present' | 'Absent'>('All');
+
+  const { data: customers = [] } = useCustomersQuery();
+  const companyOptions = useMemo(
+    () => customers.filter((c) => !!c.code).map((c) => ({ value: c.code as string, label: c.name })),
+    [customers]
+  );
+
+  useEffect(() => {
+    if (!pending.companyId && companyOptions.length > 0) {
+      const first = companyOptions[0].value;
+      setPending((p) => ({ ...p, companyId: first }));
+      setApplied((a) => ({ ...a, companyId: first }));
+    }
+  }, [companyOptions, pending.companyId]);
 
   const filters: AttendanceFilters = {
     companyId: applied.companyId,
@@ -99,10 +113,10 @@ export function TodayAttendancePage() {
               Company <span style={{ color: '#ef4444' }}>*</span>
             </div>
             <Select
-              value={pending.companyId}
+              value={pending.companyId || undefined}
               onChange={(v) => setPending((p) => ({ ...p, companyId: v }))}
               style={{ width: 160 }}
-              options={COMPANIES.map((c) => ({ value: c.id, label: c.label }))}
+              options={companyOptions}
             />
           </div>
           <div>
@@ -142,22 +156,24 @@ export function TodayAttendancePage() {
         </div>
       </Card>
 
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16 }}>
-        <Select
-          value={status}
-          onChange={setStatus}
-          style={{ width: 160 }}
-          options={['All', 'Present', 'Absent'].map((s) => ({ value: s, label: s }))}
-        />
-      </div>
+      <Card styles={{ body: { padding: 20 } }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16 }}>
+          <Select
+            value={status}
+            onChange={setStatus}
+            style={{ width: 160 }}
+            options={['All', 'Present', 'Absent'].map((s) => ({ value: s, label: s }))}
+          />
+        </div>
 
-      <Table
-        rowKey="id"
-        loading={isLoading}
-        dataSource={filtered}
-        columns={columns}
-        pagination={{ pageSize: 10, showSizeChanger: true }}
-      />
+        <Table
+          rowKey="id"
+          loading={isLoading}
+          dataSource={filtered}
+          columns={columns}
+          pagination={{ pageSize: 10, showSizeChanger: true }}
+        />
+      </Card>
 
       <UploadAttendanceDrawer open={uploadOpen} onClose={() => setUploadOpen(false)} />
     </div>

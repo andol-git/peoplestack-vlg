@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Avatar, Button, Input, Popconfirm, Select, Space, Table, Tag } from 'antd';
+import { Avatar, Button, Card, Input, Popconfirm, Select, Space, Table, Tag } from 'antd';
 import {
   CheckCircleOutlined,
   EditOutlined,
@@ -109,23 +109,25 @@ export function UserListPage() {
         </Link>
       </div>
 
-      <Space style={{ marginBottom: 16 }}>
-        <Input
-          placeholder="Search name or email..."
-          prefix={<SearchOutlined />}
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          style={{ width: 260 }}
-        />
-        <Select
-          value={statusFilter}
-          onChange={setStatusFilter}
-          style={{ width: 140 }}
-          options={['All', 'Active', 'Inactive'].map((s) => ({ value: s, label: s }))}
-        />
-      </Space>
+      <Card styles={{ body: { padding: 20 } }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16, gap: 8 }}>
+          <Input
+            placeholder="Search name or email..."
+            prefix={<SearchOutlined style={{ color: '#cbd5e1' }} />}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            style={{ width: 260, borderRadius: 20 }}
+          />
+          <Select
+            value={statusFilter}
+            onChange={setStatusFilter}
+            style={{ width: 140 }}
+            options={['All', 'Active', 'Inactive'].map((s) => ({ value: s, label: s }))}
+          />
+        </div>
 
-      <Table rowKey="id" loading={isLoading} dataSource={filtered} columns={columns} pagination={{ pageSize: 10 }} />
+        <Table rowKey="id" loading={isLoading} dataSource={filtered} columns={columns} pagination={{ pageSize: 10 }} />
+      </Card>
     </div>
   );
 }

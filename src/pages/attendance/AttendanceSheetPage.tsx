@@ -1,9 +1,8 @@
-import { useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Avatar, Button, Card, Select, Table } from 'antd';
 import { CheckCircleFilled, CloseCircleFilled, MinusCircleFilled, SearchOutlined } from '@ant-design/icons';
 import { useAttendanceQuery } from '../../hooks/useAttendance';
-import { DEFAULT_COMPANY_ID } from '../../api/attendance-api';
-import { COMPANIES } from '../../constants/companies';
+import { useCustomersQuery } from '../../hooks/useCustomers';
 
 type DayStatus = 'P' | 'A' | 'W' | 'N';
 
@@ -34,14 +33,29 @@ function LegendItem({ icon, label }: { icon: ReactNode; label: string }) {
 
 export function AttendanceSheetPage() {
   const now = new Date();
-  const [pendingCompanyId, setPendingCompanyId] = useState(DEFAULT_COMPANY_ID);
+  const [pendingCompanyId, setPendingCompanyId] = useState('');
   const [pendingYear, setPendingYear] = useState(now.getFullYear());
   const [pendingMonth, setPendingMonth] = useState(now.getMonth());
   const [applied, setApplied] = useState({
-    companyId: DEFAULT_COMPANY_ID,
+    companyId: '',
     year: now.getFullYear(),
     month: now.getMonth(),
   });
+
+  const { data: customers = [] } = useCustomersQuery();
+  const companyOptions = useMemo(
+    () => customers.filter((c) => !!c.code).map((c) => ({ value: c.code as string, label: c.name })),
+    [customers]
+  );
+
+  useEffect(() => {
+    if (!pendingCompanyId && companyOptions.length > 0) {
+      const first = companyOptions[0].value;
+      setPendingCompanyId(first);
+      setApplied((a) => ({ ...a, companyId: first }));
+    }
+  }, [companyOptions, pendingCompanyId]);
+
   const { data: records = [], isLoading } = useAttendanceQuery({ companyId: applied.companyId });
 
   const { year, month } = applied;
@@ -154,10 +168,10 @@ export function AttendanceSheetPage() {
               Company <span style={{ color: '#ef4444' }}>*</span>
             </div>
             <Select
-              value={pendingCompanyId}
+              value={pendingCompanyId || undefined}
               onChange={setPendingCompanyId}
               style={{ width: 160 }}
-              options={COMPANIES.map((c) => ({ value: c.id, label: c.label }))}
+              options={companyOptions}
             />
           </div>
           <div>
@@ -192,38 +206,40 @@ export function AttendanceSheetPage() {
         </div>
       </Card>
 
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: 12,
-          flexWrap: 'wrap',
-          gap: 12,
-        }}
-      >
-        <div style={{ fontSize: 13, color: '#64748b' }}>
-          Year: <strong>{year}</strong> | Month: <strong>{MONTHS[month]}</strong> | Showing{' '}
-          <strong>{employees.length}</strong> employee(s)
+      <Card styles={{ body: { padding: 20 } }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: 16,
+            flexWrap: 'wrap',
+            gap: 12,
+          }}
+        >
+          <div style={{ fontSize: 13, color: '#64748b' }}>
+            Year: <strong>{year}</strong> | Month: <strong>{MONTHS[month]}</strong> | Showing{' '}
+            <strong>{employees.length}</strong> employee(s)
+          </div>
+          <div style={{ display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>
+            <LegendItem icon={<MinusCircleFilled style={{ color: '#94a3b8' }} />} label="Weekend" />
+            <LegendItem icon={<CheckCircleFilled style={{ color: '#22c55e' }} />} label="Present" />
+            <LegendItem icon={<CloseCircleFilled style={{ color: '#ef4444' }} />} label="Absent" />
+            <LegendItem icon={<MinusCircleFilled style={{ color: '#e2e8f0' }} />} label="No Record" />
+          </div>
         </div>
-        <div style={{ display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>
-          <LegendItem icon={<MinusCircleFilled style={{ color: '#94a3b8' }} />} label="Weekend" />
-          <LegendItem icon={<CheckCircleFilled style={{ color: '#22c55e' }} />} label="Present" />
-          <LegendItem icon={<CloseCircleFilled style={{ color: '#ef4444' }} />} label="Absent" />
-          <LegendItem icon={<MinusCircleFilled style={{ color: '#e2e8f0' }} />} label="No Record" />
-        </div>
-      </div>
 
-      <Table
-        rowKey="employeeId"
-        loading={isLoading}
-        dataSource={employees}
-        columns={columns}
-        pagination={false}
-        scroll={{ x: 'max-content' }}
-        size="small"
-        bordered
-      />
+        <Table
+          rowKey="employeeId"
+          loading={isLoading}
+          dataSource={employees}
+          columns={columns}
+          pagination={false}
+          scroll={{ x: 'max-content' }}
+          size="small"
+          bordered
+        />
+      </Card>
     </div>
   );
 }

@@ -76,28 +76,28 @@ export function UserFormPage() {
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item label="Name" name="name" rules={[{ required: true }]}>
-                <Input />
+                <Input placeholder="Enter full name" />
               </Form.Item>
             </Col>
             <Col span={12}>
               <Form.Item label="Email" name="email" rules={[{ required: true, type: 'email' }]}>
-                <Input />
+                <Input placeholder="Enter email address" />
               </Form.Item>
             </Col>
             <Col span={12}>
               <Form.Item label="Role" name="role" rules={[{ required: true }]}>
-                <Select options={ROLES.map((r) => ({ value: r.id, label: r.label }))} />
+                <Select placeholder="Select role" options={ROLES.map((r) => ({ value: r.id, label: r.label }))} />
               </Form.Item>
             </Col>
             <Col span={12}>
               <Form.Item label="Company" name="company">
-                <Select options={COMPANIES.map((c) => ({ value: c, label: c }))} />
+                <Select placeholder="Select company" options={COMPANIES.map((c) => ({ value: c, label: c }))} />
               </Form.Item>
             </Col>
             {isEditMode && (
               <Col span={12}>
                 <Form.Item label="Status" name="status">
-                  <Select options={['Active', 'Inactive'].map((s) => ({ value: s, label: s }))} />
+                  <Select placeholder="Select status" options={['Active', 'Inactive'].map((s) => ({ value: s, label: s }))} />
                 </Form.Item>
               </Col>
             )}
@@ -109,7 +109,7 @@ export function UserFormPage() {
                     name="password"
                     rules={[{ required: true, min: 6, message: 'Minimum 6 characters' }]}
                   >
-                    <Input.Password />
+                    <Input.Password placeholder="Enter password" />
                   </Form.Item>
                 </Col>
                 <Col span={12}>
@@ -127,14 +127,14 @@ export function UserFormPage() {
                       }),
                     ]}
                   >
-                    <Input.Password />
+                    <Input.Password placeholder="Re-enter password" />
                   </Form.Item>
                 </Col>
               </>
             )}
             <Col span={24}>
               <Form.Item label="Notes" name="notes">
-                <Input.TextArea rows={3} />
+                <Input.TextArea rows={3} placeholder="Optional notes" />
               </Form.Item>
             </Col>
           </Row>

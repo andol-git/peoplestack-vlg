@@ -5,6 +5,7 @@ export function useAttendanceQuery(filters: AttendanceFilters) {
   return useQuery({
     queryKey: ['attendance', filters],
     queryFn: () => attendanceApi.getAll(filters),
+    enabled: !!filters.companyId,
   });
 }
 

@@ -100,15 +100,19 @@ export function CustomerListPage() {
         </Col>
       </Row>
 
-      <Input
-        placeholder="Search customers..."
-        prefix={<SearchOutlined />}
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        style={{ maxWidth: 320, marginBottom: 16 }}
-      />
+      <Card styles={{ body: { padding: 20 } }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16 }}>
+          <Input
+            placeholder="Search customers..."
+            prefix={<SearchOutlined style={{ color: '#cbd5e1' }} />}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            style={{ width: 260, borderRadius: 20 }}
+          />
+        </div>
 
-      <Table rowKey="id" loading={isLoading} dataSource={filtered} columns={columns} pagination={{ pageSize: 10 }} />
+        <Table rowKey="id" loading={isLoading} dataSource={filtered} columns={columns} pagination={{ pageSize: 10 }} />
+      </Card>
     </div>
   );
 }

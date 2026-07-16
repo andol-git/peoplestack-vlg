@@ -50,8 +50,7 @@ export function AssignStaffModal({ customerId, customerName, open, onClose, onAs
             value: e.id,
             label: `${e.personalDetails?.name ?? e.idNo} (${e.idNo})`,
           }))}
-          showSearch
-          optionFilterProp="label"
+          showSearch={{ optionFilterProp: 'label' }}
         />
         <Button type="primary" onClick={handleAssign} loading={assignMutation.isPending} disabled={!selectedEmployeeId}>
           Assign

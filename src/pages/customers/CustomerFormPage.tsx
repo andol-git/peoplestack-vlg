@@ -48,22 +48,22 @@ export function CustomerFormPage() {
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item label="Name" name="name" rules={[{ required: true }]}>
-                <Input />
+                <Input placeholder="Enter customer name" />
               </Form.Item>
             </Col>
             <Col span={12}>
               <Form.Item label="Code" name="code">
-                <Input />
+                <Input placeholder="e.g. CUST001" />
               </Form.Item>
             </Col>
             <Col span={12}>
               <Form.Item label="Site" name="site">
-                <Input />
+                <Input placeholder="Enter site name" />
               </Form.Item>
             </Col>
             <Col span={12}>
               <Form.Item label="Contact Number" name="contactNumber">
-                <Input />
+                <Input placeholder="Enter contact number" />
               </Form.Item>
             </Col>
             <Col span={12}>

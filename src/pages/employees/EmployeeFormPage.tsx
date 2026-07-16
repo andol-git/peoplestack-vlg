@@ -139,17 +139,17 @@ export function EmployeeFormPage() {
               </Col>
               <Col span={6}>
                 <Form.Item label="ID No" name="idNo" rules={[{ required: true }]}>
-                  <Input />
+                  <Input placeholder="Enter ID number" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="Serial Number" name="serialNumberAssigned">
-                  <Input />
+                  <Input placeholder="Enter serial number" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="Email" name="emailId" rules={[{ type: 'email' }]}>
-                  <Input />
+                  <Input placeholder="Enter email address" />
                 </Form.Item>
               </Col>
               <Col span={6}>
@@ -158,7 +158,7 @@ export function EmployeeFormPage() {
                   name="phoneNo"
                   rules={[{ required: true, pattern: /^[0-9]{10}$/, message: 'Phone number must be exactly 10 digits' }]}
                 >
-                  <Input />
+                  <Input placeholder="Enter 10-digit phone number" />
                 </Form.Item>
               </Col>
               <Col span={6}>
@@ -172,52 +172,52 @@ export function EmployeeFormPage() {
             <Row gutter={16}>
               <Col span={6}>
                 <Form.Item label="Name" name={['personalDetails', 'name']} rules={[{ required: true }]}>
-                  <Input />
+                  <Input placeholder="Enter full name" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="Gender" name={['personalDetails', 'gender']} rules={[{ required: true }]}>
-                  <Select options={GENDER_OPTIONS.map((g) => ({ value: g, label: g }))} />
+                  <Select placeholder="Select gender" options={GENDER_OPTIONS.map((g) => ({ value: g, label: g }))} />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="Date of Birth" name={['personalDetails', 'dateOfBirth']} rules={[{ required: true }]}>
-                  <DatePicker style={{ width: '100%' }} />
+                  <DatePicker style={{ width: '100%' }} placeholder="Select date" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="Marital Status" name={['personalDetails', 'maritalStatus']}>
-                  <Select options={MARITAL_OPTIONS.map((m) => ({ value: m, label: m }))} />
+                  <Select placeholder="Select marital status" options={MARITAL_OPTIONS.map((m) => ({ value: m, label: m }))} />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="Blood Group" name={['personalDetails', 'bloodGroup']}>
-                  <Input />
+                  <Input placeholder="e.g. O+" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="Nationality" name={['personalDetails', 'nationality']} rules={[{ required: true }]}>
-                  <Input />
+                  <Input placeholder="Enter nationality" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="Height (ft)" name={['personalDetails', 'height']}>
-                  <InputNumber style={{ width: '100%' }} step={0.1} />
+                  <InputNumber style={{ width: '100%' }} step={0.1} placeholder="Enter height" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="Weight (kg)" name={['personalDetails', 'weight']}>
-                  <InputNumber style={{ width: '100%' }} />
+                  <InputNumber style={{ width: '100%' }} placeholder="Enter weight" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="Chest" name={['personalDetails', 'chest']}>
-                  <InputNumber style={{ width: '100%' }} />
+                  <InputNumber style={{ width: '100%' }} placeholder="Enter chest measurement" />
                 </Form.Item>
               </Col>
               <Col span={12}>
                 <Form.Item label="Identification Marks" name={['personalDetails', 'identificationMarks']}>
-                  <Input />
+                  <Input placeholder="Enter identification marks" />
                 </Form.Item>
               </Col>
             </Row>
@@ -226,32 +226,32 @@ export function EmployeeFormPage() {
             <Row gutter={16}>
               <Col span={6}>
                 <Form.Item label="Father's Name" name={['familyDetails', 'fathersName']} rules={[{ required: true }]}>
-                  <Input />
+                  <Input placeholder="Enter father's name" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="Father Place of Birth" name={['familyDetails', 'fatherPlaceOfBirth']}>
-                  <Input />
+                  <Input placeholder="Enter place of birth" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="Mother's Name" name={['familyDetails', 'motherName']} rules={[{ required: true }]}>
-                  <Input />
+                  <Input placeholder="Enter mother's name" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="Wife Name" name={['familyDetails', 'wifeName']}>
-                  <Input />
+                  <Input placeholder="Enter wife's name" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="Alternate Mobile" name={['familyDetails', 'alternativeMobileNumber']}>
-                  <Input />
+                  <Input placeholder="Enter alternate mobile number" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="Relation" name={['familyDetails', 'relation']}>
-                  <Input />
+                  <Input placeholder="Enter relation" />
                 </Form.Item>
               </Col>
             </Row>
@@ -260,17 +260,17 @@ export function EmployeeFormPage() {
             <Row gutter={16}>
               <Col span={6}>
                 <Form.Item label="Date of Interview" name={['careerDetails', 'dateOfInterview']}>
-                  <DatePicker style={{ width: '100%' }} />
+                  <DatePicker style={{ width: '100%' }} placeholder="Select date" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="Joining Date" name={['careerDetails', 'joiningDate']} rules={[{ required: true }]}>
-                  <DatePicker style={{ width: '100%' }} />
+                  <DatePicker style={{ width: '100%' }} placeholder="Select date" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="Re-Joining Date" name={['careerDetails', 'reJoiningDate']}>
-                  <DatePicker style={{ width: '100%' }} />
+                  <DatePicker style={{ width: '100%' }} placeholder="Select date" />
                 </Form.Item>
               </Col>
               <Col span={6}>
@@ -285,67 +285,67 @@ export function EmployeeFormPage() {
               </Col>
               <Col span={6}>
                 <Form.Item label="Organisation" name={['careerDetails', 'organisation']}>
-                  <Input />
+                  <Input placeholder="Enter organisation" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="Nature of Employment" name={['careerDetails', 'natureOfEmployment']}>
-                  <Input />
+                  <Input placeholder="Enter nature of employment" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="Reason for Leaving" name={['careerDetails', 'reasonForLeaving']}>
-                  <Input />
+                  <Input placeholder="Enter reason for leaving" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="Present Address" name={['careerDetails', 'presentAddress']}>
-                  <Input />
+                  <Input placeholder="Enter present address" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="Present Address 2" name={['careerDetails', 'presentAddress2']}>
-                  <Input />
+                  <Input placeholder="Enter present address (line 2)" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="From Date" name={['careerDetails', 'fromDate']}>
-                  <DatePicker style={{ width: '100%' }} />
+                  <DatePicker style={{ width: '100%' }} placeholder="Select date" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="Till Date" name={['careerDetails', 'tillDate']}>
-                  <DatePicker style={{ width: '100%' }} />
+                  <DatePicker style={{ width: '100%' }} placeholder="Select date" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="Age at Matriculation" name={['careerDetails', 'ageAtMatriculation']}>
-                  <Input />
+                  <Input placeholder="Enter age at matriculation" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="Examination Passed" name={['careerDetails', 'examinationPassed']}>
-                  <Input />
+                  <Input placeholder="Enter examination passed" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="Educational Qualifications" name={['careerDetails', 'educationalQualifications']}>
-                  <Input />
+                  <Input placeholder="Enter educational qualifications" />
                 </Form.Item>
               </Col>
               <Col span={12}>
                 <Form.Item label="Name of School/College with Full Address" name={['careerDetails', 'schoolCollegeName']}>
-                  <Input />
+                  <Input placeholder="Enter school/college name & address" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="Staying From" name={['careerDetails', 'stayingFrom']}>
-                  <Input />
+                  <Input placeholder="Enter staying from" />
                 </Form.Item>
               </Col>
               <Col span={18}>
                 <Form.Item label="Reference with Full Address" name={['careerDetails', 'referenceWithFullAddress']}>
-                  <Input />
+                  <Input placeholder="Enter reference name & full address" />
                 </Form.Item>
               </Col>
             </Row>
@@ -365,17 +365,17 @@ export function EmployeeFormPage() {
                           name={[field.name, 'line1']}
                           rules={[{ required: true }]}
                         >
-                          <Input />
+                          <Input placeholder="Enter address line 1" />
                         </Form.Item>
                       </Col>
                       <Col span={6}>
                         <Form.Item label="District" name={[field.name, 'district']}>
-                          <Input />
+                          <Input placeholder="Enter district" />
                         </Form.Item>
                       </Col>
                       <Col span={6}>
                         <Form.Item label="State" name={[field.name, 'state']} rules={[{ required: true }]}>
-                          <Select options={STATE_OPTIONS.map((s) => ({ value: s, label: s }))} />
+                          <Select placeholder="Select state" options={STATE_OPTIONS.map((s) => ({ value: s, label: s }))} />
                         </Form.Item>
                       </Col>
                       <Col span={6}>
@@ -384,7 +384,7 @@ export function EmployeeFormPage() {
                           name={[field.name, 'pincode']}
                           rules={[{ required: true, pattern: /^[0-9]{5,6}$/, message: 'Invalid format' }]}
                         >
-                          <Input />
+                          <Input placeholder="Enter pincode" />
                         </Form.Item>
                       </Col>
                     </Row>
@@ -421,7 +421,7 @@ export function EmployeeFormPage() {
                   label="Names & Address of Two Responsible Persons (other than relatives)"
                   name={['legalBackground', 'responsiblePersonsInfo']}
                 >
-                  <Input.TextArea rows={2} />
+                  <Input.TextArea rows={2} placeholder="Enter names & addresses" />
                 </Form.Item>
               </Col>
             </Row>
@@ -434,94 +434,94 @@ export function EmployeeFormPage() {
             <Row gutter={16}>
               <Col span={6}>
                 <Form.Item label="PF No" name={['complianceDetails', 'pfNo']}>
-                  <Input />
+                  <Input placeholder="Enter PF number" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="ESIC No" name={['complianceDetails', 'esicNo']}>
-                  <Input />
+                  <Input placeholder="Enter ESIC number" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="PAN" name={['complianceDetails', 'pan']}>
-                  <Input />
+                  <Input placeholder="Enter PAN" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="Bank Account Number" name={['complianceDetails', 'bankAccountNumber']}>
-                  <Input />
+                  <Input placeholder="Enter bank account number" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="IFSC Code" name={['complianceDetails', 'ifscCode']}>
-                  <Input />
+                  <Input placeholder="Enter IFSC code" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="Aadhar" name={['complianceDetails', 'aadhar']}>
-                  <Input />
+                  <Input placeholder="Enter Aadhar number" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="Passport Number" name={['complianceDetails', 'passportNumber']}>
-                  <Input />
+                  <Input placeholder="Enter passport number" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="Passport Submitted" name={['complianceDetails', 'passportSubmitted']}>
-                  <Input />
+                  <Input placeholder="Enter passport submitted status" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="Passport Valid From" name={['complianceDetails', 'passportValidFrom']}>
-                  <DatePicker style={{ width: '100%' }} />
+                  <DatePicker style={{ width: '100%' }} placeholder="Select date" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="Passport Valid To" name={['complianceDetails', 'passportValidTo']}>
-                  <DatePicker style={{ width: '100%' }} />
+                  <DatePicker style={{ width: '100%' }} placeholder="Select date" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="AEP Application Status" name={['complianceDetails', 'aepApplicationStatus']}>
-                  <Select options={STATUS_OPTIONS.map((s) => ({ value: s, label: s }))} />
+                  <Select placeholder="Select status" options={STATUS_OPTIONS.map((s) => ({ value: s, label: s }))} />
                 </Form.Item>
               </Col>
               {isGmr && (
                 <Col span={6}>
                   <Form.Item label="AEP Type" name={['complianceDetails', 'aepType']}>
-                    <Select options={AEP_TYPE_OPTIONS.map((t) => ({ value: t, label: t }))} />
+                    <Select placeholder="Select AEP type" options={AEP_TYPE_OPTIONS.map((t) => ({ value: t, label: t }))} />
                   </Form.Item>
                 </Col>
               )}
               <Col span={6}>
                 <Form.Item label="AEP Number" name={['complianceDetails', 'aepNumber']}>
-                  <Input />
+                  <Input placeholder="Enter AEP number" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="AEP Validity" name={['complianceDetails', 'aepValidity']}>
-                  <Input />
+                  <Input placeholder="Enter AEP validity" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="AEP Date" name={['complianceDetails', 'aepDate']}>
-                  <DatePicker style={{ width: '100%' }} />
+                  <DatePicker style={{ width: '100%' }} placeholder="Select date" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="AVSEC Status" name={['complianceDetails', 'avsecStatus']}>
-                  <Select options={STATUS_OPTIONS.map((s) => ({ value: s, label: s }))} />
+                  <Select placeholder="Select status" options={STATUS_OPTIONS.map((s) => ({ value: s, label: s }))} />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="AVSEC Valid From" name={['complianceDetails', 'avsecValidFrom']}>
-                  <DatePicker style={{ width: '100%' }} />
+                  <DatePicker style={{ width: '100%' }} placeholder="Select date" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="AVSEC Valid To" name={['complianceDetails', 'avsecValidTo']}>
-                  <DatePicker style={{ width: '100%' }} />
+                  <DatePicker style={{ width: '100%' }} placeholder="Select date" />
                 </Form.Item>
               </Col>
             </Row>
@@ -530,116 +530,116 @@ export function EmployeeFormPage() {
             <Row gutter={16}>
               <Col span={6}>
                 <Form.Item label="Site" name={['workDetails', 'site']}>
-                  <Select options={SITE_OPTIONS.map((s) => ({ value: s, label: s }))} />
+                  <Select placeholder="Select site" options={SITE_OPTIONS.map((s) => ({ value: s, label: s }))} />
                 </Form.Item>
               </Col>
               {isGmr && (
                 <Col span={6}>
                   <Form.Item label="Shift" name={['workDetails', 'shift']}>
-                    <Input />
+                    <Input placeholder="Enter shift" />
                   </Form.Item>
                 </Col>
               )}
               <Col span={6}>
                 <Form.Item label="Category" name={['workDetails', 'category']}>
-                  <Select options={OPTED_OPTIONS.map((o) => ({ value: o, label: o }))} />
+                  <Select placeholder="Select category" options={OPTED_OPTIONS.map((o) => ({ value: o, label: o }))} />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="Uniform" name={['workDetails', 'uniform']}>
-                  <Input />
+                  <Input placeholder="Enter uniform" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="Uniform Size" name={['workDetails', 'uniformSize']}>
-                  <Input />
+                  <Input placeholder="Enter uniform size" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="Shoes" name={['workDetails', 'shoes']}>
-                  <Input />
+                  <Input placeholder="Enter shoes" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="Shoes Size" name={['workDetails', 'shoesSize']}>
-                  <Input />
+                  <Input placeholder="Enter shoes size" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="Transport" name={['workDetails', 'transport']}>
-                  <Select options={OPTED_OPTIONS.map((o) => ({ value: o, label: o }))} />
+                  <Select placeholder="Select transport" options={OPTED_OPTIONS.map((o) => ({ value: o, label: o }))} />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="Previous Experience" name={['workDetails', 'previousExperience']}>
-                  <Input />
+                  <Input placeholder="Enter previous experience" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="Certificates" name={['workDetails', 'certificates']}>
-                  <Input />
+                  <Input placeholder="Enter certificates" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="Document Given" name={['workDetails', 'documentGiven']}>
-                  <Input />
+                  <Input placeholder="Enter document given" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="Broker Name" name={['workDetails', 'brokerName']}>
-                  <Input />
+                  <Input placeholder="Enter broker name" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="Hostel Joining Date" name={['workDetails', 'hostelJoiningDate']}>
-                  <DatePicker style={{ width: '100%' }} />
+                  <DatePicker style={{ width: '100%' }} placeholder="Select date" />
                 </Form.Item>
               </Col>
               {isGmr && (
                 <Col span={6}>
                   <Form.Item label="PVC Status" name={['workDetails', 'pvcStatus']}>
-                    <Select options={STATUS_OPTIONS.map((s) => ({ value: s, label: s }))} />
+                    <Select placeholder="Select status" options={STATUS_OPTIONS.map((s) => ({ value: s, label: s }))} />
                   </Form.Item>
                 </Col>
               )}
               <Col span={6}>
                 <Form.Item label="Leave From Date" name={['workDetails', 'leaveFromDate']}>
-                  <DatePicker style={{ width: '100%' }} />
+                  <DatePicker style={{ width: '100%' }} placeholder="Select date" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="Leave To Date" name={['workDetails', 'leaveToDate']}>
-                  <DatePicker style={{ width: '100%' }} />
+                  <DatePicker style={{ width: '100%' }} placeholder="Select date" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="Notice Date" name={['workDetails', 'noticeDate']}>
-                  <DatePicker style={{ width: '100%' }} />
+                  <DatePicker style={{ width: '100%' }} placeholder="Select date" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="Notice Reason" name={['workDetails', 'noticeReason']}>
-                  <Input />
+                  <Input placeholder="Enter notice reason" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="Exit Date" name={['workDetails', 'exitDate']}>
-                  <DatePicker style={{ width: '100%' }} />
+                  <DatePicker style={{ width: '100%' }} placeholder="Select date" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="Exit Status" name={['workDetails', 'exitStatus']}>
-                  <Select options={EXIT_STATUS_OPTIONS.map((s) => ({ value: s, label: s }))} />
+                  <Select placeholder="Select exit status" options={EXIT_STATUS_OPTIONS.map((s) => ({ value: s, label: s }))} />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="Full & Final Settlement" name={['workDetails', 'fullFinalSettlement']}>
-                  <Input />
+                  <Input placeholder="Enter full & final settlement" />
                 </Form.Item>
               </Col>
               <Col span={12}>
                 <Form.Item label="Remarks" name={['workDetails', 'remarks']}>
-                  <Input />
+                  <Input placeholder="Enter remarks" />
                 </Form.Item>
               </Col>
             </Row>

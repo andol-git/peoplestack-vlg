@@ -1,9 +1,6 @@
 import { http } from '../lib/http';
 import type { AttendanceRecord } from '../types/models';
 
-// TODO: hardcoded until there's a companies endpoint or the logged-in user carries their own companyId.
-export const DEFAULT_COMPANY_ID = 'CUST001';
-
 export interface AttendanceFilters {
   companyId: string;
   employeeId?: string;
@@ -25,7 +22,7 @@ export const attendanceApi = {
       })
       .then((r) => r.data);
   },
-  upload(file: File, date: string, companyId: string = DEFAULT_COMPANY_ID) {
+  upload(file: File, date: string, companyId: string) {
     const formData = new FormData();
     formData.append('file', file);
     return http
