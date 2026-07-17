@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
-import { Avatar, Button, Card, Select, Table } from 'antd';
-import { CheckCircleFilled, CloseCircleFilled, MinusCircleFilled, SearchOutlined } from '@ant-design/icons';
+import { Avatar, Button, Card, Input, Select, Table } from 'antd';
+import { CheckCircleFilled, DownloadOutlined, MinusCircleFilled, SearchOutlined } from '@ant-design/icons';
 import { useAttendanceQuery } from '../../hooks/useAttendance';
 import { useCustomersQuery } from '../../hooks/useCustomers';
 
-type DayStatus = 'P' | 'A' | 'W' | 'N';
+type DayStatus = 'P' | 'A' | 'W' | 'H' | 'N';
 
 const YEARS = [2024, 2025, 2026, 2027];
 const MONTHS = [
@@ -12,15 +12,30 @@ const MONTHS = [
   'July', 'August', 'September', 'October', 'November', 'December',
 ];
 
-const STATUS_ICON: Record<DayStatus, ReactNode> = {
-  P: <CheckCircleFilled style={{ color: '#22c55e' }} />,
-  A: <CloseCircleFilled style={{ color: '#ef4444' }} />,
-  W: <MinusCircleFilled style={{ color: '#94a3b8' }} />,
-  N: <MinusCircleFilled style={{ color: '#e2e8f0' }} />,
+// Fixed-date national holidays. No holidays endpoint exists yet — replace with a real
+// API once one is available; these are placeholders so holidays render distinctly from weekends.
+const HOLIDAYS: Array<{ month: number; day: number; label: string }> = [
+  { month: 0, day: 26, label: 'Republic Day' },
+  { month: 7, day: 15, label: 'Independence Day' },
+  { month: 9, day: 2, label: 'Gandhi Jayanti' },
+];
+
+function holidayLabel(month: number, day: number): string | undefined {
+  return HOLIDAYS.find((h) => h.month === month && h.day === day)?.label;
+}
+
+const STATUS_COLOR: Record<DayStatus, string> = {
+  P: '#3b82f6',
+  A: '#ef4444',
+  W: '#cbd5e1',
+  H: '#a855f7',
+  N: '#e2e8f0',
 };
 
-function initials(name: string): string {
-  return name.split(' ').slice(0, 2).map((n) => n[0]).join('').toUpperCase();
+function statusIcon(status: DayStatus) {
+  const color = STATUS_COLOR[status];
+  if (status === 'P') return <CheckCircleFilled style={{ color, fontSize: 16 }} />;
+  return <MinusCircleFilled style={{ color, fontSize: 16 }} />;
 }
 
 function LegendItem({ icon, label }: { icon: ReactNode; label: string }) {
@@ -29,6 +44,10 @@ function LegendItem({ icon, label }: { icon: ReactNode; label: string }) {
       {icon} {label}
     </span>
   );
+}
+
+function initials(name: string): string {
+  return name.split(' ').slice(0, 2).map((n) => n[0]).join('').toUpperCase();
 }
 
 export function AttendanceSheetPage() {
@@ -41,6 +60,7 @@ export function AttendanceSheetPage() {
     year: now.getFullYear(),
     month: now.getMonth(),
   });
+  const [search, setSearch] = useState('');
 
   const { data: customers = [] } = useCustomersQuery();
   const companyOptions = useMemo(
@@ -84,7 +104,14 @@ export function AttendanceSheetPage() {
     return Array.from(byEmployee.values());
   }, [records, year, month]);
 
+  const filteredEmployees = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return employees;
+    return employees.filter((e) => e.employeeName.toLowerCase().includes(q) || e.employeeId.toLowerCase().includes(q));
+  }, [employees, search]);
+
   function getStatus(emp: (typeof employees)[number], day: number): DayStatus {
+    if (holidayLabel(month, day)) return 'H';
     if (isWeekend(day)) return 'W';
     const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     const present = emp.byDate.get(dateStr);
@@ -92,14 +119,34 @@ export function AttendanceSheetPage() {
     return present ? 'P' : 'A';
   }
 
-  function summary(emp: (typeof employees)[number]) {
-    let p = 0, a = 0;
+  function leaveDays(emp: (typeof employees)[number]) {
+    let a = 0;
     for (let d = 1; d <= daysInMonth; d++) {
-      const s = getStatus(emp, d);
-      if (s === 'P') p++;
-      else if (s === 'A') a++;
+      if (getStatus(emp, d) === 'A') a++;
     }
-    return { p, a };
+    return a;
+  }
+
+  function downloadReport() {
+    const headers = ['Employee Name', 'Employee ID', ...daysArray.map(String), 'Leave Days'];
+    const lines = filteredEmployees.map((emp) =>
+      [
+        emp.employeeName,
+        emp.employeeId,
+        ...daysArray.map((d) => getStatus(emp, d)),
+        leaveDays(emp),
+      ]
+        .map((v) => `"${String(v).replace(/"/g, '""')}"`)
+        .join(',')
+    );
+    const csv = [headers.join(','), ...lines].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `attendance-${year}-${String(month + 1).padStart(2, '0')}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
   }
 
   const columns = [
@@ -107,108 +154,44 @@ export function AttendanceSheetPage() {
       title: 'Employee Name',
       key: 'name',
       fixed: 'left' as const,
-      width: 220,
+      width: 200,
       render: (_: unknown, emp: (typeof employees)[number]) => (
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <Avatar size={32} className="ps-avatar" style={{ flexShrink: 0 }}>{initials(emp.employeeName)}</Avatar>
-          <div>
-            <div style={{ fontWeight: 600, fontSize: 13 }}>{emp.employeeName}</div>
-            <div style={{ fontSize: 12, color: '#94a3b8' }}>{emp.employeeId}</div>
-          </div>
+          <span style={{ fontWeight: 600, fontSize: 13 }}>{emp.employeeName}</span>
         </div>
       ),
     },
     ...daysArray.map((day) => {
-      const weekend = isWeekend(day);
-      const weekendCell = weekend ? { style: { background: '#eff6ff' } } : {};
+      const holiday = holidayLabel(month, day);
       return {
-        title: <span style={{ color: weekend ? '#3b82f6' : undefined }}>{day}</span>,
+        title: (
+          <span style={{ fontWeight: 500, color: '#64748b' }} title={holiday}>
+            {day}
+          </span>
+        ),
         key: `day-${day}`,
-        width: 40,
+        width: 34,
         align: 'center' as const,
-        onCell: () => weekendCell,
-        onHeaderCell: () => weekendCell,
-        render: (_: unknown, emp: (typeof employees)[number]) => STATUS_ICON[getStatus(emp, day)],
+        render: (_: unknown, emp: (typeof employees)[number]) => (
+          <span title={holiday}>{statusIcon(getStatus(emp, day))}</span>
+        ),
       };
     }),
     {
-      title: 'P',
-      key: 'present',
+      title: 'Leave',
+      key: 'leave',
       fixed: 'right' as const,
-      width: 46,
+      width: 70,
       align: 'center' as const,
       render: (_: unknown, emp: (typeof employees)[number]) => (
-        <span style={{ color: '#16a34a', fontWeight: 700 }}>{summary(emp).p}</span>
-      ),
-    },
-    {
-      title: 'A',
-      key: 'absent',
-      fixed: 'right' as const,
-      width: 46,
-      align: 'center' as const,
-      render: (_: unknown, emp: (typeof employees)[number]) => (
-        <span style={{ color: '#dc2626', fontWeight: 700 }}>{summary(emp).a}</span>
+        <span style={{ color: '#f97316', fontWeight: 600, fontSize: 13 }}>{leaveDays(emp)} Day</span>
       ),
     },
   ];
 
   return (
     <div>
-      <h1 style={{ margin: '0 0 4px', fontSize: 22, fontWeight: 700 }}>Attendance Sheet</h1>
-      <p style={{ margin: '0 0 20px', color: '#9ca3af' }}>Track daily attendance for all employees</p>
-
-      <Card
-        title={<span style={{ fontSize: 13, textTransform: 'uppercase', letterSpacing: 0.5 }}>Attendance Sheet</span>}
-        style={{ marginBottom: 16 }}
-      >
-        <div style={{ display: 'flex', gap: 24, alignItems: 'flex-end', flexWrap: 'wrap' }}>
-          <div>
-            <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5, color: '#475569', marginBottom: 6 }}>
-              Company <span style={{ color: '#ef4444' }}>*</span>
-            </div>
-            <Select
-              value={pendingCompanyId || undefined}
-              onChange={setPendingCompanyId}
-              style={{ width: 160 }}
-              showSearch={{ optionFilterProp: 'label' }}
-              options={companyOptions}
-            />
-          </div>
-          <div>
-            <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5, color: '#475569', marginBottom: 6 }}>
-              Select Year <span style={{ color: '#ef4444' }}>*</span>
-            </div>
-            <Select
-              value={pendingYear}
-              onChange={setPendingYear}
-              style={{ width: 120 }}
-              showSearch={{ optionFilterProp: 'label' }}
-              options={YEARS.map((y) => ({ value: y, label: y }))}
-            />
-          </div>
-          <div>
-            <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5, color: '#475569', marginBottom: 6 }}>
-              Select Month <span style={{ color: '#ef4444' }}>*</span>
-            </div>
-            <Select
-              value={pendingMonth}
-              onChange={setPendingMonth}
-              style={{ width: 160 }}
-              showSearch={{ optionFilterProp: 'label' }}
-              options={MONTHS.map((m, i) => ({ value: i, label: m }))}
-            />
-          </div>
-          <Button
-            type="primary"
-            icon={<SearchOutlined />}
-            onClick={() => setApplied({ companyId: pendingCompanyId, year: pendingYear, month: pendingMonth })}
-          >
-            Search
-          </Button>
-        </div>
-      </Card>
-
       <Card styles={{ body: { padding: 20 } }}>
         <div
           style={{
@@ -220,27 +203,85 @@ export function AttendanceSheetPage() {
             gap: 12,
           }}
         >
-          <div style={{ fontSize: 13, color: '#64748b' }}>
-            Year: <strong>{year}</strong> | Month: <strong>{MONTHS[month]}</strong> | Showing{' '}
-            <strong>{employees.length}</strong> employee(s)
+          <h1 style={{ margin: 0, fontSize: 18, fontWeight: 700 }}>Employee Attendance</h1>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+            <Input
+              placeholder="Search employee..."
+              prefix={<SearchOutlined style={{ color: '#cbd5e1' }} />}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              style={{ width: 220, borderRadius: 20 }}
+            />
+            <Button icon={<DownloadOutlined />} onClick={downloadReport}>
+              Download Report
+            </Button>
+            <Select
+              value={pendingYear}
+              onChange={(v) => {
+                setPendingYear(v);
+                setApplied((a) => ({ ...a, year: v }));
+              }}
+              style={{ width: 100 }}
+              showSearch={{ optionFilterProp: 'label' }}
+              options={YEARS.map((y) => ({ value: y, label: y }))}
+            />
           </div>
+        </div>
+
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: 12,
+            marginBottom: 16,
+          }}
+        >
+          <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+            <Select
+              value={pendingCompanyId || undefined}
+              onChange={(v) => {
+                setPendingCompanyId(v);
+                setApplied((a) => ({ ...a, companyId: v }));
+              }}
+              placeholder="Select company"
+              style={{ width: 160 }}
+              showSearch={{ optionFilterProp: 'label' }}
+              options={companyOptions}
+            />
+            <Select
+              value={pendingMonth}
+              onChange={(v) => {
+                setPendingMonth(v);
+                setApplied((a) => ({ ...a, month: v }));
+              }}
+              style={{ width: 140 }}
+              showSearch={{ optionFilterProp: 'label' }}
+              options={MONTHS.map((m, i) => ({ value: i, label: m }))}
+            />
+            <span style={{ fontSize: 12, color: '#94a3b8' }}>
+              Showing {filteredEmployees.length} employee(s) for {MONTHS[month]} {year}
+            </span>
+          </div>
+
           <div style={{ display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>
-            <LegendItem icon={<MinusCircleFilled style={{ color: '#94a3b8' }} />} label="Weekend" />
-            <LegendItem icon={<CheckCircleFilled style={{ color: '#22c55e' }} />} label="Present" />
-            <LegendItem icon={<CloseCircleFilled style={{ color: '#ef4444' }} />} label="Absent" />
-            <LegendItem icon={<MinusCircleFilled style={{ color: '#e2e8f0' }} />} label="No Record" />
+            <LegendItem icon={<CheckCircleFilled style={{ color: STATUS_COLOR.P, fontSize: 14 }} />} label="Present" />
+            <LegendItem icon={<MinusCircleFilled style={{ color: STATUS_COLOR.A, fontSize: 14 }} />} label="Absent" />
+            <LegendItem icon={<MinusCircleFilled style={{ color: STATUS_COLOR.W, fontSize: 14 }} />} label="Weekend" />
+            <LegendItem icon={<MinusCircleFilled style={{ color: STATUS_COLOR.H, fontSize: 14 }} />} label="Holiday" />
+            <LegendItem icon={<MinusCircleFilled style={{ color: STATUS_COLOR.N, fontSize: 14 }} />} label="No Record" />
           </div>
         </div>
 
         <Table
           rowKey="employeeId"
           loading={isLoading}
-          dataSource={employees}
+          dataSource={filteredEmployees}
           columns={columns}
-          pagination={false}
+          pagination={{ pageSize: 9, showSizeChanger: false }}
           scroll={{ x: 'max-content' }}
           size="small"
-          bordered
         />
       </Card>
     </div>

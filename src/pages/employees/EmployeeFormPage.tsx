@@ -23,8 +23,8 @@ const UNIFORM_OPTIONS = ['Shirt, Socks, ID Card', 'Not Opted'];
 const AEP_TYPE_OPTIONS = ['TAEP', 'BAEP', 'NA'];
 const BLOOD_GROUP_OPTIONS = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
 
-// The backend requires every Legal Background flag on every submission — default them so a
-// brand-new form (where the switches haven't been touched) still submits valid boolean values.
+// The backend requires every Legal Background flag on every submission, even for non-airport
+// sites where the section is hidden — default them so a hidden section still submits valid data.
 const LEGAL_BACKGROUND_DEFAULTS = {
   everDetained: false,
   everBoundDown: false,
@@ -162,6 +162,7 @@ export function EmployeeFormPage() {
           <Card>
             <Divider titlePlacement="left" style={{ marginTop: 0 }}>Basic Info</Divider>
             <Row gutter={16}>
+             
               <Col span={6}>
                 <Form.Item label="Company" name="customerId">
                   <Select
@@ -178,7 +179,7 @@ export function EmployeeFormPage() {
                 </Form.Item>
               </Col>
               <Col span={6}>
-                <Form.Item label="Serial Number" name="serialNumberAssigned">
+                <Form.Item label="Serial Number Assigned" name="serialNumberAssigned">
                   <Input placeholder="Enter serial number" />
                 </Form.Item>
               </Col>
@@ -553,11 +554,6 @@ export function EmployeeFormPage() {
 
             <Divider titlePlacement="left">Work Details</Divider>
             <Row gutter={16}>
-              <Col span={6}>
-                <Form.Item label="Site" name={['workDetails', 'site']}>
-                  <Select placeholder="Select site" showSearch={{ optionFilterProp: 'label' }} options={SITE_OPTIONS.map((s) => ({ value: s, label: s }))} />
-                </Form.Item>
-              </Col>
               {isGmr && (
                 <Col span={6}>
                   <Form.Item label="Shift" name={['workDetails', 'shift']}>
