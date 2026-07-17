@@ -19,8 +19,25 @@ const DESIGNATION_OPTIONS = ['LOADER', 'SECURITY GUARD', 'UTILITY STAFF', 'SUPER
 const SITE_OPTIONS = ['GMR', 'BIAL', 'IGI', 'CSIA', 'MAA', 'TSGIRD', 'NOVOTEL', 'CBIT', 'MGIT'];
 const AIRPORT_SITES = ['GMR', 'BIAL', 'IGI', 'CSIA', 'MAA'];
 const OPTED_OPTIONS = ['Opted', 'Not Opted'];
+const UNIFORM_OPTIONS = ['Shirt, Socks, ID Card', 'Not Opted'];
 const AEP_TYPE_OPTIONS = ['TAEP', 'BAEP', 'NA'];
 const BLOOD_GROUP_OPTIONS = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
+
+// The backend requires every Legal Background flag on every submission — default them so a
+// brand-new form (where the switches haven't been touched) still submits valid boolean values.
+const LEGAL_BACKGROUND_DEFAULTS = {
+  everDetained: false,
+  everBoundDown: false,
+  everFined: false,
+  everConvicted: false,
+  anyCasePending: false,
+  everArrested: false,
+  everProsecuted: false,
+  dismissedOrRemoved: false,
+  dischargedFromTraining: false,
+  previousEmploymentUnderGovt: false,
+  undertakingOwnedByGovt: false,
+};
 
 // Blocks any non-digit keystroke so phone-style fields can only ever contain digits.
 function blockNonDigits(e: KeyboardEvent<HTMLInputElement>) {
@@ -80,12 +97,17 @@ export function EmployeeFormPage() {
         careerDetails: toDayjsFields(employee.careerDetails, CAREER_DATE_FIELDS),
         complianceDetails: toDayjsFields(employee.complianceDetails, COMPLIANCE_DATE_FIELDS),
         workDetails: toDayjsFields(employee.workDetails, WORK_DATE_FIELDS),
+        legalBackground: { ...LEGAL_BACKGROUND_DEFAULTS, ...employee.legalBackground },
         addresses: employee.addresses?.length
           ? employee.addresses
           : [{ addressType: 'PERMANENT' }, { addressType: 'TEMPORARY' }],
       });
     } else {
-      form.setFieldsValue({ addresses: [{ addressType: 'PERMANENT' }, { addressType: 'TEMPORARY' }], isActive: true });
+      form.setFieldsValue({
+        addresses: [{ addressType: 'PERMANENT' }, { addressType: 'TEMPORARY' }],
+        isActive: true,
+        legalBackground: LEGAL_BACKGROUND_DEFAULTS,
+      });
     }
   }, [employee, form]);
 
@@ -135,7 +157,7 @@ export function EmployeeFormPage() {
         style={{ marginBottom: 24, maxWidth: 600 }}
       />
 
-      <Form form={form} layout="vertical" initialValues={{ isActive: true }}>
+      <Form form={form} layout="vertical" initialValues={{ isActive: true, legalBackground: LEGAL_BACKGROUND_DEFAULTS }}>
         <div style={{ display: step === 0 ? 'block' : 'none' }}>
           <Card>
             <Divider titlePlacement="left" style={{ marginTop: 0 }}>Basic Info</Divider>
@@ -310,16 +332,7 @@ export function EmployeeFormPage() {
                   <Input placeholder="Enter reason for leaving" />
                 </Form.Item>
               </Col>
-              <Col span={6}>
-                <Form.Item label="Present Address" name={['careerDetails', 'presentAddress']}>
-                  <Input placeholder="Enter present address" />
-                </Form.Item>
-              </Col>
-              <Col span={6}>
-                <Form.Item label="Present Address 2" name={['careerDetails', 'presentAddress2']}>
-                  <Input placeholder="Enter present address (line 2)" />
-                </Form.Item>
-              </Col>
+             
               <Col span={6}>
                 <Form.Item label="From Date" name={['careerDetails', 'fromDate']}>
                   <DatePicker style={{ width: '100%' }} placeholder="Select date" />
@@ -345,16 +358,12 @@ export function EmployeeFormPage() {
                   <Input placeholder="Enter educational qualifications" />
                 </Form.Item>
               </Col>
-              <Col span={12}>
+              <Col span={18}>
                 <Form.Item label="Name of School/College with Full Address" name={['careerDetails', 'schoolCollegeName']}>
                   <Input placeholder="Enter school/college name & address" />
                 </Form.Item>
               </Col>
-              <Col span={6}>
-                <Form.Item label="Staying From" name={['careerDetails', 'stayingFrom']}>
-                  <Input placeholder="Enter staying from" />
-                </Form.Item>
-              </Col>
+             
               <Col span={18}>
                 <Form.Item label="Reference with Full Address" name={['careerDetails', 'referenceWithFullAddress']}>
                   <Input placeholder="Enter reference name & full address" />
@@ -381,7 +390,7 @@ export function EmployeeFormPage() {
                         </Form.Item>
                       </Col>
                       <Col span={6}>
-                        <Form.Item label="District" name={[field.name, 'district']}>
+                        <Form.Item label="District" name={[field.name, 'district']}  rules={[{ required: true }]}>
                           <Input placeholder="Enter district" />
                         </Form.Item>
                       </Col>
@@ -409,42 +418,38 @@ export function EmployeeFormPage() {
               )}
             </Form.List>
 
-            {isAirportSite && (
-              <>
-                <Divider titlePlacement="left">Legal Background</Divider>
-                <Row gutter={16}>
-                  {(
-                    [
-                      ['everDetained', 'Ever Detained'],
-                      ['everBoundDown', 'Ever Bound Down'],
-                      ['everFined', 'Ever Fined'],
-                      ['everConvicted', 'Ever Convicted'],
-                      ['anyCasePending', 'Any Case Pending'],
-                      ['everArrested', 'Ever Arrested'],
-                      ['everProsecuted', 'Ever Prosecuted'],
-                      ['dismissedOrRemoved', 'Dismissed or Removed'],
-                      ['dischargedFromTraining', 'Discharged from Training'],
-                      ['previousEmploymentUnderGovt', 'Previous Employment under Govt.'],
-                      ['undertakingOwnedByGovt', 'Undertaking Owned/Controlled by Govt.'],
-                    ] as const
-                  ).map(([field, label]) => (
-                    <Col span={6} key={field}>
-                      <Form.Item label={label} name={['legalBackground', field]} valuePropName="checked">
-                        <Switch />
-                      </Form.Item>
-                    </Col>
-                  ))}
-                  <Col span={24}>
-                    <Form.Item
-                      label="Names & Address of Two Responsible Persons (other than relatives)"
-                      name={['legalBackground', 'responsiblePersonsInfo']}
-                    >
-                      <Input.TextArea rows={2} placeholder="Enter names & addresses" />
-                    </Form.Item>
-                  </Col>
-                </Row>
-              </>
-            )}
+            <Divider titlePlacement="left">Legal Background</Divider>
+            <Row gutter={16}>
+              {(
+                [
+                  ['everDetained', 'Ever Detained'],
+                  ['everBoundDown', 'Ever Bound Down'],
+                  ['everFined', 'Ever Fined'],
+                  ['everConvicted', 'Ever Convicted'],
+                  ['anyCasePending', 'Any Case Pending'],
+                  ['everArrested', 'Ever Arrested'],
+                  ['everProsecuted', 'Ever Prosecuted'],
+                  ['dismissedOrRemoved', 'Dismissed or Removed'],
+                  ['dischargedFromTraining', 'Discharged from Training'],
+                  ['previousEmploymentUnderGovt', 'Previous Employment under Govt.'],
+                  ['undertakingOwnedByGovt', 'Undertaking Owned/Controlled by Govt.'],
+                ] as const
+              ).map(([field, label]) => (
+                <Col span={6} key={field}>
+                  <Form.Item label={label} name={['legalBackground', field]} valuePropName="checked">
+                    <Switch />
+                  </Form.Item>
+                </Col>
+              ))}
+              <Col span={24}>
+                <Form.Item
+                  label="Names & Address of Two Responsible Persons (other than relatives)"
+                  name={['legalBackground', 'responsiblePersonsInfo']}
+                >
+                  <Input.TextArea rows={2} placeholder="Enter names & addresses" />
+                </Form.Item>
+              </Col>
+            </Row>
           </Card>
         </div>
 
@@ -567,7 +572,7 @@ export function EmployeeFormPage() {
               </Col>
               <Col span={6}>
                 <Form.Item label="Uniform" name={['workDetails', 'uniform']}>
-                  <Select placeholder="Select uniform" showSearch={{ optionFilterProp: 'label' }} options={OPTED_OPTIONS.map((o) => ({ value: o, label: o }))} />
+                  <Select placeholder="Select uniform" showSearch={{ optionFilterProp: 'label' }} options={UNIFORM_OPTIONS.map((o) => ({ value: o, label: o }))} />
                 </Form.Item>
               </Col>
               {uniformOpted && (
