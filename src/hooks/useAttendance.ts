@@ -14,6 +14,17 @@ export function useUploadAttendance() {
   return useMutation({
     mutationFn: ({ file, date, companyId }: { file: File; date: string; companyId: string }) =>
       attendanceApi.upload(file, date, companyId),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['attendance'] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['attendance'] });
+      qc.invalidateQueries({ queryKey: ['attendance-history'] });
+    },
+  });
+}
+
+export function useAttendanceHistoryQuery(companyId: string) {
+  return useQuery({
+    queryKey: ['attendance-history', companyId],
+    queryFn: () => attendanceApi.getHistory(companyId),
+    enabled: !!companyId,
   });
 }

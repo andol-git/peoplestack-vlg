@@ -2,8 +2,10 @@ import { http } from '../lib/http';
 import type { Employee } from '../types/models';
 
 export const employeeApi = {
-  getAll() {
-    return http.get<Employee[]>('/api/employees').then((r) => r.data);
+  getAll(customerId?: number) {
+    return http
+      .get<Employee[]>('/api/employees', customerId != null ? { params: { customerId } } : undefined)
+      .then((r) => r.data);
   },
   getAllInactive() {
     return http.get<Employee[]>('/api/employees/inactive').then((r) => r.data);
