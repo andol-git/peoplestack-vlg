@@ -35,7 +35,6 @@ export interface FamilyDetails {
   id?: number;
   fathersName: string;
   motherName: string;
-  fatherPlaceOfBirth?: string;
   alternativeMobileNumber?: string;
   relation?: string;
   wifeName?: string;

@@ -122,6 +122,7 @@ export function UserListPage() {
             value={statusFilter}
             onChange={setStatusFilter}
             style={{ width: 140 }}
+            showSearch={{ optionFilterProp: 'label' }}
             options={['All', 'Active', 'Inactive'].map((s) => ({ value: s, label: s }))}
           />
         </div>

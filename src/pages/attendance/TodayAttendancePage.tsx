@@ -148,6 +148,7 @@ export function TodayAttendancePage() {
               value={pending.companyId || undefined}
               onChange={handleCompanyChange}
               style={{ width: 160 }}
+              showSearch={{ optionFilterProp: 'label' }}
               options={companyOptions}
               placeholder="Select customer"
             />
@@ -207,6 +208,7 @@ export function TodayAttendancePage() {
             value={status}
             onChange={setStatus}
             style={{ width: 160 }}
+            showSearch={{ optionFilterProp: 'label' }}
             options={['All', 'Present', 'Absent'].map((s) => ({ value: s, label: s }))}
           />
         </div>

@@ -171,6 +171,7 @@ export function AttendanceSheetPage() {
               value={pendingCompanyId || undefined}
               onChange={setPendingCompanyId}
               style={{ width: 160 }}
+              showSearch={{ optionFilterProp: 'label' }}
               options={companyOptions}
             />
           </div>
@@ -182,6 +183,7 @@ export function AttendanceSheetPage() {
               value={pendingYear}
               onChange={setPendingYear}
               style={{ width: 120 }}
+              showSearch={{ optionFilterProp: 'label' }}
               options={YEARS.map((y) => ({ value: y, label: y }))}
             />
           </div>
@@ -193,6 +195,7 @@ export function AttendanceSheetPage() {
               value={pendingMonth}
               onChange={setPendingMonth}
               style={{ width: 160 }}
+              showSearch={{ optionFilterProp: 'label' }}
               options={MONTHS.map((m, i) => ({ value: i, label: m }))}
             />
           </div>
