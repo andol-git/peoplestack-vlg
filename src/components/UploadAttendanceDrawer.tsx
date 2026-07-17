@@ -18,7 +18,7 @@ export function UploadAttendanceDrawer({ open, onClose }: Props) {
   const { data: customers = [] } = useCustomersQuery();
 
   const companyOptions = useMemo(
-    () => customers.filter((c) => !!c.code).map((c) => ({ value: c.code as string, label: c.name })),
+    () => customers.filter((c) => !!c.id).map((c) => ({ value: c.id, label: c.name })),
     [customers]
   );
 
