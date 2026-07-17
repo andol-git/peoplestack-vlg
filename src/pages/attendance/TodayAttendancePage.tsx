@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Avatar, Button, Card, DatePicker, Input, Select, Table, Tag } from 'antd';
 import { SearchOutlined, UploadOutlined } from '@ant-design/icons';
 import dayjs, { type Dayjs } from 'dayjs';
@@ -34,17 +34,17 @@ export function TodayAttendancePage() {
 
   const { data: customers = [] } = useCustomersQuery();
   const companyOptions = useMemo(
-    () => customers.filter((c) => !!c.code).map((c) => ({ value: c.code as string, label: c.name })),
+    () => customers.filter((c) => !!c.id).map((c) => ({ value: String(c.id), label: c.name })),
     [customers]
   );
 
-  useEffect(() => {
-    if (!pending.companyId && companyOptions.length > 0) {
-      const first = companyOptions[0].value;
-      setPending((p) => ({ ...p, companyId: first }));
-      setApplied((a) => ({ ...a, companyId: first }));
-    }
-  }, [companyOptions, pending.companyId]);
+  function handleCompanyChange(companyId: string) {
+    const weekStart = dayjs().startOf('week');
+    const weekEnd = dayjs().endOf('week');
+    const next: PendingFilters = { ...pending, companyId, dateFrom: weekStart, dateTo: weekEnd };
+    setPending(next);
+    setApplied(next);
+  }
 
   const filters: AttendanceFilters = {
     companyId: applied.companyId,
@@ -110,14 +110,15 @@ export function TodayAttendancePage() {
         <div style={{ display: 'flex', gap: 24, alignItems: 'flex-end', flexWrap: 'wrap' }}>
           <div>
             <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5, color: '#475569', marginBottom: 6 }}>
-              Company <span style={{ color: '#ef4444' }}>*</span>
+              Customer <span style={{ color: '#ef4444' }}>*</span>
             </div>
             <Select
               value={pending.companyId || undefined}
-              onChange={(v) => setPending((p) => ({ ...p, companyId: v }))}
+              onChange={handleCompanyChange}
               style={{ width: 160 }}
               showSearch={{ optionFilterProp: 'label' }}
               options={companyOptions}
+              placeholder="Select customer"
             />
           </div>
           <div>

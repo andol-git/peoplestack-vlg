@@ -16,8 +16,8 @@ export const attendanceApi = {
         params: {
           companyId,
           ...(employeeId ? { employeeId } : {}),
-          ...(dateFrom ? { dateFrom } : {}),
-          ...(dateTo ? { dateTo } : {}),
+          ...(dateFrom ? { fromDate: dateFrom } : {}),
+          ...(dateTo ? { toDate: dateTo } : {}),
         },
       })
       .then((r) => r.data);
