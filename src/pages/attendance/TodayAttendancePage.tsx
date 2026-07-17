@@ -1,12 +1,13 @@
 import { useMemo, useState } from 'react';
 import { Avatar, Button, Card, DatePicker, Input, Select, Table, Tag } from 'antd';
-import { SearchOutlined, UploadOutlined } from '@ant-design/icons';
+import { DownloadOutlined, SearchOutlined, UploadOutlined } from '@ant-design/icons';
 import dayjs, { type Dayjs } from 'dayjs';
-import { useAttendanceQuery } from '../../hooks/useAttendance';
+import { useAttendanceHistoryQuery, useAttendanceQuery } from '../../hooks/useAttendance';
 import { useCustomersQuery } from '../../hooks/useCustomers';
 import type { AttendanceFilters } from '../../api/attendance-api';
-import type { AttendanceRecord } from '../../types/models';
+import type { AttendanceHistoryEntry, AttendanceRecord } from '../../types/models';
 import { UploadAttendanceDrawer } from '../../components/UploadAttendanceDrawer';
+import { DownloadAttendanceSheetDrawer } from '../../components/DownloadAttendanceSheetDrawer';
 
 function initials(name: string): string {
   return name.split(' ').slice(0, 2).map((n) => n[0]).join('').toUpperCase();
@@ -21,6 +22,7 @@ interface PendingFilters {
 
 export function TodayAttendancePage() {
   const [uploadOpen, setUploadOpen] = useState(false);
+  const [downloadOpen, setDownloadOpen] = useState(false);
   const today = dayjs();
   const initial: PendingFilters = {
     companyId: '',
@@ -54,6 +56,7 @@ export function TodayAttendancePage() {
   };
 
   const { data: records = [], isLoading } = useAttendanceQuery(filters);
+  const { data: history = [], isLoading: isHistoryLoading } = useAttendanceHistoryQuery(applied.companyId);
 
   const filtered = useMemo(() => {
     if (status === 'Present') return records.filter((r) => r.present);
@@ -94,6 +97,30 @@ export function TodayAttendancePage() {
     },
   ];
 
+  const historyStatusColors: Record<string, string> = {
+    SUCCESS: 'success',
+    PARTIAL_SUCCESS: 'warning',
+    FAILED: 'error',
+    IN_PROGRESS: 'processing',
+  };
+
+  const historyColumns = [
+    { title: 'File Name', dataIndex: 'fileName', key: 'fileName' },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+      key: 'status',
+      render: (v: string) => <Tag color={historyStatusColors[v] ?? 'default'}>{v}</Tag>,
+    },
+    { title: 'Uploaded By', dataIndex: 'createdByUsername', key: 'createdByUsername', render: (v?: string) => v ?? '—' },
+    {
+      title: 'Uploaded At',
+      dataIndex: 'createdAt',
+      key: 'createdAt',
+      render: (v?: string) => (v ? new Date(v).toLocaleString('en-IN') : '—'),
+    },
+  ];
+
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
@@ -101,9 +128,14 @@ export function TodayAttendancePage() {
           <h1 style={{ margin: '0 0 4px', fontSize: 22, fontWeight: 700 }}>Today's Attendance</h1>
           <p style={{ margin: 0, color: '#9ca3af' }}>{today.format('dddd, D MMMM YYYY')}</p>
         </div>
-        <Button type="primary" icon={<UploadOutlined />} onClick={() => setUploadOpen(true)}>
-          Upload Attendance
-        </Button>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <Button icon={<DownloadOutlined />} onClick={() => setDownloadOpen(true)}>
+            Download Sheet
+          </Button>
+          <Button type="primary" icon={<UploadOutlined />} onClick={() => setUploadOpen(true)}>
+            Upload Attendance
+          </Button>
+        </div>
       </div>
 
       <Card style={{ marginBottom: 16 }}>
@@ -157,6 +189,18 @@ export function TodayAttendancePage() {
         </div>
       </Card>
 
+      {applied.companyId && (
+        <Card title="Upload History" style={{ marginBottom: 16 }}>
+          <Table<AttendanceHistoryEntry>
+            rowKey="id"
+            loading={isHistoryLoading}
+            dataSource={history}
+            columns={historyColumns}
+            pagination={{ pageSize: 5 }}
+          />
+        </Card>
+      )}
+
       <Card styles={{ body: { padding: 20 } }}>
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16 }}>
           <Select
@@ -177,6 +221,7 @@ export function TodayAttendancePage() {
       </Card>
 
       <UploadAttendanceDrawer open={uploadOpen} onClose={() => setUploadOpen(false)} />
+      <DownloadAttendanceSheetDrawer open={downloadOpen} onClose={() => setDownloadOpen(false)} />
     </div>
   );
 }

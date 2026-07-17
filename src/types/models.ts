@@ -167,6 +167,15 @@ export interface AttendanceRecord {
   updatedAt?: string;
 }
 
+export interface AttendanceHistoryEntry {
+  id: number;
+  fileName: string;
+  status: string;
+  createdByUsername?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 // ─── Customer ────────────────────────────────────────────────────────────────
 
 export interface Customer {

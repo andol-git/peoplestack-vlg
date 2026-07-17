@@ -1,5 +1,5 @@
 import { http } from '../lib/http';
-import type { AttendanceRecord } from '../types/models';
+import type { AttendanceHistoryEntry, AttendanceRecord } from '../types/models';
 
 export interface AttendanceFilters {
   companyId: string;
@@ -27,6 +27,11 @@ export const attendanceApi = {
     formData.append('file', file);
     return http
       .post<void>('/api/attendance/upload', formData, { params: { date, companyId } })
+      .then((r) => r.data);
+  },
+  getHistory(companyId: string) {
+    return http
+      .get<AttendanceHistoryEntry[]>('/api/attendance/history', { params: { companyId } })
       .then((r) => r.data);
   },
 };

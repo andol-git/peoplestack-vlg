@@ -9,6 +9,12 @@ export function useEmployeesQuery(active: boolean) {
   });
 }
 
+export function useEmployeesByCustomer() {
+  return useMutation({
+    mutationFn: (customerId: number) => employeeApi.getAll(customerId),
+  });
+}
+
 export function useEmployeeQuery(id: number | undefined) {
   return useQuery({
     queryKey: ['employee', id],
