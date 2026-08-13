@@ -18,8 +18,9 @@ const STATE_OPTIONS = [
 const DESIGNATION_OPTIONS = ['LOADER', 'SECURITY GUARD', 'UTILITY STAFF', 'SUPERVISOR', 'MANAGER', 'HOUSE KEEPING'];
 const SITE_OPTIONS = ['GMR', 'BIAL', 'IGI', 'CSIA', 'MAA', 'TSGIRD', 'NOVOTEL', 'CBIT', 'MGIT'];
 const AIRPORT_SITES = ['GMR', 'BIAL', 'IGI', 'CSIA', 'MAA'];
+const SHIFT_OPTIONS = ['Day', 'Night'];
 const OPTED_OPTIONS = ['Opted', 'Not Opted'];
-const UNIFORM_OPTIONS = ['Shirt, Socks, ID Card', 'Not Opted'];
+const UNIFORM_OPTIONS = ['Shirt, Socks, ID Card', 'Not Opted']; 
 const AEP_TYPE_OPTIONS = ['TAEP', 'BAEP', 'NA'];
 const BLOOD_GROUP_OPTIONS = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
 
@@ -67,6 +68,27 @@ function toStringFields(obj: Record<string, any> | undefined, fields: readonly s
   return result;
 }
 
+// Every required field on Step 1 ("Employee Info") — validated before allowing Next.
+const STEP_0_REQUIRED_FIELDS: (string | (string | number)[])[] = [
+  'customerId',
+  'vlgId',
+  'idNo',
+  'phoneNo',
+  ['personalDetails', 'name'],
+  ['personalDetails', 'gender'],
+  ['personalDetails', 'dateOfBirth'],
+  ['personalDetails', 'nationality'],
+  ['familyDetails', 'fathersName'],
+  ['familyDetails', 'motherName'],
+  ['careerDetails', 'joiningDate'],
+  ...[0, 1].flatMap((i) => [
+    ['addresses', i, 'line1'],
+    ['addresses', i, 'district'],
+    ['addresses', i, 'state'],
+    ['addresses', i, 'pincode'],
+  ]),
+];
+
 export function EmployeeFormPage() {
   const { id } = useParams();
   const isEditMode = !!id;
@@ -111,6 +133,15 @@ export function EmployeeFormPage() {
     }
   }, [employee, form]);
 
+  async function handleNext() {
+    try {
+      await form.validateFields(STEP_0_REQUIRED_FIELDS);
+      setStep(1);
+    } catch {
+      // antd shows the inline field errors; just don't advance the step.
+    }
+  }
+
   async function handleSubmit() {
     try {
       const values = await form.validateFields();
@@ -135,7 +166,7 @@ export function EmployeeFormPage() {
       navigate('/employees');
     } catch (err: any) {
       if (err?.errorFields) return; // antd validation error, already shown inline
-      message.error(err?.response?.status === 409 ? 'Duplicate entry.' : 'Save failed.');
+      message.error(err?.response?.data?.message ?? 'Save failed.', 6);
     }
   }
 
@@ -149,7 +180,7 @@ export function EmployeeFormPage() {
 
       <Steps
         current={step}
-        onChange={setStep}
+        onChange={(next) => (next > step ? handleNext() : setStep(next))}
         items={[
           { title: 'Employee Info', description: 'Personal, family, career & legal details' },
           { title: 'Compliance & Work', description: 'Compliance, documents & work details' },
@@ -163,18 +194,17 @@ export function EmployeeFormPage() {
             <Divider titlePlacement="left" style={{ marginTop: 0 }}>Basic Info</Divider>
             <Row gutter={16}>
               <Col span={6}>
-                <Form.Item label="Company" name="customerId">
+                <Form.Item label="Customer" name="customerId" rules={[{ required: true }]}  >
                   <Select
-                    allowClear
                     showSearch={{ optionFilterProp: 'label' }}
-                    placeholder="Optional"
+                    placeholder="Select customer"
                     options={customers.map((c) => ({ value: c.id, label: c.name }))}
                   />
                 </Form.Item>
               </Col>
               <Col span={6}>
-                <Form.Item label="ID No" name="idNo" rules={[{ required: true }]}>
-                  <Input placeholder="Enter ID number" />
+                <Form.Item label="VLG ID" name="vlgId" rules={[{ required: true }]}>
+                  <Input placeholder="Enter VLG ID" />
                 </Form.Item>
               </Col>
               <Col span={6}>
@@ -217,7 +247,7 @@ export function EmployeeFormPage() {
               </Col>
               <Col span={6}>
                 <Form.Item label="Date of Birth" name={['personalDetails', 'dateOfBirth']} rules={[{ required: true }]}>
-                  <DatePicker style={{ width: '100%' }} placeholder="Select date" />
+                  <DatePicker style={{ width: '100%' }} placeholder="DD-MM-YYYY" format="DD-MM-YYYY" />
                 </Form.Item>
               </Col>
               <Col span={6}>
@@ -294,25 +324,24 @@ export function EmployeeFormPage() {
             <Row gutter={16}>
               <Col span={6}>
                 <Form.Item label="Date of Interview" name={['careerDetails', 'dateOfInterview']}>
-                  <DatePicker style={{ width: '100%' }} placeholder="Select date" />
+                  <DatePicker style={{ width: '100%' }} placeholder="DD-MM-YYYY" format="DD-MM-YYYY" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="Joining Date" name={['careerDetails', 'joiningDate']} rules={[{ required: true }]}>
-                  <DatePicker style={{ width: '100%' }} placeholder="Select date" />
+                  <DatePicker style={{ width: '100%' }} placeholder="DD-MM-YYYY" format="DD-MM-YYYY" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="Re-Joining Date" name={['careerDetails', 'reJoiningDate']}>
-                  <DatePicker style={{ width: '100%' }} placeholder="Select date" />
+                  <DatePicker style={{ width: '100%' }} placeholder="DD-MM-YYYY" format="DD-MM-YYYY" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="Designation" name={['careerDetails', 'designation']}>
                   <Select
-                    mode="tags"
-                    maxCount={1}
-                    placeholder="Select or type a designation"
+                    placeholder="Select designation"
+                    showSearch={{ optionFilterProp: 'label' }}
                     options={DESIGNATION_OPTIONS.map((d) => ({ value: d, label: d }))}
                   />
                 </Form.Item>
@@ -326,23 +355,7 @@ export function EmployeeFormPage() {
                 <Form.Item label="Nature of Employment" name={['careerDetails', 'natureOfEmployment']}>
                   <Input placeholder="Enter nature of employment" />
                 </Form.Item>
-              </Col>
-              <Col span={6}>
-                <Form.Item label="Reason for Leaving" name={['careerDetails', 'reasonForLeaving']}>
-                  <Input placeholder="Enter reason for leaving" />
-                </Form.Item>
-              </Col>
-             
-              <Col span={6}>
-                <Form.Item label="From Date" name={['careerDetails', 'fromDate']}>
-                  <DatePicker style={{ width: '100%' }} placeholder="Select date" />
-                </Form.Item>
-              </Col>
-              <Col span={6}>
-                <Form.Item label="Till Date" name={['careerDetails', 'tillDate']}>
-                  <DatePicker style={{ width: '100%' }} placeholder="Select date" />
-                </Form.Item>
-              </Col>
+              </Col>                
               <Col span={6}>
                 <Form.Item label="Age at Matriculation" name={['careerDetails', 'ageAtMatriculation']}>
                   <Input placeholder="Enter age at matriculation" />
@@ -384,18 +397,18 @@ export function EmployeeFormPage() {
                         <Form.Item
                           label="Address Line 1"
                           name={[field.name, 'line1']}
-                          rules={[{ required: true }]}
+                          
                         >
                           <Input placeholder="Enter address line 1" />
                         </Form.Item>
                       </Col>
                       <Col span={6}>
-                        <Form.Item label="District" name={[field.name, 'district']}  rules={[{ required: true }]}>
+                        <Form.Item label="District" name={[field.name, 'district']}>
                           <Input placeholder="Enter district" />
                         </Form.Item>
                       </Col>
                       <Col span={6}>
-                        <Form.Item label="State" name={[field.name, 'state']} rules={[{ required: true }]}>
+                        <Form.Item label="State" name={[field.name, 'state']}>
                           <Select
                             placeholder="Select state"
                             showSearch={{ optionFilterProp: 'label' }}
@@ -407,7 +420,7 @@ export function EmployeeFormPage() {
                         <Form.Item
                           label="Pincode"
                           name={[field.name, 'pincode']}
-                          rules={[{ required: true, pattern: /^[0-9]{5,6}$/, message: 'Invalid format' }]}
+                          rules={[{pattern: /^[0-9]{5,6}$/, message: 'Invalid format' }]}
                         >
                           <Input placeholder="Enter pincode" />
                         </Form.Item>
@@ -472,16 +485,7 @@ export function EmployeeFormPage() {
                   <Input placeholder="Enter PAN" />
                 </Form.Item>
               </Col>
-              <Col span={6}>
-                <Form.Item label="Bank Account Number" name={['complianceDetails', 'bankAccountNumber']}>
-                  <Input placeholder="Enter bank account number" />
-                </Form.Item>
-              </Col>
-              <Col span={6}>
-                <Form.Item label="IFSC Code" name={['complianceDetails', 'ifscCode']}>
-                  <Input placeholder="Enter IFSC code" />
-                </Form.Item>
-              </Col>
+             
               <Col span={6}>
                 <Form.Item label="Aadhar" name={['complianceDetails', 'aadhar']}>
                   <Input placeholder="Enter Aadhar number" />
@@ -499,12 +503,12 @@ export function EmployeeFormPage() {
               </Col>
               <Col span={6}>
                 <Form.Item label="Passport Valid From" name={['complianceDetails', 'passportValidFrom']}>
-                  <DatePicker style={{ width: '100%' }} placeholder="Select date" />
+                  <DatePicker style={{ width: '100%' }} placeholder="DD-MM-YYYY" format="DD-MM-YYYY" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="Passport Valid To" name={['complianceDetails', 'passportValidTo']}>
-                  <DatePicker style={{ width: '100%' }} placeholder="Select date" />
+                  <DatePicker style={{ width: '100%' }} placeholder="DD-MM-YYYY" format="DD-MM-YYYY" />
                 </Form.Item>
               </Col>
               <Col span={6}>
@@ -531,7 +535,7 @@ export function EmployeeFormPage() {
               </Col>
               <Col span={6}>
                 <Form.Item label="AEP Date" name={['complianceDetails', 'aepDate']}>
-                  <DatePicker style={{ width: '100%' }} placeholder="Select date" />
+                  <DatePicker style={{ width: '100%' }} placeholder="DD-MM-YYYY" format="DD-MM-YYYY" />
                 </Form.Item>
               </Col>
               <Col span={6}>
@@ -541,15 +545,30 @@ export function EmployeeFormPage() {
               </Col>
               <Col span={6}>
                 <Form.Item label="AVSEC Valid From" name={['complianceDetails', 'avsecValidFrom']}>
-                  <DatePicker style={{ width: '100%' }} placeholder="Select date" />
+                  <DatePicker style={{ width: '100%' }} placeholder="DD-MM-YYYY" format="DD-MM-YYYY" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="AVSEC Valid To" name={['complianceDetails', 'avsecValidTo']}>
-                  <DatePicker style={{ width: '100%' }} placeholder="Select date" />
+                  <DatePicker style={{ width: '100%' }} placeholder="DD-MM-YYYY" format="DD-MM-YYYY" />
                 </Form.Item>
               </Col>
             </Row>
+
+             <Divider titlePlacement="left">Bank Details</Divider>
+
+             <Row gutter={16}>
+              <Col span={6}>
+                <Form.Item label="Bank Account Number" name={['complianceDetails', 'bankAccountNumber']}>
+                  <Input placeholder="Enter bank account number" />
+                </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item label="IFSC Code" name={['complianceDetails', 'ifscCode']}>
+                  <Input placeholder="Enter IFSC code" />
+                </Form.Item>
+              </Col>
+              </Row>
 
             <Divider titlePlacement="left">Work Details</Divider>
             <Row gutter={16}>
@@ -558,13 +577,14 @@ export function EmployeeFormPage() {
                   <Select placeholder="Select site" showSearch={{ optionFilterProp: 'label' }} options={SITE_OPTIONS.map((s) => ({ value: s, label: s }))} />
                 </Form.Item>
               </Col>
-              {isGmr && (
                 <Col span={6}>
                   <Form.Item label="Shift" name={['workDetails', 'shift']}>
-                    <Input placeholder="Enter shift" />
+                    <Select
+                    placeholder="Select shift"
+                    showSearch={{ optionFilterProp: 'label' }}
+                    options={SHIFT_OPTIONS.map((s) => ({ value: s, label: s }))} />
                   </Form.Item>
                 </Col>
-              )}
               <Col span={6}>
                 <Form.Item label="Hostel" name={['workDetails', 'category']}>
                   <Select placeholder="Select hostel" showSearch={{ optionFilterProp: 'label' }} options={OPTED_OPTIONS.map((o) => ({ value: o, label: o }))} />
@@ -622,7 +642,7 @@ export function EmployeeFormPage() {
               {hostelOpted && (
                 <Col span={6}>
                   <Form.Item label="Hostel Joining Date" name={['workDetails', 'hostelJoiningDate']}>
-                    <DatePicker style={{ width: '100%' }} placeholder="Select date" />
+                    <DatePicker style={{ width: '100%' }} placeholder="DD-MM-YYYY" format="DD-MM-YYYY" />
                   </Form.Item>
                 </Col>
               )}
@@ -635,17 +655,17 @@ export function EmployeeFormPage() {
               )}
               <Col span={6}>
                 <Form.Item label="Leave From Date" name={['workDetails', 'leaveFromDate']}>
-                  <DatePicker style={{ width: '100%' }} placeholder="Select date" />
+                  <DatePicker style={{ width: '100%' }} placeholder="DD-MM-YYYY" format="DD-MM-YYYY" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="Leave To Date" name={['workDetails', 'leaveToDate']}>
-                  <DatePicker style={{ width: '100%' }} placeholder="Select date" />
+                  <DatePicker style={{ width: '100%' }} placeholder="DD-MM-YYYY" format="DD-MM-YYYY" />
                 </Form.Item>
               </Col>
               <Col span={6}>
                 <Form.Item label="Notice Date" name={['workDetails', 'noticeDate']}>
-                  <DatePicker style={{ width: '100%' }} placeholder="Select date" />
+                  <DatePicker style={{ width: '100%' }} placeholder="DD-MM-YYYY" format="DD-MM-YYYY" />
                 </Form.Item>
               </Col>
               <Col span={6}>
@@ -655,7 +675,7 @@ export function EmployeeFormPage() {
               </Col>
               <Col span={6}>
                 <Form.Item label="Exit Date" name={['workDetails', 'exitDate']}>
-                  <DatePicker style={{ width: '100%' }} placeholder="Select date" />
+                  <DatePicker style={{ width: '100%' }} placeholder="DD-MM-YYYY" format="DD-MM-YYYY" />
                 </Form.Item>
               </Col>
               <Col span={6}>
@@ -680,7 +700,7 @@ export function EmployeeFormPage() {
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 24 }}>
           {step > 0 && <Button onClick={() => setStep(0)}>Back</Button>}
           {step === 0 && (
-            <Button type="primary" onClick={() => setStep(1)}>
+            <Button type="primary" onClick={handleNext}>
               Next
             </Button>
           )}
