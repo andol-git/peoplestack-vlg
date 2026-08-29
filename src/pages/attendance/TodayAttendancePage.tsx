@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Avatar, Button, Card, DatePicker, Input, Select, Table, Tag } from 'antd';
+import { Avatar, Button, Card, DatePicker, Select, Table, Tag } from 'antd';
 import { DownloadOutlined, SearchOutlined, UploadOutlined } from '@ant-design/icons';
 import dayjs, { type Dayjs } from 'dayjs';
 import { useAttendanceHistoryQuery, useAttendanceQuery } from '../../hooks/useAttendance';
@@ -153,17 +153,7 @@ export function TodayAttendancePage() {
               placeholder="Select customer"
             />
           </div>
-          <div>
-            <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5, color: '#475569', marginBottom: 6 }}>
-              Employee ID
-            </div>
-            <Input
-              placeholder="Optional"
-              value={pending.employeeId}
-              onChange={(e) => setPending((p) => ({ ...p, employeeId: e.target.value }))}
-              style={{ width: 160 }}
-            />
-          </div>
+          
           <div>
             <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5, color: '#475569', marginBottom: 6 }}>
               Date From

@@ -137,6 +137,7 @@ export interface WorkDetails {
 export interface Employee {
   id?: number;
   customerId?: number;
+  vlgId: string;
   idNo: string;
   serialNumberAssigned?: string;
   emailId: string;

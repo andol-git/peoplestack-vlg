@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Drawer, Select, message } from 'antd';
+import { Button, Drawer, Select, message } from 'antd';
+import { DownloadOutlined } from '@ant-design/icons';
 import { useCustomersQuery } from '../hooks/useCustomers';
 import { useEmployeesByCustomer } from '../hooks/useEmployees';
 import type { Employee } from '../types/models';
@@ -44,35 +45,56 @@ export function DownloadAttendanceSheetDrawer({ open, onClose }: Props) {
     onClose();
   }
 
-  async function handleCompanyChange(value: number) {
-    setCompanyId(value);
-    const company = customers.find((c) => c.id === value);
+  async function handleDownload() {
+    if (!companyId) {
+      message.error('Please select a company.');
+      return;
+    }
+    const company = customers.find((c) => c.id === companyId);
     try {
-      const employees = await fetchMutation.mutateAsync(value);
+      const employees = await fetchMutation.mutateAsync(companyId);
       if (employees.length === 0) {
         message.warning('No employees found for this company.');
         return;
       }
-      downloadCsv(employees, company?.name ?? String(value));
+      downloadCsv(employees, company?.name ?? String(companyId));
       message.success('Attendance sheet downloaded.');
+      handleClose();
     } catch (err: any) {
       message.error(err?.response?.data?.message ?? 'Failed to fetch employees.');
     }
   }
 
   return (
-    <Drawer title="Download Attendance Sheet" open={open} onClose={handleClose} size={420}>
+    <Drawer
+      title="Download Attendance Sheet"
+      open={open}
+      onClose={handleClose}
+      size={420}
+      footer={
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
+          <Button onClick={handleClose}>Cancel</Button>
+          <Button
+            type="primary"
+            icon={<DownloadOutlined />}
+            loading={fetchMutation.isPending}
+            onClick={handleDownload}
+          >
+            Download
+          </Button>
+        </div>
+      }
+    >
       <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5, color: '#475569', marginBottom: 6 }}>
         Company
       </div>
       <Select
         value={companyId}
-        onChange={handleCompanyChange}
+        onChange={setCompanyId}
         style={{ width: '100%' }}
         options={companyOptions}
         placeholder="Select a company"
         showSearch={{ optionFilterProp: 'label' }}
-        loading={fetchMutation.isPending}
         disabled={fetchMutation.isPending}
       />
     </Drawer>
