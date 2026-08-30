@@ -70,16 +70,12 @@ function toStringFields(obj: Record<string, any> | undefined, fields: readonly s
 
 // Every required field on Step 1 ("Employee Info") — validated before allowing Next.
 const STEP_0_REQUIRED_FIELDS: (string | (string | number)[])[] = [
-  'customerId',
-  'vlgId',
   'idNo',
   'phoneNo',
   ['personalDetails', 'name'],
   ['personalDetails', 'gender'],
   ['personalDetails', 'dateOfBirth'],
-  ['personalDetails', 'nationality'],
   ['familyDetails', 'fathersName'],
-  ['familyDetails', 'motherName'],
   ['careerDetails', 'joiningDate'],
   ...[0, 1].flatMap((i) => [
     ['addresses', i, 'line1'],
@@ -194,7 +190,7 @@ export function EmployeeFormPage() {
             <Divider titlePlacement="left" style={{ marginTop: 0 }}>Basic Info</Divider>
             <Row gutter={16}>
               <Col span={6}>
-                <Form.Item label="Customer" name="customerId" rules={[{ required: true }]}  >
+                <Form.Item label="Customer" name="customerId">
                   <Select
                     showSearch={{ optionFilterProp: 'label' }}
                     placeholder="Select customer"
@@ -203,7 +199,7 @@ export function EmployeeFormPage() {
                 </Form.Item>
               </Col>
               <Col span={6}>
-                <Form.Item label="VLG ID" name="vlgId" rules={[{ required: true }]}>
+                <Form.Item label="VLG ID" name="idNo" rules={[{ required: true }]}>
                   <Input placeholder="Enter VLG ID" />
                 </Form.Item>
               </Col>
@@ -261,7 +257,7 @@ export function EmployeeFormPage() {
                 </Form.Item>
               </Col>
               <Col span={6}>
-                <Form.Item label="Nationality" name={['personalDetails', 'nationality']} rules={[{ required: true }]}>
+                <Form.Item label="Nationality" name={['personalDetails', 'nationality']}>
                   <Input placeholder="Enter nationality" />
                 </Form.Item>
               </Col>
@@ -295,7 +291,7 @@ export function EmployeeFormPage() {
                 </Form.Item>
               </Col>
               <Col span={6}>
-                <Form.Item label="Mother's Name" name={['familyDetails', 'motherName']} rules={[{ required: true }]}>
+                <Form.Item label="Mother's Name" name={['familyDetails', 'motherName']}>
                   <Input placeholder="Enter mother's name" />
                 </Form.Item>
               </Col>
@@ -487,7 +483,7 @@ export function EmployeeFormPage() {
               </Col>
              
               <Col span={6}>
-                <Form.Item label="Aadhar" name={['complianceDetails', 'aadhar']}>
+                <Form.Item label="Aadhar" name={['complianceDetails', 'aadhar']} rules={[{ required: true }]}>
                   <Input placeholder="Enter Aadhar number" />
                 </Form.Item>
               </Col>
