@@ -84,10 +84,9 @@ export function AttendanceSheetPage() {
   }, [records]);
 
   function getStatus(emp: (typeof employees)[number], date: Dayjs): DayStatus {
-    if (isWeekend(date)) return 'W';
     const present = emp.byDate.get(date.format('YYYY-MM-DD'));
-    if (present === undefined) return 'N';
-    return present ? 'P' : 'A';
+    if (present !== undefined) return present ? 'P' : 'A';
+    return isWeekend(date) ? 'W' : 'N';
   }
 
   function summary(emp: (typeof employees)[number]) {
