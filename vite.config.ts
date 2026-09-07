@@ -9,7 +9,7 @@ export default defineConfig({
     port: 4400,
     proxy: {
       '/vlg_service_v1': {
-        target: 'http://165.232.184.121:8080',
+        target: 'http://localhost:8080',
         changeOrigin: true,
         secure: false,
         configure: (proxy) => {

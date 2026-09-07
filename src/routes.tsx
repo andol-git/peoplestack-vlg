@@ -6,6 +6,7 @@ import { DashboardPage } from './pages/DashboardPage';
 import { EmployeeListPage } from './pages/employees/EmployeeListPage';
 import { EmployeeFormPage } from './pages/employees/EmployeeFormPage';
 import { EmployeeDetailPage } from './pages/employees/EmployeeDetailPage';
+import { SalaryDetailsListPage } from './pages/employees/SalaryDetailsListPage';
 import { CustomerListPage } from './pages/customers/CustomerListPage';
 import { CustomerFormPage } from './pages/customers/CustomerFormPage';
 import { CustomerDetailPage } from './pages/customers/CustomerDetailPage';
@@ -15,6 +16,8 @@ import { UserFormPage } from './pages/users/UserFormPage';
 import { UserDetailPage } from './pages/users/UserDetailPage';
 import { TodayAttendancePage } from './pages/attendance/TodayAttendancePage';
 import { AttendanceSheetPage } from './pages/attendance/AttendanceSheetPage';
+import { RunPayrollPage } from './pages/payments/RunPayrollPage';
+import { AdvanceTypesPage } from './pages/payments/AdvanceTypesPage';
 
 export function AppRoutes() {
   return (
@@ -32,6 +35,7 @@ export function AppRoutes() {
           <Route path="/employees/new" element={<EmployeeFormPage />} />
           <Route path="/employees/:id/edit" element={<EmployeeFormPage />} />
           <Route path="/employees/:id" element={<EmployeeDetailPage />} />
+          <Route path="/employees/salary-details" element={<SalaryDetailsListPage />} />
 
           <Route path="/customers" element={<CustomerListPage />} />
           <Route path="/customers/new" element={<CustomerFormPage />} />
@@ -48,6 +52,9 @@ export function AppRoutes() {
           <Route path="/attendance" element={<Navigate to="/attendance/today" replace />} />
           <Route path="/attendance/today" element={<TodayAttendancePage />} />
           <Route path="/attendance/sheet" element={<AttendanceSheetPage />} />
+
+          <Route path="/payments/run-payroll" element={<RunPayrollPage />} />
+          <Route path="/payments/advance-types" element={<AdvanceTypesPage />} />
         </Route>
       </Route>
 
