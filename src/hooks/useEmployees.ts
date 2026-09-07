@@ -15,6 +15,18 @@ export function useEmployeesByCustomer() {
   });
 }
 
+export function useEmployeesByCustomerQuery(customerId: number | undefined) {
+  const query = useQuery({
+    queryKey: ['employees', 'by-customer', customerId],
+    queryFn: () => employeeApi.getAll(customerId),
+    enabled: customerId !== undefined,
+  });
+  return {
+    ...query,
+    data: query.data ?? [],
+  };
+}
+
 export function useEmployeeQuery(id: number | undefined) {
   return useQuery({
     queryKey: ['employee', id],

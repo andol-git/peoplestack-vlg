@@ -176,6 +176,83 @@ export interface AttendanceHistoryEntry {
   updatedAt?: string;
 }
 
+// ─── Employee Salary Details ───────────────────────────────────────────────────
+
+export interface EmployeeSalaryDetail {
+  id: number;
+  employeeId: number;
+  employeeIdNo: string;
+  employeeName?: string;
+  customerId: number;
+  customerName?: string;
+  basic: number;
+  hra?: number | null;
+  da?: number | null;
+  others?: number | null;
+  effectiveFrom: string; // YYYY-MM-DD
+  isActive: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+// ─── Payroll ─────────────────────────────────────────────────────────────────
+
+export interface PayrollLine {
+  employeeId: number;
+  employeeIdNo: string;
+  employeeName?: string;
+  daysInPeriod: number;
+  presentDays: number;
+  basic: number;
+  hra: number;
+  da: number;
+  others: number;
+  proratedBasic: number;
+  proratedHra: number;
+  proratedDa: number;
+  proratedOthers: number;
+  grossPay: number;
+  professionalTax: number;
+  providentFund: number;
+  netPay: number;
+}
+
+export interface SkippedEmployee {
+  employeeId: number;
+  employeeIdNo: string;
+  employeeName?: string;
+  reason: string;
+}
+
+export interface PayrollPreview {
+  customerId: number;
+  customerName: string;
+  fromDate: string; // YYYY-MM-DD
+  toDate: string; // YYYY-MM-DD
+  daysInPeriod: number;
+  employeeCount: number;
+  totalGross: number;
+  lines: PayrollLine[];
+  skippedEmployees: SkippedEmployee[];
+}
+
+export interface PayrollRunSummary {
+  id: number;
+  customerId: number;
+  customerName: string;
+  fromDate: string;
+  toDate: string;
+  status: string;
+  employeeCount: number;
+  totalGross: number;
+  createdByUsername?: string;
+  createdAt?: string;
+}
+
+export interface PayrollRunDetail extends PayrollRunSummary {
+  lines: PayrollLine[];
+}
+
 // ─── Customer ────────────────────────────────────────────────────────────────
 
 export interface Customer {
@@ -186,6 +263,15 @@ export interface Customer {
   contactNumber?: string;
   isActive?: boolean;
   assignedStaffCount?: number;
+}
+
+export interface AdvanceType {
+  id: number;
+  customer: Customer;
+  name: string;
+  isActive: boolean;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface StaffAssignment {

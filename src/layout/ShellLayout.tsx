@@ -5,6 +5,7 @@ import {
   BellOutlined,
   ClockCircleOutlined,
   DashboardOutlined,
+  DollarOutlined,
   DownOutlined,
   LogoutOutlined,
   MenuFoldOutlined,
@@ -20,6 +21,7 @@ import { UploadAttendanceDrawer } from '../components/UploadAttendanceDrawer';
 import {
   CUSTOMERS_ROLES,
   EMPLOYEES_ROLES,
+  PAYMENTS_ROLES,
   ROLE_LABELS,
   USERS_ROLES,
 } from '../constants/roles';
@@ -54,7 +56,15 @@ export function ShellLayout() {
     }
 
     if (hasAnyRole(...EMPLOYEES_ROLES)) {
-      items.push({ key: '/employees', icon: <TeamOutlined />, label: 'Employees' });
+      items.push({
+        key: 'employees-group',
+        icon: <TeamOutlined />,
+        label: 'Employees',
+        children: [
+          { key: '/employees', label: 'Employees' },
+          { key: '/employees/salary-details', label: 'Salary Details' },
+        ],
+      });
     }
 
     const attendanceChildren: NonNullable<MenuProps['items']> = [
@@ -70,6 +80,18 @@ export function ShellLayout() {
       children: attendanceChildren,
     });
 
+    if (hasAnyRole(...PAYMENTS_ROLES)) {
+      items.push({
+        key: 'payments-group',
+        icon: <DollarOutlined />,
+        label: 'Payments',
+        children: [
+          { key: '/payments/run-payroll', label: 'Run Payroll' },
+          { key: '/payments/advance-types', label: 'Advance Types' },
+        ],
+      });
+    }
+
     if (hasAnyRole(...USERS_ROLES)) {
       items.push({ key: '/users', icon: <UserOutlined />, label: 'Users' });
     }
@@ -82,6 +104,8 @@ export function ShellLayout() {
       return location.pathname.startsWith('/customers/new') ? '/customers/new' : '/customers';
     }
     if (location.pathname.startsWith('/attendance')) return location.pathname;
+    if (location.pathname.startsWith('/employees/salary-details')) return '/employees/salary-details';
+    if (location.pathname.startsWith('/payments')) return location.pathname;
     return `/${location.pathname.split('/')[1] || 'dashboard'}`;
   }, [location.pathname]);
 
@@ -90,7 +114,11 @@ export function ShellLayout() {
     if (location.pathname.startsWith('/customers') || location.pathname.startsWith('/assignments')) {
       return 'customers-group';
     }
+    if (location.pathname.startsWith('/employees')) {
+      return 'employees-group';
+    }
     if (location.pathname.startsWith('/attendance')) return 'attendance-group';
+    if (location.pathname.startsWith('/payments')) return 'payments-group';
     return null;
   }, [location.pathname]);
 
