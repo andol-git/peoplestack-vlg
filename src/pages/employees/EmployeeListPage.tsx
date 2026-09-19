@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Avatar, Button, Card, Input, Popconfirm, Select, Table, Tag } from 'antd';
 import {
@@ -11,15 +11,16 @@ import {
   SearchOutlined,
 } from '@ant-design/icons';
 import { useDeleteEmployee, useEmployeesQuery, useInactivateEmployee } from '../../hooks/useEmployees';
-import type { Employee } from '../../types/models';
+import { useCustomersQuery } from '../../hooks/useCustomers';
+import type { Customer, Employee } from '../../types/models';
 
 function initials(name?: string): string {
   if (!name) return '?';
   return name.split(' ').slice(0, 2).map((n) => n[0]).join('').toUpperCase();
 }
 
-function exportCsv(rows: Employee[]) {
-  const headers = ['Employee', 'Email', 'ID No', 'Phone', 'Designation', 'Site', 'Joining Date', 'Status'];
+function exportCsv(rows: Employee[], customerNameById: Map<number | undefined, string>) {
+  const headers = ['Employee', 'Email', 'ID No', 'Phone', 'Designation', 'Customer', 'Joining Date', 'Status'];
   const lines = rows.map((e) =>
     [
       e.personalDetails?.name ?? '',
@@ -27,7 +28,7 @@ function exportCsv(rows: Employee[]) {
       e.idNo ?? '',
       e.phoneNo ?? '',
       e.careerDetails?.designation ?? '',
-      e.workDetails?.site ?? '',
+      customerNameById.get(e.customerId) ?? '',
       e.careerDetails?.joiningDate ?? '',
       e.isActive ? 'Active' : 'Inactive',
     ]
@@ -49,34 +50,41 @@ const CATEGORY_OPTIONS = ['All', 'Resigned', 'On Leave', 'Left'] as const;
 export function EmployeeListPage() {
   const [tab, setTab] = useState<'active' | 'inactive'>('active');
   const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [category, setCategory] = useState<(typeof CATEGORY_OPTIONS)[number]>('All');
+  const [customerId, setCustomerId] = useState<number | 'All'>('All');
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
+  const customerIdParam = customerId === 'All' ? undefined : customerId;
+
+  // Debounce the search box so each keystroke doesn't fire its own backend request.
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(search.trim()), 300);
+    return () => clearTimeout(timer);
+  }, [search]);
+
+  // Unfiltered counts, shown on the tab badges regardless of the customer/search filters.
   const { data: activeEmployees = [] } = useEmployeesQuery(true);
-  const { data: inactiveEmployees = [], isLoading: isLoadingInactive } = useEmployeesQuery(false);
-  const isLoading = tab === 'active' ? false : isLoadingInactive;
-  const employees = tab === 'active' ? activeEmployees : inactiveEmployees;
+  const { data: inactiveEmployees = [] } = useEmployeesQuery(false);
+  const { data: customers = [] } = useCustomersQuery();
+
+  // The employees actually rendered in the table — fetched from the backend, scoped to the
+  // selected customer and search text (name / ID No / phone). With neither set, this shares
+  // its cache with the queries above.
+  const { data: employees = [], isLoading } = useEmployeesQuery(tab === 'active', customerIdParam, debouncedSearch);
 
   const inactivateMutation = useInactivateEmployee();
   const deleteMutation = useDeleteEmployee();
 
+  const customerNameById = useMemo(
+    () => new Map<number | undefined, string>(customers.map((c: Customer) => [c.id, c.name])),
+    [customers]
+  );
+
   const filtered = useMemo(() => {
-    let data = employees;
-    if (category !== 'All') {
-      data = data.filter((e) => e.workDetails?.exitStatus === category);
-    }
-    const q = search.toLowerCase();
-    if (q) {
-      data = data.filter(
-        (e) =>
-          e.idNo?.toLowerCase().includes(q) ||
-          e.personalDetails?.name?.toLowerCase().includes(q) ||
-          e.phoneNo?.includes(q) ||
-          e.workDetails?.site?.toLowerCase()?.includes(q)
-      );
-    }
-    return data;
-  }, [employees, search, category]);
+    if (category === 'All') return employees;
+    return employees.filter((e) => e.workDetails?.exitStatus === category);
+  }, [employees, category]);
 
   const columns = [
     {
@@ -112,7 +120,7 @@ export function EmployeeListPage() {
     },
     { title: 'Phone', dataIndex: 'phoneNo', key: 'phoneNo' },
     { title: 'Designation', key: 'designation', render: (_: unknown, e: Employee) => e.careerDetails?.designation ?? '—' },
-    { title: 'Site', key: 'site', render: (_: unknown, e: Employee) => e.workDetails?.site ?? '—' },
+    { title: 'Customer', key: 'customer', render: (_: unknown, e: Employee) => customerNameById.get(e.customerId) ?? '—' },
     { title: 'Joining Date', key: 'joiningDate', render: (_: unknown, e: Employee) => e.careerDetails?.joiningDate ?? '—' },
     {
       title: 'Status',
@@ -203,6 +211,16 @@ export function EmployeeListPage() {
                 </span>
               </button>
             ))}
+            <Select
+              value={customerId}
+              onChange={setCustomerId}
+              style={{ width: 180 }}
+              showSearch={{ optionFilterProp: 'label' }}
+              options={[
+                { value: 'All', label: 'All Customers' },
+                ...customers.map((c) => ({ value: c.id, label: c.name })),
+              ]}
+            />
           </div>
 
           <div style={{ display: 'flex', gap: 8 }}>
@@ -220,7 +238,7 @@ export function EmployeeListPage() {
               showSearch={{ optionFilterProp: 'label' }}
               options={CATEGORY_OPTIONS.map((c) => ({ value: c, label: c }))}
             />
-            <Button icon={<DownloadOutlined />} onClick={() => exportCsv(filtered)}>
+            <Button icon={<DownloadOutlined />} onClick={() => exportCsv(filtered, customerNameById)}>
               Export
             </Button>
           </div>

@@ -33,11 +33,10 @@ export interface PersonalDetails {
 
 export interface FamilyDetails {
   id?: number;
-  fathersName: string;
-  motherName: string;
+  fathersName?: string;
+  spouseName?: string;
   alternativeMobileNumber?: string;
   relation?: string;
-  wifeName?: string;
 }
 
 export interface CareerDetails {
@@ -170,6 +169,7 @@ export interface AttendanceRecord {
 export interface AttendanceHistoryEntry {
   id: number;
   fileName: string;
+  attendanceDate?: string; // YYYY-MM-DD; the date the uploaded rows are FOR
   status: string;
   createdByUsername?: string;
   createdAt?: string;

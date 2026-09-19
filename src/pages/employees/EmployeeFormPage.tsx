@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Button, Card, Col, DatePicker, Divider, Form, Input, InputNumber, Row, Select, Steps, Switch, message } from 'antd';
 import dayjs from 'dayjs';
 import { useCreateEmployee, useEmployeeQuery, useUpdateEmployee } from '../../hooks/useEmployees';
-import { useCustomersQuery } from '../../hooks/useCustomers';
+import { useCustomerQuery, useCustomersQuery } from '../../hooks/useCustomers';
 import type { Employee } from '../../types/models';
 
 const GENDER_OPTIONS = ['Male', 'Female', 'Other'];
@@ -16,8 +16,6 @@ const STATE_OPTIONS = [
   'Madhya Pradesh', 'Assam', 'Kerala', 'Jharkhand', 'Other',
 ];
 const DESIGNATION_OPTIONS = ['LOADER', 'SECURITY GUARD', 'UTILITY STAFF', 'SUPERVISOR', 'MANAGER', 'HOUSE KEEPING'];
-const SITE_OPTIONS = ['GMR', 'BIAL', 'IGI', 'CSIA', 'MAA', 'TSGIRD', 'NOVOTEL', 'CBIT', 'MGIT'];
-const AIRPORT_SITES = ['GMR', 'BIAL', 'IGI', 'CSIA', 'MAA'];
 const SHIFT_OPTIONS = ['Day', 'Night'];
 const OPTED_OPTIONS = ['Opted', 'Not Opted'];
 const UNIFORM_OPTIONS = ['Shirt, Socks, ID Card', 'Not Opted']; 
@@ -75,7 +73,6 @@ const STEP_0_REQUIRED_FIELDS: (string | (string | number)[])[] = [
   ['personalDetails', 'name'],
   ['personalDetails', 'gender'],
   ['personalDetails', 'dateOfBirth'],
-  ['familyDetails', 'fathersName'],
   ['careerDetails', 'joiningDate'],
   ...[0, 1].flatMap((i) => [
     ['addresses', i, 'line1'],
@@ -91,9 +88,6 @@ export function EmployeeFormPage() {
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const [step, setStep] = useState(0);
-  const site = Form.useWatch(['workDetails', 'site'], form);
-  const isGmr = site === 'GMR';
-  const isAirportSite = !!site && AIRPORT_SITES.includes(site);
   const hostelOpted = Form.useWatch(['workDetails', 'category'], form) === 'Opted';
   const uniformOpted = Form.useWatch(['workDetails', 'uniform'], form) === 'Opted';
   const shoesOpted = Form.useWatch(['workDetails', 'shoes'], form) === 'Opted';
@@ -103,6 +97,24 @@ export function EmployeeFormPage() {
   const createMutation = useCreateEmployee();
   const updateMutation = useUpdateEmployee();
   const saving = createMutation.isPending || updateMutation.isPending;
+
+  const [selectedCustomerId, setSelectedCustomerId] = useState<number | undefined>();
+  const { data: selectedCustomer } = useCustomerQuery(selectedCustomerId);
+
+  // Populate Customer Code from the customer fetched from the backend whenever the
+  // customer selection changes (not on the initial edit-mode load of the employee).
+  useEffect(() => {
+    if (selectedCustomer) {
+      form.setFieldValue('idNo', selectedCustomer.code ?? '');
+    }
+  }, [selectedCustomer, form]);
+
+  function handleCustomerChange(value: number | undefined) {
+    setSelectedCustomerId(value);
+    if (value === undefined) {
+      form.setFieldValue('idNo', undefined);
+    }
+  }
 
   useEffect(() => {
     if (employee) {
@@ -195,17 +207,23 @@ export function EmployeeFormPage() {
                     showSearch={{ optionFilterProp: 'label' }}
                     placeholder="Select customer"
                     options={customers.map((c) => ({ value: c.id, label: c.name }))}
+                    onChange={handleCustomerChange}
+                    allowClear
                   />
                 </Form.Item>
               </Col>
               <Col span={6}>
-                <Form.Item label="VLG ID" name="idNo" rules={[{ required: true }]}>
-                  <Input placeholder="Enter VLG ID" />
+                <Form.Item label="Customer Code" name="idNo" rules={[{ required: true }]}>
+                  <Input placeholder="Select a customer to populate" readOnly />
                 </Form.Item>
               </Col>
               <Col span={6}>
-                <Form.Item label="Serial Number" name="serialNumberAssigned">
-                  <Input placeholder="Enter serial number" />
+                <Form.Item
+                  label="ID"
+                  name="serialNumberAssigned"
+                  rules={[{ pattern: /^[0-9]*$/, message: 'ID must contain numbers only' }]}
+                >
+                  <Input placeholder="Enter ID" onKeyDown={blockNonDigits} />
                 </Form.Item>
               </Col>
               <Col span={6}>
@@ -286,18 +304,13 @@ export function EmployeeFormPage() {
             <Divider titlePlacement="left">Nominee Details</Divider>
             <Row gutter={16}>
               <Col span={6}>
-                <Form.Item label="Father's Name" name={['familyDetails', 'fathersName']} rules={[{ required: true }]}>
+                <Form.Item label="Father's Name" name={['familyDetails', 'fathersName']}>
                   <Input placeholder="Enter father's name" />
                 </Form.Item>
               </Col>
               <Col span={6}>
-                <Form.Item label="Mother's Name" name={['familyDetails', 'motherName']}>
-                  <Input placeholder="Enter mother's name" />
-                </Form.Item>
-              </Col>
-              <Col span={6}>
-                <Form.Item label="Wife Name" name={['familyDetails', 'wifeName']}>
-                  <Input placeholder="Enter wife's name" />
+                <Form.Item label="Spouse Name" name={['familyDetails', 'spouseName']}>
+                  <Input placeholder="Enter spouse's name" />
                 </Form.Item>
               </Col>
               <Col span={6}>
@@ -512,13 +525,11 @@ export function EmployeeFormPage() {
                   <Select placeholder="Select status" showSearch={{ optionFilterProp: 'label' }} options={STATUS_OPTIONS.map((s) => ({ value: s, label: s }))} />
                 </Form.Item>
               </Col>
-              {isGmr && (
-                <Col span={6}>
-                  <Form.Item label="AEP Type" name={['complianceDetails', 'aepType']}>
-                    <Select placeholder="Select AEP type" showSearch={{ optionFilterProp: 'label' }} options={AEP_TYPE_OPTIONS.map((t) => ({ value: t, label: t }))} />
-                  </Form.Item>
-                </Col>
-              )}
+              <Col span={6}>
+                <Form.Item label="AEP Type" name={['complianceDetails', 'aepType']}>
+                  <Select placeholder="Select AEP type" showSearch={{ optionFilterProp: 'label' }} options={AEP_TYPE_OPTIONS.map((t) => ({ value: t, label: t }))} />
+                </Form.Item>
+              </Col>
               <Col span={6}>
                 <Form.Item label="AEP Number" name={['complianceDetails', 'aepNumber']}>
                   <Input placeholder="Enter AEP number" />
@@ -568,11 +579,6 @@ export function EmployeeFormPage() {
 
             <Divider titlePlacement="left">Work Details</Divider>
             <Row gutter={16}>
-              <Col span={6}>
-                <Form.Item label="Site" name={['workDetails', 'site']}>
-                  <Select placeholder="Select site" showSearch={{ optionFilterProp: 'label' }} options={SITE_OPTIONS.map((s) => ({ value: s, label: s }))} />
-                </Form.Item>
-              </Col>
                 <Col span={6}>
                   <Form.Item label="Shift" name={['workDetails', 'shift']}>
                     <Select
@@ -642,13 +648,11 @@ export function EmployeeFormPage() {
                   </Form.Item>
                 </Col>
               )}
-              {isAirportSite && (
-                <Col span={6}>
-                  <Form.Item label="PVC Status" name={['workDetails', 'pvcStatus']}>
-                    <Select placeholder="Select status" showSearch={{ optionFilterProp: 'label' }} options={STATUS_OPTIONS.map((s) => ({ value: s, label: s }))} />
-                  </Form.Item>
-                </Col>
-              )}
+              <Col span={6}>
+                <Form.Item label="PVC Status" name={['workDetails', 'pvcStatus']}>
+                  <Select placeholder="Select status" showSearch={{ optionFilterProp: 'label' }} options={STATUS_OPTIONS.map((s) => ({ value: s, label: s }))} />
+                </Form.Item>
+              </Col>
               <Col span={6}>
                 <Form.Item label="Leave From Date" name={['workDetails', 'leaveFromDate']}>
                   <DatePicker style={{ width: '100%' }} placeholder="DD-MM-YYYY" format="DD-MM-YYYY" />

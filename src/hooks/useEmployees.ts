@@ -2,10 +2,11 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { employeeApi } from '../api/employee-api';
 import type { Employee } from '../types/models';
 
-export function useEmployeesQuery(active: boolean) {
+export function useEmployeesQuery(active: boolean, customerId?: number, search?: string) {
   return useQuery({
-    queryKey: ['employees', active ? 'active' : 'inactive'],
-    queryFn: () => (active ? employeeApi.getAll() : employeeApi.getAllInactive()),
+    queryKey: ['employees', active ? 'active' : 'inactive', customerId ?? 'All', search ?? ''],
+    queryFn: () =>
+      active ? employeeApi.getAll(customerId, search) : employeeApi.getAllInactive(customerId, search),
   });
 }
 

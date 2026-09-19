@@ -106,6 +106,7 @@ export function TodayAttendancePage() {
 
   const historyColumns = [
     { title: 'File Name', dataIndex: 'fileName', key: 'fileName' },
+    { title: 'Attendance Date', dataIndex: 'attendanceDate', key: 'attendanceDate', render: (v?: string) => v ?? '—' },
     {
       title: 'Status',
       dataIndex: 'status',
