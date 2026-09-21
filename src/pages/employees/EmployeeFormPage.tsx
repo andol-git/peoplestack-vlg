@@ -1,9 +1,10 @@
-import { useEffect, useState, type KeyboardEvent } from 'react';
+import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Button, Card, Col, DatePicker, Divider, Form, Input, InputNumber, Row, Select, Steps, Switch, message } from 'antd';
 import dayjs from 'dayjs';
 import { useCreateEmployee, useEmployeeQuery, useUpdateEmployee } from '../../hooks/useEmployees';
 import { useCustomerQuery, useCustomersQuery } from '../../hooks/useCustomers';
+import { useDesignationsQuery } from '../../hooks/useDesignations';
 import type { Employee } from '../../types/models';
 
 const GENDER_OPTIONS = ['Male', 'Female', 'Other'];
@@ -15,7 +16,6 @@ const STATE_OPTIONS = [
   'Uttar Pradesh', 'West Bengal', 'Bihar', 'Rajasthan', 'Gujarat', 'Odisha',
   'Madhya Pradesh', 'Assam', 'Kerala', 'Jharkhand', 'Other',
 ];
-const DESIGNATION_OPTIONS = ['LOADER', 'SECURITY GUARD', 'UTILITY STAFF', 'SUPERVISOR', 'MANAGER', 'HOUSE KEEPING'];
 const SHIFT_OPTIONS = ['Day', 'Night'];
 const OPTED_OPTIONS = ['Opted', 'Not Opted'];
 const UNIFORM_OPTIONS = ['Shirt, Socks, ID Card', 'Not Opted']; 
@@ -100,16 +100,22 @@ export function EmployeeFormPage() {
 
   const [selectedCustomerId, setSelectedCustomerId] = useState<number | undefined>();
   const { data: selectedCustomer } = useCustomerQuery(selectedCustomerId);
+  const { data: designations } = useDesignationsQuery(selectedCustomerId);
+  // True only once the user picks a customer from the dropdown themselves — guards the
+  // idNo auto-populate effect below from firing when selectedCustomerId is set from the
+  // employee's existing data on the initial edit-mode load.
+  const customerChangedByUser = useRef(false);
 
   // Populate Customer Code from the customer fetched from the backend whenever the
   // customer selection changes (not on the initial edit-mode load of the employee).
   useEffect(() => {
-    if (selectedCustomer) {
+    if (selectedCustomer && customerChangedByUser.current) {
       form.setFieldValue('idNo', selectedCustomer.code ?? '');
     }
   }, [selectedCustomer, form]);
 
   function handleCustomerChange(value: number | undefined) {
+    customerChangedByUser.current = true;
     setSelectedCustomerId(value);
     if (value === undefined) {
       form.setFieldValue('idNo', undefined);
@@ -118,6 +124,7 @@ export function EmployeeFormPage() {
 
   useEffect(() => {
     if (employee) {
+      setSelectedCustomerId(employee.customerId);
       form.setFieldsValue({
         ...employee,
         personalDetails: {
@@ -347,11 +354,12 @@ export function EmployeeFormPage() {
                 </Form.Item>
               </Col>
               <Col span={6}>
-                <Form.Item label="Designation" name={['careerDetails', 'designation']}>
+                <Form.Item label="Designation" name={['careerDetails', 'designationId']}>
                   <Select
-                    placeholder="Select designation"
+                    placeholder={selectedCustomerId ? 'Select designation' : 'Select a customer first'}
                     showSearch={{ optionFilterProp: 'label' }}
-                    options={DESIGNATION_OPTIONS.map((d) => ({ value: d, label: d }))}
+                    disabled={!selectedCustomerId}
+                    options={designations.map((d) => ({ value: d.id, label: d.name }))}
                   />
                 </Form.Item>
               </Col>

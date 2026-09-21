@@ -27,7 +27,7 @@ function exportCsv(rows: Employee[], customerNameById: Map<number | undefined, s
       e.emailId ?? '',
       e.idNo ?? '',
       e.phoneNo ?? '',
-      e.careerDetails?.designation ?? '',
+      e.careerDetails?.designation?.name ?? '',
       customerNameById.get(e.customerId) ?? '',
       e.careerDetails?.joiningDate ?? '',
       e.isActive ? 'Active' : 'Inactive',
@@ -119,7 +119,7 @@ export function EmployeeListPage() {
       ),
     },
     { title: 'Phone', dataIndex: 'phoneNo', key: 'phoneNo' },
-    { title: 'Designation', key: 'designation', render: (_: unknown, e: Employee) => e.careerDetails?.designation ?? '—' },
+    { title: 'Designation', key: 'designation', render: (_: unknown, e: Employee) => e.careerDetails?.designation?.name ?? '—' },
     { title: 'Customer', key: 'customer', render: (_: unknown, e: Employee) => customerNameById.get(e.customerId) ?? '—' },
     { title: 'Joining Date', key: 'joiningDate', render: (_: unknown, e: Employee) => e.careerDetails?.joiningDate ?? '—' },
     {

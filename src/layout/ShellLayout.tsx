@@ -87,7 +87,7 @@ export function ShellLayout() {
         label: 'Payments',
         children: [
           { key: '/payments/run-payroll', label: 'Run Payroll' },
-          { key: '/payments/advance-types', label: 'Advance Types' },
+          { key: '/payments/deduction-types', label: 'Deduction Types' },
         ],
       });
     }
@@ -95,6 +95,13 @@ export function ShellLayout() {
     if (hasAnyRole(...USERS_ROLES)) {
       items.push({ key: '/users', icon: <UserOutlined />, label: 'Users' });
     }
+
+    items.push({
+      key: 'settings-group',
+      icon: <SettingOutlined />,
+      label: 'Settings',
+      children: [{ key: '/settings/designations', label: 'Designations' }],
+    });
 
     return items;
   }, [role]);
@@ -106,6 +113,7 @@ export function ShellLayout() {
     if (location.pathname.startsWith('/attendance')) return location.pathname;
     if (location.pathname.startsWith('/employees/salary-details')) return '/employees/salary-details';
     if (location.pathname.startsWith('/payments')) return location.pathname;
+    if (location.pathname.startsWith('/settings')) return location.pathname;
     return `/${location.pathname.split('/')[1] || 'dashboard'}`;
   }, [location.pathname]);
 
@@ -119,6 +127,7 @@ export function ShellLayout() {
     }
     if (location.pathname.startsWith('/attendance')) return 'attendance-group';
     if (location.pathname.startsWith('/payments')) return 'payments-group';
+    if (location.pathname.startsWith('/settings')) return 'settings-group';
     return null;
   }, [location.pathname]);
 

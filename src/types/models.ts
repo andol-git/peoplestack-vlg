@@ -44,7 +44,8 @@ export interface CareerDetails {
   dateOfInterview?: string;
   joiningDate: string;
   reJoiningDate?: string | null;
-  designation?: string;
+  designationId?: number;
+  designation?: Designation;
   organisation?: string;
   natureOfEmployment?: string;
   reasonForLeaving?: string;
@@ -265,7 +266,16 @@ export interface Customer {
   assignedStaffCount?: number;
 }
 
-export interface AdvanceType {
+export interface DeductionType {
+  id: number;
+  customer: Customer;
+  name: string;
+  isActive: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface Designation {
   id: number;
   customer: Customer;
   name: string;
