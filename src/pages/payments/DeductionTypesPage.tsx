@@ -3,10 +3,10 @@ import { Button, Card, Input, Popconfirm, Select, Table, message } from 'antd';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { useCustomersQuery } from '../../hooks/useCustomers';
-import { useAdvanceTypesQuery, useCreateAdvanceType, useDeleteAdvanceType } from '../../hooks/useAdvanceTypes';
-import type { AdvanceType } from '../../types/models';
+import { useCreateDeductionType, useDeductionTypesQuery, useDeleteDeductionType } from '../../hooks/useDeductionTypes';
+import type { DeductionType } from '../../types/models';
 
-export function AdvanceTypesPage() {
+export function DeductionTypesPage() {
   const [customerId, setCustomerId] = useState<number | undefined>();
   const [name, setName] = useState('');
 
@@ -16,9 +16,9 @@ export function AdvanceTypesPage() {
     [customers]
   );
 
-  const { data: advanceTypes = [], isLoading } = useAdvanceTypesQuery(customerId);
-  const createMutation = useCreateAdvanceType();
-  const deleteMutation = useDeleteAdvanceType();
+  const { data: deductionTypes = [], isLoading } = useDeductionTypesQuery(customerId);
+  const createMutation = useCreateDeductionType();
+  const deleteMutation = useDeleteDeductionType();
 
   async function handleAdd() {
     if (!customerId) {
@@ -27,15 +27,15 @@ export function AdvanceTypesPage() {
     }
     const trimmed = name.trim();
     if (!trimmed) {
-      message.error('Please enter an advance type.');
+      message.error('Please enter a deduction type.');
       return;
     }
     try {
       await createMutation.mutateAsync({ customerId, name: trimmed });
-      message.success('Advance type added.');
+      message.success('Deduction type added.');
       setName('');
     } catch (err: any) {
-      message.error(err?.response?.data?.message ?? 'Failed to add advance type.');
+      message.error(err?.response?.data?.message ?? 'Failed to add deduction type.');
     }
   }
 
@@ -43,14 +43,14 @@ export function AdvanceTypesPage() {
     if (!customerId) return;
     try {
       await deleteMutation.mutateAsync({ id, customerId });
-      message.success('Advance type removed.');
+      message.success('Deduction type removed.');
     } catch (err: any) {
-      message.error(err?.response?.data?.message ?? 'Failed to remove advance type.');
+      message.error(err?.response?.data?.message ?? 'Failed to remove deduction type.');
     }
   }
 
   const columns = [
-    { title: 'Advance Type', dataIndex: 'name', key: 'name' },
+    { title: 'Deduction Type', dataIndex: 'name', key: 'name' },
     {
       title: 'Created At',
       dataIndex: 'createdAt',
@@ -61,8 +61,8 @@ export function AdvanceTypesPage() {
       title: 'Action',
       key: 'action',
       align: 'right' as const,
-      render: (_: unknown, row: AdvanceType) => (
-        <Popconfirm title="Remove this advance type?" onConfirm={() => handleDelete(row.id)}>
+      render: (_: unknown, row: DeductionType) => (
+        <Popconfirm title="Remove this deduction type?" onConfirm={() => handleDelete(row.id)}>
           <Button type="text" size="small" icon={<DeleteOutlined />} style={{ color: '#ef4444' }} title="Delete" />
         </Popconfirm>
       ),
@@ -72,8 +72,8 @@ export function AdvanceTypesPage() {
   return (
     <div>
       <div style={{ marginBottom: 16 }}>
-        <h1 style={{ margin: 0, fontSize: 22, fontWeight: 700 }}>Advance Types</h1>
-        <p style={{ margin: '4px 0 0', color: '#9ca3af' }}>Manage the advance categories available per customer</p>
+        <h1 style={{ margin: 0, fontSize: 22, fontWeight: 700 }}>Deduction Types</h1>
+        <p style={{ margin: '4px 0 0', color: '#9ca3af' }}>Manage the deduction categories available per customer</p>
       </div>
 
       <Card styles={{ body: { padding: 20 } }}>
@@ -96,13 +96,13 @@ export function AdvanceTypesPage() {
         <div style={{ display: 'flex', gap: 24, alignItems: 'flex-end', marginBottom: 20 }}>
           <div style={{ flex: 1, maxWidth: 320 }}>
             <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5, color: '#475569', marginBottom: 6 }}>
-              Advance Type
+              Deduction Type
             </div>
             <Input
               value={name}
               onChange={(e) => setName(e.target.value)}
               onPressEnter={handleAdd}
-              placeholder="e.g. Medical Advance"
+              placeholder="e.g. Uniform Deduction"
               disabled={!customerId}
             />
           </div>
@@ -120,11 +120,11 @@ export function AdvanceTypesPage() {
         <Table
           rowKey="id"
           loading={isLoading}
-          dataSource={advanceTypes}
+          dataSource={deductionTypes}
           columns={columns}
           pagination={{ pageSize: 10 }}
           locale={{
-            emptyText: customerId ? 'No advance types added for this customer yet.' : 'Select a customer to view its advance types.',
+            emptyText: customerId ? 'No deduction types added for this customer yet.' : 'Select a customer to view its deduction types.',
           }}
         />
       </Card>

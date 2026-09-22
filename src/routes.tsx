@@ -17,7 +17,8 @@ import { UserDetailPage } from './pages/users/UserDetailPage';
 import { TodayAttendancePage } from './pages/attendance/TodayAttendancePage';
 import { AttendanceSheetPage } from './pages/attendance/AttendanceSheetPage';
 import { RunPayrollPage } from './pages/payments/RunPayrollPage';
-import { AdvanceTypesPage } from './pages/payments/AdvanceTypesPage';
+import { DeductionTypesPage } from './pages/payments/DeductionTypesPage';
+import { DesignationsPage } from './pages/settings/DesignationsPage';
 
 export function AppRoutes() {
   return (
@@ -54,7 +55,9 @@ export function AppRoutes() {
           <Route path="/attendance/sheet" element={<AttendanceSheetPage />} />
 
           <Route path="/payments/run-payroll" element={<RunPayrollPage />} />
-          <Route path="/payments/advance-types" element={<AdvanceTypesPage />} />
+          <Route path="/payments/deduction-types" element={<DeductionTypesPage />} />
+
+          <Route path="/settings/designations" element={<DesignationsPage />} />
         </Route>
       </Route>
 
