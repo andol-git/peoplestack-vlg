@@ -20,12 +20,11 @@ function initials(name?: string): string {
 }
 
 function exportCsv(rows: Employee[], customerNameById: Map<number | undefined, string>) {
-  const headers = ['Employee', 'Email', 'ID No', 'Phone', 'Designation', 'Customer', 'Joining Date', 'Status'];
+  const headers = ['Employee', 'Email', 'Phone', 'Designation', 'Customer', 'Joining Date', 'Status'];
   const lines = rows.map((e) =>
     [
       e.personalDetails?.name ?? '',
       e.emailId ?? '',
-      e.idNo ?? '',
       e.phoneNo ?? '',
       e.careerDetails?.designation?.name ?? '',
       customerNameById.get(e.customerId) ?? '',
@@ -69,7 +68,7 @@ export function EmployeeListPage() {
   const { data: customers = [] } = useCustomersQuery();
 
   // The employees actually rendered in the table — fetched from the backend, scoped to the
-  // selected customer and search text (name / ID No / phone). With neither set, this shares
+  // selected customer and search text (name / phone). With neither set, this shares
   // its cache with the queries above.
   const { data: employees = [], isLoading } = useEmployeesQuery(tab === 'active', customerIdParam, debouncedSearch);
 
@@ -98,24 +97,6 @@ export function EmployeeListPage() {
             <div style={{ fontSize: 12, color: '#94a3b8' }}>{e.emailId}</div>
           </div>
         </div>
-      ),
-    },
-    {
-      title: 'ID No',
-      key: 'idNo',
-      render: (_: unknown, e: Employee) => (
-        <span
-          style={{
-            border: '1px solid #e5e7eb',
-            borderRadius: 6,
-            padding: '2px 8px',
-            fontSize: 12,
-            fontFamily: "'JetBrains Mono', monospace",
-            color: '#475569',
-          }}
-        >
-          {e.idNo}
-        </span>
       ),
     },
     { title: 'Phone', dataIndex: 'phoneNo', key: 'phoneNo' },
@@ -225,7 +206,7 @@ export function EmployeeListPage() {
 
           <div style={{ display: 'flex', gap: 8 }}>
             <Input
-              placeholder="Search by name, ID, phone..."
+              placeholder="Search by name, phone..."
               prefix={<SearchOutlined style={{ color: '#cbd5e1' }} />}
               value={search}
               onChange={(e) => setSearch(e.target.value)}

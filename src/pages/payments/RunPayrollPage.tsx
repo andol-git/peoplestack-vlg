@@ -51,7 +51,6 @@ function downloadPayrollRunsCsv(runs: PayrollRunSummary[], companyName: string) 
 // The actual monthly payroll file: one row per employee paid in that run.
 function downloadPayrollRunLinesCsv(run: PayrollRunDetail) {
   const headers = [
-    'Employee ID No',
     'Employee Name',
     'Days in Period',
     'Present Days',
@@ -70,7 +69,6 @@ function downloadPayrollRunLinesCsv(run: PayrollRunDetail) {
   ];
   const rows = run.lines.map((l) =>
     [
-      l.employeeIdNo,
       l.employeeName ?? '',
       l.daysInPeriod,
       l.presentDays,
@@ -175,12 +173,7 @@ export function RunPayrollPage() {
     {
       title: 'Employee',
       key: 'employee',
-      render: (_: unknown, row: PayrollLine) => (
-        <div>
-          <div style={{ fontWeight: 600 }}>{row.employeeName ?? '—'}</div>
-          <div style={{ fontSize: 12, color: '#94a3b8' }}>{row.employeeIdNo}</div>
-        </div>
-      ),
+      render: (_: unknown, row: PayrollLine) => row.employeeName ?? '—',
     },
     { title: 'Basic', dataIndex: 'basic', key: 'basic', align: 'right' as const, render: formatCurrency },
     { title: 'HRA', dataIndex: 'hra', key: 'hra', align: 'right' as const, render: formatCurrency },
@@ -355,9 +348,7 @@ export function RunPayrollPage() {
               description={
                 <div>
                   {preview.skippedEmployees.map((e) => (
-                    <div key={e.employeeId}>
-                      {e.employeeName ?? e.employeeIdNo} ({e.employeeIdNo})
-                    </div>
+                    <div key={e.employeeId}>{e.employeeName ?? `Employee #${e.employeeId}`}</div>
                   ))}
                   <Link to="/employees/salary-details">Set up salary details →</Link>
                 </div>

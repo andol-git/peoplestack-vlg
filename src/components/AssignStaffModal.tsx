@@ -48,7 +48,7 @@ export function AssignStaffModal({ customerId, customerName, open, onClose, onAs
           onChange={setSelectedEmployeeId}
           options={availableEmployees.map((e) => ({
             value: e.id,
-            label: `${e.personalDetails?.name ?? e.idNo} (${e.idNo})`,
+            label: e.personalDetails?.name ?? `Employee #${e.id}`,
           }))}
           showSearch={{ optionFilterProp: 'label' }}
         />
