@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
+import { useEffect, useState, type KeyboardEvent } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Button, Card, Col, DatePicker, Divider, Form, Input, InputNumber, Row, Select, Steps, Switch, message } from 'antd';
 import dayjs from 'dayjs';
 import { useCreateEmployee, useEmployeeQuery, useUpdateEmployee } from '../../hooks/useEmployees';
-import { useCustomerQuery, useCustomersQuery } from '../../hooks/useCustomers';
+import { useCustomersQuery } from '../../hooks/useCustomers';
 import { useDesignationsQuery } from '../../hooks/useDesignations';
 import type { Employee } from '../../types/models';
 
@@ -68,7 +68,6 @@ function toStringFields(obj: Record<string, any> | undefined, fields: readonly s
 
 // Every required field on Step 1 ("Employee Info") — validated before allowing Next.
 const STEP_0_REQUIRED_FIELDS: (string | (string | number)[])[] = [
-  'idNo',
   'phoneNo',
   ['personalDetails', 'name'],
   ['personalDetails', 'gender'],
@@ -99,27 +98,10 @@ export function EmployeeFormPage() {
   const saving = createMutation.isPending || updateMutation.isPending;
 
   const [selectedCustomerId, setSelectedCustomerId] = useState<number | undefined>();
-  const { data: selectedCustomer } = useCustomerQuery(selectedCustomerId);
   const { data: designations } = useDesignationsQuery(selectedCustomerId);
-  // True only once the user picks a customer from the dropdown themselves — guards the
-  // idNo auto-populate effect below from firing when selectedCustomerId is set from the
-  // employee's existing data on the initial edit-mode load.
-  const customerChangedByUser = useRef(false);
-
-  // Populate Customer Code from the customer fetched from the backend whenever the
-  // customer selection changes (not on the initial edit-mode load of the employee).
-  useEffect(() => {
-    if (selectedCustomer && customerChangedByUser.current) {
-      form.setFieldValue('idNo', selectedCustomer.code ?? '');
-    }
-  }, [selectedCustomer, form]);
 
   function handleCustomerChange(value: number | undefined) {
-    customerChangedByUser.current = true;
     setSelectedCustomerId(value);
-    if (value === undefined) {
-      form.setFieldValue('idNo', undefined);
-    }
   }
 
   useEffect(() => {
@@ -173,10 +155,10 @@ export function EmployeeFormPage() {
 
       if (isEditMode) {
         await updateMutation.mutateAsync({ id: +id!, employee: payload });
-        message.success(`Employee ${payload.idNo} updated successfully.`);
+        message.success('Employee updated successfully.');
       } else {
         await createMutation.mutateAsync(payload);
-        message.success(`Employee ${payload.idNo} created successfully.`);
+        message.success('Employee created successfully.');
       }
       navigate('/employees');
     } catch (err: any) {
@@ -217,11 +199,6 @@ export function EmployeeFormPage() {
                     onChange={handleCustomerChange}
                     allowClear
                   />
-                </Form.Item>
-              </Col>
-              <Col span={6}>
-                <Form.Item label="Customer Code" name="idNo" rules={[{ required: true }]}>
-                  <Input placeholder="Select a customer to populate" readOnly />
                 </Form.Item>
               </Col>
               <Col span={6}>

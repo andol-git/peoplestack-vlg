@@ -27,7 +27,6 @@ function formatOptionalCurrency(value: number | null | undefined): string {
 interface SalaryRow {
   salaryDetailId?: number;
   employeeId: number;
-  employeeIdNo: string;
   employeeName?: string;
   basic: number;
   hra: number | null;
@@ -69,7 +68,6 @@ export function SalaryDetailsListPage() {
         return {
           salaryDetailId: detail?.id,
           employeeId: e.id!,
-          employeeIdNo: e.idNo,
           employeeName: e.personalDetails?.name,
           basic: detail?.basic ?? 0,
           hra: detail?.hra ?? null,
@@ -88,10 +86,7 @@ export function SalaryDetailsListPage() {
       render: (_: unknown, row: SalaryRow) => (
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <Avatar className="ps-avatar">{initials(row.employeeName)}</Avatar>
-          <div>
-            <div style={{ fontWeight: 600 }}>{row.employeeName ?? '—'}</div>
-            <div style={{ fontSize: 12, color: '#94a3b8' }}>{row.employeeIdNo}</div>
-          </div>
+          <div style={{ fontWeight: 600 }}>{row.employeeName ?? '—'}</div>
         </div>
       ),
     },
@@ -193,7 +188,6 @@ export function SalaryDetailsListPage() {
           customerId={customerId!}
           employeeId={selectedForAdd.employeeId}
           employeeName={selectedForAdd.employeeName}
-          employeeIdNo={selectedForAdd.employeeIdNo}
           existing={
             selectedForAdd.hasRecord && selectedForAdd.salaryDetailId && selectedForAdd.effectiveFrom
               ? {

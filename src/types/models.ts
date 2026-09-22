@@ -137,8 +137,6 @@ export interface WorkDetails {
 export interface Employee {
   id?: number;
   customerId?: number;
-  //vlgId: string;
-  idNo: string;
   serialNumberAssigned?: string;
   emailId?: string;
   phoneNo: string;
@@ -182,7 +180,6 @@ export interface AttendanceHistoryEntry {
 export interface EmployeeSalaryDetail {
   id: number;
   employeeId: number;
-  employeeIdNo: string;
   employeeName?: string;
   customerId: number;
   customerName?: string;
@@ -200,7 +197,6 @@ export interface EmployeeSalaryDetail {
 
 export interface PayrollLine {
   employeeId: number;
-  employeeIdNo: string;
   employeeName?: string;
   daysInPeriod: number;
   presentDays: number;
@@ -220,7 +216,6 @@ export interface PayrollLine {
 
 export interface SkippedEmployee {
   employeeId: number;
-  employeeIdNo: string;
   employeeName?: string;
   reason: string;
 }

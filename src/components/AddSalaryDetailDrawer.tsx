@@ -17,7 +17,6 @@ interface Props {
   customerId: number;
   employeeId: number;
   employeeName?: string;
-  employeeIdNo: string;
   existing?: ExistingSalaryDetail;
   onClose: () => void;
   onSaved: () => void;
@@ -35,7 +34,6 @@ export function AddSalaryDetailDrawer({
   open,
   employeeId,
   employeeName,
-  employeeIdNo,
   existing,
   onClose,
   onSaved,
@@ -114,7 +112,6 @@ export function AddSalaryDetailDrawer({
     >
       <div style={{ marginBottom: 20, padding: 12, borderRadius: 8, background: '#f8fafc' }}>
         <div style={{ fontWeight: 600 }}>{employeeName ?? '—'}</div>
-        <div style={{ fontSize: 12, color: '#94a3b8' }}>{employeeIdNo}</div>
       </div>
 
       <Form form={form} layout="vertical" initialValues={{ effectiveFrom: dayjs() }}>
