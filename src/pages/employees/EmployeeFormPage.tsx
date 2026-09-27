@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Button, Card, Col, DatePicker, Divider, Form, Input, InputNumber, Row, Select, Steps, Switch, message } from 'antd';
 import dayjs from 'dayjs';
 import { useCreateEmployee, useEmployeeQuery, useUpdateEmployee } from '../../hooks/useEmployees';
-import { useCustomersQuery } from '../../hooks/useCustomers';
+import { useCustomerQuery, useCustomersQuery } from '../../hooks/useCustomers';
 import { useDesignationsQuery } from '../../hooks/useDesignations';
 import type { Employee } from '../../types/models';
 
@@ -98,6 +98,7 @@ export function EmployeeFormPage() {
   const saving = createMutation.isPending || updateMutation.isPending;
 
   const [selectedCustomerId, setSelectedCustomerId] = useState<number | undefined>();
+  const { data: selectedCustomer } = useCustomerQuery(selectedCustomerId);
   const { data: designations } = useDesignationsQuery(selectedCustomerId);
 
   function handleCustomerChange(value: number | undefined) {
@@ -199,6 +200,11 @@ export function EmployeeFormPage() {
                     onChange={handleCustomerChange}
                     allowClear
                   />
+                </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item label="Customer Code">
+                  <Input value={selectedCustomer?.code ?? ''} placeholder="Select a customer to populate" readOnly />
                 </Form.Item>
               </Col>
               <Col span={6}>
