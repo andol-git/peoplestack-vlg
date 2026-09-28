@@ -6,21 +6,18 @@ import { useCreateEmployee, useEmployeeQuery, useUpdateEmployee } from '../../ho
 import { useCustomersQuery } from '../../hooks/useCustomers';
 import { useDesignationsQuery } from '../../hooks/useDesignations';
 import type { Employee } from '../../types/models';
-
-const GENDER_OPTIONS = ['Male', 'Female', 'Other'];
-const MARITAL_OPTIONS = ['Married', 'Single'];
-const STATUS_OPTIONS = ['Not Applied', 'Applied', 'Completed'];
-const EXIT_STATUS_OPTIONS = ['Resigned', 'On Leave', 'Left', 'Not Joined'];
-const STATE_OPTIONS = [
-  'Andhra Pradesh', 'Telangana', 'Karnataka', 'Tamil Nadu', 'Maharashtra', 'Delhi',
-  'Uttar Pradesh', 'West Bengal', 'Bihar', 'Rajasthan', 'Gujarat', 'Odisha',
-  'Madhya Pradesh', 'Assam', 'Kerala', 'Jharkhand', 'Other',
-];
-const SHIFT_OPTIONS = ['Day', 'Night'];
-const OPTED_OPTIONS = ['Opted', 'Not Opted'];
-const UNIFORM_OPTIONS = ['Shirt, Socks, ID Card', 'Not Opted']; 
-const AEP_TYPE_OPTIONS = ['TAEP', 'BAEP', 'NA'];
-const BLOOD_GROUP_OPTIONS = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
+import {
+  GENDER_OPTIONS,
+  MARITAL_OPTIONS,
+  STATUS_OPTIONS,
+  EXIT_STATUS_OPTIONS,
+  STATE_OPTIONS,
+  SHIFT_OPTIONS,
+  OPTED_OPTIONS,
+  UNIFORM_OPTIONS,
+  AEP_TYPE_OPTIONS,
+  BLOOD_GROUP_OPTIONS,
+} from '../../constants/employeeOptions';
 
 // The backend requires every Legal Background flag on every submission — default them so a
 // brand-new form (where the switches haven't been touched) still submits valid boolean values.
