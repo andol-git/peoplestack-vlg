@@ -1,4 +1,4 @@
-import { useEffect, useState, type KeyboardEvent } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Button, Card, Col, DatePicker, Divider, Form, Input, InputNumber, Row, Select, Steps, Switch, message } from 'antd';
 import dayjs from 'dayjs';
@@ -18,50 +18,16 @@ import {
   AEP_TYPE_OPTIONS,
   BLOOD_GROUP_OPTIONS,
 } from '../../constants/employeeOptions';
-
-// The backend requires every Legal Background flag on every submission — default them so a
-// brand-new form (where the switches haven't been touched) still submits valid boolean values.
-const LEGAL_BACKGROUND_DEFAULTS = {
-  everDetained: false,
-  everBoundDown: false,
-  everFined: false,
-  everConvicted: false,
-  anyCasePending: false,
-  everArrested: false,
-  everProsecuted: false,
-  dismissedOrRemoved: false,
-  dischargedFromTraining: false,
-  previousEmploymentUnderGovt: false,
-  undertakingOwnedByGovt: false,
-};
-
-// Blocks any non-digit keystroke so phone-style fields can only ever contain digits.
-function blockNonDigits(e: KeyboardEvent<HTMLInputElement>) {
-  if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.key)) {
-    e.preventDefault();
-  }
-}
-
-// Nested date fields that need dayjs <-> 'YYYY-MM-DD' string conversion around the antd Form.
-const CAREER_DATE_FIELDS = ['dateOfInterview', 'joiningDate', 'reJoiningDate', 'fromDate', 'tillDate'] as const;
-const COMPLIANCE_DATE_FIELDS = ['passportValidFrom', 'passportValidTo', 'aepDate', 'avsecValidFrom', 'avsecValidTo'] as const;
-const WORK_DATE_FIELDS = ['hostelJoiningDate', 'leaveFromDate', 'leaveToDate', 'noticeDate', 'exitDate'] as const;
-
-function toDayjsFields(obj: Record<string, any> | undefined, fields: readonly string[]) {
-  const result: Record<string, any> = { ...obj };
-  for (const f of fields) {
-    if (result[f]) result[f] = dayjs(result[f]);
-  }
-  return result;
-}
-
-function toStringFields(obj: Record<string, any> | undefined, fields: readonly string[]) {
-  const result: Record<string, any> = { ...obj };
-  for (const f of fields) {
-    if (result[f] && typeof result[f].format === 'function') result[f] = result[f].format('YYYY-MM-DD');
-  }
-  return result;
-}
+import {
+  CAREER_DATE_FIELDS,
+  COMPLIANCE_DATE_FIELDS,
+  WORK_DATE_FIELDS,
+  LEGAL_BACKGROUND_FIELDS,
+  LEGAL_BACKGROUND_DEFAULTS,
+  toDayjsFields,
+  toStringFields,
+  blockNonDigits,
+} from '../../utils/employeeFormFields';
 
 // Every required field on Step 1 ("Employee Info") — validated before allowing Next.
 const STEP_0_REQUIRED_FIELDS: (string | (string | number)[])[] = [
@@ -346,7 +312,22 @@ export function EmployeeFormPage() {
                 <Form.Item label="Nature of Employment" name={['careerDetails', 'natureOfEmployment']}>
                   <Input placeholder="Enter nature of employment" />
                 </Form.Item>
-              </Col>                
+              </Col>
+              <Col span={6}>
+                <Form.Item label="Reason for Leaving" name={['careerDetails', 'reasonForLeaving']}>
+                  <Input placeholder="Enter reason for leaving" />
+                </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item label="From Date" name={['careerDetails', 'fromDate']}>
+                  <DatePicker style={{ width: '100%' }} placeholder="DD-MM-YYYY" format="DD-MM-YYYY" />
+                </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item label="Till Date" name={['careerDetails', 'tillDate']}>
+                  <DatePicker style={{ width: '100%' }} placeholder="DD-MM-YYYY" format="DD-MM-YYYY" />
+                </Form.Item>
+              </Col>
               <Col span={6}>
                 <Form.Item label="Age at Matriculation" name={['careerDetails', 'ageAtMatriculation']}>
                   <Input placeholder="Enter age at matriculation" />
@@ -362,12 +343,26 @@ export function EmployeeFormPage() {
                   <Input placeholder="Enter educational qualifications" />
                 </Form.Item>
               </Col>
+              <Col span={6}>
+                <Form.Item label="Staying From" name={['careerDetails', 'stayingFrom']}>
+                  <Input placeholder="Enter staying from" />
+                </Form.Item>
+              </Col>
               <Col span={18}>
                 <Form.Item label="Name of School/College with Full Address" name={['careerDetails', 'schoolCollegeName']}>
                   <Input placeholder="Enter school/college name & address" />
                 </Form.Item>
               </Col>
-             
+              <Col span={12}>
+                <Form.Item label="Present Address" name={['careerDetails', 'presentAddress']}>
+                  <Input placeholder="Enter present address" />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item label="Present Address 2" name={['careerDetails', 'presentAddress2']}>
+                  <Input placeholder="Enter present address (line 2)" />
+                </Form.Item>
+              </Col>
               <Col span={18}>
                 <Form.Item label="Reference with Full Address" name={['careerDetails', 'referenceWithFullAddress']}>
                   <Input placeholder="Enter reference name & full address" />
@@ -424,21 +419,7 @@ export function EmployeeFormPage() {
 
             <Divider titlePlacement="left">Legal Background</Divider>
             <Row gutter={16}>
-              {(
-                [
-                  ['everDetained', 'Ever Detained'],
-                  ['everBoundDown', 'Ever Bound Down'],
-                  ['everFined', 'Ever Fined'],
-                  ['everConvicted', 'Ever Convicted'],
-                  ['anyCasePending', 'Any Case Pending'],
-                  ['everArrested', 'Ever Arrested'],
-                  ['everProsecuted', 'Ever Prosecuted'],
-                  ['dismissedOrRemoved', 'Dismissed or Removed'],
-                  ['dischargedFromTraining', 'Discharged from Training'],
-                  ['previousEmploymentUnderGovt', 'Previous Employment under Govt.'],
-                  ['undertakingOwnedByGovt', 'Undertaking Owned/Controlled by Govt.'],
-                ] as const
-              ).map(([field, label]) => (
+              {LEGAL_BACKGROUND_FIELDS.map(([field, label]) => (
                 <Col span={6} key={field}>
                   <Form.Item label={label} name={['legalBackground', field]} valuePropName="checked">
                     <Switch />
@@ -561,6 +542,11 @@ export function EmployeeFormPage() {
 
             <Divider titlePlacement="left">Work Details</Divider>
             <Row gutter={16}>
+                <Col span={6}>
+                  <Form.Item label="Site" name={['workDetails', 'site']}>
+                    <Input placeholder="Enter site" />
+                  </Form.Item>
+                </Col>
                 <Col span={6}>
                   <Form.Item label="Shift" name={['workDetails', 'shift']}>
                     <Select

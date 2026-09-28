@@ -7,6 +7,7 @@ import {
   DashboardOutlined,
   DollarOutlined,
   DownOutlined,
+  IdcardOutlined,
   LogoutOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
@@ -94,6 +95,10 @@ export function ShellLayout() {
 
     if (hasAnyRole(...USERS_ROLES)) {
       items.push({ key: '/users', icon: <UserOutlined />, label: 'Users' });
+    }
+
+    if (hasAnyRole(...EMPLOYEES_ROLES)) {
+      items.push({ key: '/id-cards', icon: <IdcardOutlined />, label: 'ID Card Generator' });
     }
 
     items.push({
