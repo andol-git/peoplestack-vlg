@@ -71,6 +71,7 @@ export function ShellLayout() {
       { type: 'divider' },
       { key: '/attendance/today', label: "Attendance" },
       { key: '/attendance/sheet', label: 'Attendance Sheet' },
+      { key: '/attendance/add', label: 'Add Attendance' },
     ];
    
     items.push({

@@ -16,6 +16,7 @@ import { UserFormPage } from './pages/users/UserFormPage';
 import { UserDetailPage } from './pages/users/UserDetailPage';
 import { TodayAttendancePage } from './pages/attendance/TodayAttendancePage';
 import { AttendanceSheetPage } from './pages/attendance/AttendanceSheetPage';
+import { AddAttendancePage } from './pages/attendance/AddAttendancePage';
 import { RunPayrollPage } from './pages/payments/RunPayrollPage';
 import { DeductionTypesPage } from './pages/payments/DeductionTypesPage';
 import { DesignationsPage } from './pages/settings/DesignationsPage';
@@ -54,6 +55,7 @@ export function AppRoutes() {
           <Route path="/attendance" element={<Navigate to="/attendance/today" replace />} />
           <Route path="/attendance/today" element={<TodayAttendancePage />} />
           <Route path="/attendance/sheet" element={<AttendanceSheetPage />} />
+          <Route path="/attendance/add" element={<AddAttendancePage />} />
 
           <Route path="/payments/run-payroll" element={<RunPayrollPage />} />
           <Route path="/payments/deduction-types" element={<DeductionTypesPage />} />

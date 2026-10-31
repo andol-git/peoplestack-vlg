@@ -175,6 +175,25 @@ export interface AttendanceHistoryEntry {
   updatedAt?: string;
 }
 
+/** One cell of the Add Attendance grid. present: true = P, false = A, null = clear the day. */
+export interface BulkAttendanceEntry {
+  employeeId: number;
+  date: string; // YYYY-MM-DD
+  present: boolean | null;
+}
+
+export interface BulkAttendanceResponse {
+  created: number;
+  updated: number;
+  cleared: number;
+}
+
+/** A payroll run's period; attendance inside it can no longer be changed. */
+export interface AttendanceLockedPeriod {
+  fromDate: string; // YYYY-MM-DD
+  toDate: string; // YYYY-MM-DD
+}
+
 // ─── Employee Salary Details ───────────────────────────────────────────────────
 
 export interface EmployeeSalaryDetail {
