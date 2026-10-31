@@ -19,6 +19,7 @@ import { AttendanceSheetPage } from './pages/attendance/AttendanceSheetPage';
 import { RunPayrollPage } from './pages/payments/RunPayrollPage';
 import { DeductionTypesPage } from './pages/payments/DeductionTypesPage';
 import { DesignationsPage } from './pages/settings/DesignationsPage';
+import { PayrollSettingsPage } from './pages/settings/PayrollSettingsPage';
 
 export function AppRoutes() {
   return (
@@ -58,6 +59,7 @@ export function AppRoutes() {
           <Route path="/payments/deduction-types" element={<DeductionTypesPage />} />
 
           <Route path="/settings/designations" element={<DesignationsPage />} />
+          <Route path="/settings/payroll" element={<PayrollSettingsPage />} />
         </Route>
       </Route>
 

@@ -209,8 +209,11 @@ export interface PayrollLine {
   proratedDa: number;
   proratedOthers: number;
   grossPay: number;
+  bonus?: number;
+  leaveWages?: number;
   professionalTax: number;
   providentFund: number;
+  esi?: number;
   netPay: number;
 }
 
@@ -263,7 +266,6 @@ export interface Customer {
 
 export interface DeductionType {
   id: number;
-  customer: Customer;
   name: string;
   isActive: boolean;
   createdAt?: string;
@@ -277,6 +279,15 @@ export interface Designation {
   isActive: boolean;
   createdAt?: string;
   updatedAt?: string;
+}
+
+export type EsiComponent = 'BASIC' | 'DA' | 'HRA';
+
+export interface CustomerPayrollSettings {
+  customerId: number;
+  esiComponents: EsiComponent[];
+  bonusEnabled: boolean;
+  leaveWagesEnabled: boolean;
 }
 
 export interface StaffAssignment {

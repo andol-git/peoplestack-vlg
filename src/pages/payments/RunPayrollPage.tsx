@@ -7,8 +7,9 @@ import { useCustomersQuery } from '../../hooks/useCustomers';
 import { useFetchPayrollRun, usePayrollPreviewQuery, usePayrollRunsQuery, useRunPayroll } from '../../hooks/usePayroll';
 import type { PayrollLine, PayrollRunDetail, PayrollRunSummary } from '../../types/models';
 
-function formatCurrency(value: number): string {
-  return `₹${value.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+// Tolerates a missing amount (e.g. a backend that doesn't return a newer field like `esi` yet).
+function formatCurrency(value: number | null | undefined): string {
+  return `₹${(value ?? 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
 function slugify(name: string): string {
@@ -63,8 +64,11 @@ function downloadPayrollRunLinesCsv(run: PayrollRunDetail) {
     'Prorated DA',
     'Prorated Others',
     'Gross Pay',
+    'Bonus',
+    'Leave Wages',
     'Professional Tax',
     'Provident Fund',
+    'ESI',
     'Net Pay',
   ];
   const rows = run.lines.map((l) =>
@@ -81,8 +85,11 @@ function downloadPayrollRunLinesCsv(run: PayrollRunDetail) {
       l.proratedDa.toFixed(2),
       l.proratedOthers.toFixed(2),
       l.grossPay.toFixed(2),
+      (l.bonus ?? 0).toFixed(2),
+      (l.leaveWages ?? 0).toFixed(2),
       l.professionalTax.toFixed(2),
       l.providentFund.toFixed(2),
+      (l.esi ?? 0).toFixed(2),
       l.netPay.toFixed(2),
     ]
       .map(csvCell)
@@ -221,6 +228,20 @@ export function RunPayrollPage() {
       render: (v: number) => <strong>{formatCurrency(v)}</strong>,
     },
     {
+      title: 'Bonus',
+      dataIndex: 'bonus',
+      key: 'bonus',
+      align: 'right' as const,
+      render: formatCurrency,
+    },
+    {
+      title: 'Leave Wages',
+      dataIndex: 'leaveWages',
+      key: 'leaveWages',
+      align: 'right' as const,
+      render: formatCurrency,
+    },
+    {
       title: 'Professional Tax',
       dataIndex: 'professionalTax',
       key: 'professionalTax',
@@ -231,6 +252,13 @@ export function RunPayrollPage() {
       title: 'Provident Fund',
       dataIndex: 'providentFund',
       key: 'providentFund',
+      align: 'right' as const,
+      render: formatCurrency,
+    },
+    {
+      title: 'ESI',
+      dataIndex: 'esi',
+      key: 'esi',
       align: 'right' as const,
       render: formatCurrency,
     },
