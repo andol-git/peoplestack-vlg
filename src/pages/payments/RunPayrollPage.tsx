@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Alert, Button, Card, Col, DatePicker, Popconfirm, Row, Select, Statistic, Table, Tag, message } from 'antd';
+import { Alert, Button, Card, Col, DatePicker, Popconfirm, Row, Select, Statistic, Table, Tag, Tooltip, message } from 'antd';
 import { DownloadOutlined, PlayCircleOutlined, SearchOutlined } from '@ant-design/icons';
 import dayjs, { type Dayjs } from 'dayjs';
 import { useCustomersQuery } from '../../hooks/useCustomers';
@@ -55,6 +55,8 @@ function downloadPayrollRunLinesCsv(run: PayrollRunDetail) {
     'Employee Name',
     'Days in Period',
     'Present Days',
+    'Week Off Days',
+    'OT Days',
     'Basic',
     'HRA',
     'DA',
@@ -66,6 +68,7 @@ function downloadPayrollRunLinesCsv(run: PayrollRunDetail) {
     'Gross Pay',
     'Bonus',
     'Leave Wages',
+    'OT Pay',
     'Professional Tax',
     'Provident Fund',
     'ESI',
@@ -76,6 +79,8 @@ function downloadPayrollRunLinesCsv(run: PayrollRunDetail) {
       l.employeeName ?? '',
       l.daysInPeriod,
       l.presentDays,
+      l.weekOffDays ?? 0,
+      l.otDays ?? 0,
       l.basic.toFixed(2),
       l.hra.toFixed(2),
       l.da.toFixed(2),
@@ -87,6 +92,7 @@ function downloadPayrollRunLinesCsv(run: PayrollRunDetail) {
       l.grossPay.toFixed(2),
       (l.bonus ?? 0).toFixed(2),
       (l.leaveWages ?? 0).toFixed(2),
+      (l.otPay ?? 0).toFixed(2),
       l.professionalTax.toFixed(2),
       l.providentFund.toFixed(2),
       (l.esi ?? 0).toFixed(2),
@@ -187,10 +193,25 @@ export function RunPayrollPage() {
     { title: 'DA', dataIndex: 'da', key: 'da', align: 'right' as const, render: formatCurrency },
     { title: 'Others', dataIndex: 'others', key: 'others', align: 'right' as const, render: formatCurrency },
     {
-      title: 'Present / Days',
+      title: (
+        <Tooltip title="Paid days (Present + Week Off) out of the days in the period">
+          Paid / Days
+        </Tooltip>
+      ),
       key: 'attendance',
       align: 'center' as const,
-      render: (_: unknown, row: PayrollLine) => `${row.presentDays} / ${row.daysInPeriod}`,
+      render: (_: unknown, row: PayrollLine) => (
+        <Tooltip title={`Present ${row.presentDays} · Week Off ${row.weekOffDays ?? 0}`}>
+          {row.presentDays + (row.weekOffDays ?? 0)} / {row.daysInPeriod}
+        </Tooltip>
+      ),
+    },
+    {
+      title: 'OT Days',
+      dataIndex: 'otDays',
+      key: 'otDays',
+      align: 'center' as const,
+      render: (v?: number) => v ?? 0,
     },
     {
       title: 'Prorated Basic',
@@ -238,6 +259,17 @@ export function RunPayrollPage() {
       title: 'Leave Wages',
       dataIndex: 'leaveWages',
       key: 'leaveWages',
+      align: 'right' as const,
+      render: formatCurrency,
+    },
+    {
+      title: (
+        <Tooltip title="One day's gross per OT day, paid with no PT / PF / ESI deducted">
+          OT Pay
+        </Tooltip>
+      ),
+      dataIndex: 'otPay',
+      key: 'otPay',
       align: 'right' as const,
       render: formatCurrency,
     },

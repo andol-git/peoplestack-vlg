@@ -1,16 +1,27 @@
 import { useMemo, useState, type ReactNode } from 'react';
 import { Avatar, Button, Card, DatePicker, Select, Table } from 'antd';
-import { CheckCircleFilled, CloseCircleFilled, MinusCircleFilled, SearchOutlined, UploadOutlined } from '@ant-design/icons';
+import {
+  CheckCircleFilled,
+  CloseCircleFilled,
+  MinusCircleFilled,
+  PlusCircleFilled,
+  SearchOutlined,
+  UploadOutlined,
+} from '@ant-design/icons';
 import dayjs, { type Dayjs } from 'dayjs';
 import { useAttendanceQuery } from '../../hooks/useAttendance';
 import { useCustomersQuery } from '../../hooks/useCustomers';
+import { ATTENDANCE_STATUSES, ATTENDANCE_STATUS_META } from '../../constants/attendance';
+import type { AttendanceStatus } from '../../types/models';
 
-type DayStatus = 'P' | 'A' | 'W' | 'N';
+// N = no record for that day.
+type DayStatus = AttendanceStatus | 'N';
 
 const STATUS_ICON: Record<DayStatus, ReactNode> = {
   P: <CheckCircleFilled style={{ color: '#22c55e' }} />,
   A: <CloseCircleFilled style={{ color: '#ef4444' }} />,
-  W: <MinusCircleFilled style={{ color: '#94a3b8' }} />,
+  WO: <MinusCircleFilled style={{ color: '#64748b' }} />,
+  OT: <PlusCircleFilled style={{ color: '#f59e0b' }} />,
   N: <MinusCircleFilled style={{ color: '#e2e8f0' }} />,
 };
 
@@ -69,34 +80,31 @@ export function AttendanceSheetPage() {
     return d === 0 || d === 6;
   }
 
-  // Group the flat record list into one row per employee, with a date -> present lookup.
+  // Group the flat record list into one row per employee, with a date -> status lookup.
   const employees = useMemo(() => {
-    const byEmployee = new Map<string, { employeeId: string; employeeName: string; byDate: Map<string, boolean> }>();
+    const byEmployee = new Map<string, { employeeId: string; employeeName: string; byDate: Map<string, AttendanceStatus> }>();
 
     for (const r of records) {
       if (!byEmployee.has(r.employeeId)) {
         byEmployee.set(r.employeeId, { employeeId: r.employeeId, employeeName: r.employeeName, byDate: new Map() });
       }
-      byEmployee.get(r.employeeId)!.byDate.set(r.attendanceDate, r.present);
+      byEmployee.get(r.employeeId)!.byDate.set(r.attendanceDate, r.status);
     }
 
     return Array.from(byEmployee.values());
   }, [records]);
 
   function getStatus(emp: (typeof employees)[number], date: Dayjs): DayStatus {
-    const present = emp.byDate.get(date.format('YYYY-MM-DD'));
-    if (present !== undefined) return present ? 'P' : 'A';
-    return isWeekend(date) ? 'W' : 'N';
+    return emp.byDate.get(date.format('YYYY-MM-DD')) ?? 'N';
   }
 
-  function summary(emp: (typeof employees)[number]) {
-    let p = 0, a = 0;
+  function summary(emp: (typeof employees)[number]): Record<AttendanceStatus, number> {
+    const counts: Record<AttendanceStatus, number> = { P: 0, A: 0, WO: 0, OT: 0 };
     for (const date of daysArray) {
       const s = getStatus(emp, date);
-      if (s === 'P') p++;
-      else if (s === 'A') a++;
+      if (s !== 'N') counts[s]++;
     }
-    return { p, a };
+    return counts;
   }
 
   const columns = [
@@ -132,26 +140,16 @@ export function AttendanceSheetPage() {
         render: (_: unknown, emp: (typeof employees)[number]) => STATUS_ICON[getStatus(emp, date)],
       };
     }),
-    {
-      title: 'P',
-      key: 'present',
+    ...ATTENDANCE_STATUSES.map((s) => ({
+      title: s,
+      key: `count-${s}`,
       fixed: 'right' as const,
-      width: 46,
+      width: s.length > 1 ? 52 : 46,
       align: 'center' as const,
       render: (_: unknown, emp: (typeof employees)[number]) => (
-        <span style={{ color: '#16a34a', fontWeight: 700 }}>{summary(emp).p}</span>
+        <span style={{ color: ATTENDANCE_STATUS_META[s].color, fontWeight: 700 }}>{summary(emp)[s]}</span>
       ),
-    },
-    {
-      title: 'A',
-      key: 'absent',
-      fixed: 'right' as const,
-      width: 46,
-      align: 'center' as const,
-      render: (_: unknown, emp: (typeof employees)[number]) => (
-        <span style={{ color: '#dc2626', fontWeight: 700 }}>{summary(emp).a}</span>
-      ),
-    },
+    })),
   ];
 
   return (
@@ -227,10 +225,10 @@ export function AttendanceSheetPage() {
             <strong>{employees.length}</strong> employee(s)
           </div>
           <div style={{ display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>
-            <LegendItem icon={<MinusCircleFilled style={{ color: '#94a3b8' }} />} label="Weekend" />
-            <LegendItem icon={<CheckCircleFilled style={{ color: '#22c55e' }} />} label="Present" />
-            <LegendItem icon={<CloseCircleFilled style={{ color: '#ef4444' }} />} label="Absent" />
-            <LegendItem icon={<MinusCircleFilled style={{ color: '#e2e8f0' }} />} label="No Record" />
+            {ATTENDANCE_STATUSES.map((s) => (
+              <LegendItem key={s} icon={STATUS_ICON[s]} label={ATTENDANCE_STATUS_META[s].label} />
+            ))}
+            <LegendItem icon={STATUS_ICON.N} label="No Record" />
           </div>
         </div>
 

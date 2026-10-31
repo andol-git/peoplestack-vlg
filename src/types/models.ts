@@ -155,11 +155,16 @@ export interface Employee {
 
 // ─── Attendance ──────────────────────────────────────────────────────────────
 
+/** P = Present, A = Absent, WO = Week Off (paid), OT = Overtime (a full extra day). */
+export type AttendanceStatus = 'P' | 'A' | 'WO' | 'OT';
+
 export interface AttendanceRecord {
   id: number;
   employeeId: string;
   employeeName: string;
   attendanceDate: string; // YYYY-MM-DD
+  status: AttendanceStatus;
+  /** @deprecated Use `status`. True for P and OT. */
   present: boolean;
   createdAt?: string;
   updatedAt?: string;
@@ -175,11 +180,11 @@ export interface AttendanceHistoryEntry {
   updatedAt?: string;
 }
 
-/** One cell of the Add Attendance grid. present: true = P, false = A, null = clear the day. */
+/** One cell of the Add Attendance grid. status null = clear the day. */
 export interface BulkAttendanceEntry {
   employeeId: number;
   date: string; // YYYY-MM-DD
-  present: boolean | null;
+  status: AttendanceStatus | null;
 }
 
 export interface BulkAttendanceResponse {
@@ -219,6 +224,8 @@ export interface PayrollLine {
   employeeName?: string;
   daysInPeriod: number;
   presentDays: number;
+  weekOffDays?: number;
+  otDays?: number;
   basic: number;
   hra: number;
   da: number;
@@ -230,6 +237,7 @@ export interface PayrollLine {
   grossPay: number;
   bonus?: number;
   leaveWages?: number;
+  otPay?: number;
   professionalTax: number;
   providentFund: number;
   esi?: number;
