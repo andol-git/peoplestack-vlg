@@ -151,15 +151,29 @@ export interface Employee {
   addresses?: Address[];
   complianceDetails?: ComplianceDetails;
   workDetails?: WorkDetails;
+  /** Create-only, write-only: the employee's first salary row (requires customerId). Never returned by the API. */
+  salaryDetails?: InitialSalaryDetails;
+}
+
+export interface InitialSalaryDetails {
+  basic: number;
+  hra?: number;
+  da?: number;
+  others?: number;
 }
 
 // ─── Attendance ──────────────────────────────────────────────────────────────
+
+/** P = Present, A = Absent, WO = Week Off (paid), OT = Overtime (a full extra day). */
+export type AttendanceStatus = 'P' | 'A' | 'WO' | 'OT';
 
 export interface AttendanceRecord {
   id: number;
   employeeId: string;
   employeeName: string;
   attendanceDate: string; // YYYY-MM-DD
+  status: AttendanceStatus;
+  /** @deprecated Use `status`. True for P and OT. */
   present: boolean;
   createdAt?: string;
   updatedAt?: string;
@@ -175,6 +189,25 @@ export interface AttendanceHistoryEntry {
   updatedAt?: string;
 }
 
+/** One cell of the Add Attendance grid. status null = clear the day. */
+export interface BulkAttendanceEntry {
+  employeeId: number;
+  date: string; // YYYY-MM-DD
+  status: AttendanceStatus | null;
+}
+
+export interface BulkAttendanceResponse {
+  created: number;
+  updated: number;
+  cleared: number;
+}
+
+/** A payroll run's period; attendance inside it can no longer be changed. */
+export interface AttendanceLockedPeriod {
+  fromDate: string; // YYYY-MM-DD
+  toDate: string; // YYYY-MM-DD
+}
+
 // ─── Employee Salary Details ───────────────────────────────────────────────────
 
 export interface EmployeeSalaryDetail {
@@ -187,7 +220,6 @@ export interface EmployeeSalaryDetail {
   hra?: number | null;
   da?: number | null;
   others?: number | null;
-  effectiveFrom: string; // YYYY-MM-DD
   isActive: boolean;
   createdAt?: string;
   updatedAt?: string;
@@ -200,6 +232,8 @@ export interface PayrollLine {
   employeeName?: string;
   daysInPeriod: number;
   presentDays: number;
+  weekOffDays?: number;
+  otDays?: number;
   basic: number;
   hra: number;
   da: number;
@@ -209,8 +243,12 @@ export interface PayrollLine {
   proratedDa: number;
   proratedOthers: number;
   grossPay: number;
+  bonus?: number;
+  leaveWages?: number;
+  otPay?: number;
   professionalTax: number;
   providentFund: number;
+  esi?: number;
   netPay: number;
 }
 
@@ -263,7 +301,6 @@ export interface Customer {
 
 export interface DeductionType {
   id: number;
-  customer: Customer;
   name: string;
   isActive: boolean;
   createdAt?: string;
@@ -277,6 +314,15 @@ export interface Designation {
   isActive: boolean;
   createdAt?: string;
   updatedAt?: string;
+}
+
+export type EsiComponent = 'BASIC' | 'DA' | 'HRA';
+
+export interface CustomerPayrollSettings {
+  customerId: number;
+  esiComponents: EsiComponent[];
+  bonusEnabled: boolean;
+  leaveWagesEnabled: boolean;
 }
 
 export interface StaffAssignment {

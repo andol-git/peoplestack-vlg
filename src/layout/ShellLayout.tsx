@@ -72,6 +72,7 @@ export function ShellLayout() {
       { type: 'divider' },
       { key: '/attendance/today', label: "Attendance" },
       { key: '/attendance/sheet', label: 'Attendance Sheet' },
+      { key: '/attendance/add', label: 'Add Attendance' },
     ];
    
     items.push({
@@ -105,7 +106,10 @@ export function ShellLayout() {
       key: 'settings-group',
       icon: <SettingOutlined />,
       label: 'Settings',
-      children: [{ key: '/settings/designations', label: 'Designations' }],
+      children: [
+        { key: '/settings/designations', label: 'Designations' },
+        { key: '/settings/payroll', label: 'Payroll' },
+      ],
     });
 
     return items;

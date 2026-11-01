@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Button, Card, Col, DatePicker, Divider, Form, Input, InputNumber, Row, Select, Steps, Switch, message } from 'antd';
+import { Alert, Button, Card, Col, DatePicker, Divider, Form, Input, InputNumber, Row, Select, Steps, Switch, message } from 'antd';
 import dayjs from 'dayjs';
 import { useCreateEmployee, useEmployeeQuery, useUpdateEmployee } from '../../hooks/useEmployees';
 import { useCustomersQuery } from '../../hooks/useCustomers';
@@ -44,12 +44,30 @@ const STEP_0_REQUIRED_FIELDS: (string | (string | number)[])[] = [
   ]),
 ];
 
+// Every required field on Step 2 ("Compliance & Work") — validated before moving to Salary Details.
+const STEP_1_REQUIRED_FIELDS: (string | (string | number)[])[] = [['complianceDetails', 'aadhar']];
+
+const STEP_REQUIRED_FIELDS = [STEP_0_REQUIRED_FIELDS, STEP_1_REQUIRED_FIELDS];
+
+// Which step a field lives on, so a failed final submit can jump to the offending step.
+function stepOfField(name: (string | number)[]) {
+  if (name[0] === 'salaryDetails') return 2;
+  if (name[0] === 'complianceDetails' || name[0] === 'workDetails') return 1;
+  return 0;
+}
+
+const SALARY_OPTIONAL_COMPONENTS = ['hra', 'da', 'others'] as const;
+
 export function EmployeeFormPage() {
   const { id } = useParams();
   const isEditMode = !!id;
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const [step, setStep] = useState(0);
+  // Salary Details is a create-only step; existing employees' salary rows are versioned and
+  // managed from the Salary Details page instead.
+  const lastStep = isEditMode ? 1 : 2;
+  const watchedCustomerId = Form.useWatch('customerId', form);
   const hostelOpted = Form.useWatch(['workDetails', 'category'], form) === 'Opted';
   const uniformOpted = Form.useWatch(['workDetails', 'uniform'], form) === 'Opted';
   const shoesOpted = Form.useWatch(['workDetails', 'shoes'], form) === 'Opted';
@@ -93,20 +111,36 @@ export function EmployeeFormPage() {
     }
   }, [employee, form]);
 
-  async function handleNext() {
-    try {
-      await form.validateFields(STEP_0_REQUIRED_FIELDS);
-      setStep(1);
-    } catch {
-      // antd shows the inline field errors; just don't advance the step.
+  async function goToStep(next: number) {
+    if (next <= step) {
+      setStep(next);
+      return;
     }
+    // Validate every step being skipped over, stopping at the first one with errors.
+    for (let s = step; s < next; s++) {
+      try {
+        await form.validateFields(STEP_REQUIRED_FIELDS[s]);
+      } catch {
+        // antd shows the inline field errors; land on the failing step instead of advancing.
+        setStep(s);
+        return;
+      }
+    }
+    setStep(next);
+  }
+
+  // Salary Details is optional as a whole: leaving Basic empty (and no other component) skips it.
+  function salaryEntered() {
+    const salary = form.getFieldValue('salaryDetails') ?? {};
+    return salary.basic != null || SALARY_OPTIONAL_COMPONENTS.some((k) => salary[k] != null);
   }
 
   async function handleSubmit() {
     try {
       const values = await form.validateFields();
+      const { salaryDetails, ...rest } = values;
       const payload: Employee = {
-        ...values,
+        ...rest,
         personalDetails: {
           ...values.personalDetails,
           dateOfBirth: values.personalDetails?.dateOfBirth?.format('YYYY-MM-DD'),
@@ -115,6 +149,15 @@ export function EmployeeFormPage() {
         complianceDetails: toStringFields(values.complianceDetails, COMPLIANCE_DATE_FIELDS),
         workDetails: toStringFields(values.workDetails, WORK_DATE_FIELDS),
       };
+
+      if (!isEditMode && salaryDetails?.basic != null) {
+        payload.salaryDetails = {
+          basic: salaryDetails.basic,
+          hra: salaryDetails.hra ?? undefined,
+          da: salaryDetails.da ?? undefined,
+          others: salaryDetails.others ?? undefined,
+        };
+      }
 
       if (isEditMode) {
         await updateMutation.mutateAsync({ id: +id!, employee: payload });
@@ -125,7 +168,11 @@ export function EmployeeFormPage() {
       }
       navigate('/employees');
     } catch (err: any) {
-      if (err?.errorFields) return; // antd validation error, already shown inline
+      if (err?.errorFields) {
+        // antd validation error, already shown inline — make sure it's on the visible step.
+        if (err.errorFields.length) setStep(stepOfField(err.errorFields[0].name));
+        return;
+      }
       message.error(err?.response?.data?.message ?? 'Save failed.', 6);
     }
   }
@@ -140,12 +187,13 @@ export function EmployeeFormPage() {
 
       <Steps
         current={step}
-        onChange={(next) => (next > step ? handleNext() : setStep(next))}
+        onChange={goToStep}
         items={[
           { title: 'Employee Info', description: 'Personal, family, career & legal details' },
           { title: 'Compliance & Work', description: 'Compliance, documents & work details' },
+          ...(isEditMode ? [] : [{ title: 'Salary Details', description: 'Basic, HRA, DA & others' }]),
         ]}
-        style={{ marginBottom: 24, maxWidth: 600 }}
+        style={{ marginBottom: 24, maxWidth: isEditMode ? 600 : 900 }}
       />
 
       <Form form={form} layout="vertical" initialValues={{ isActive: true, legalBackground: LEGAL_BACKGROUND_DEFAULTS }}>
@@ -665,14 +713,70 @@ export function EmployeeFormPage() {
           </Card>
         </div>
 
+        {!isEditMode && (
+          <div style={{ display: step === 2 ? 'block' : 'none' }}>
+            <Card>
+              <Divider titlePlacement="left" style={{ marginTop: 0 }}>Salary Details</Divider>
+              {!watchedCustomerId && (
+                <Alert
+                  type="info"
+                  showIcon
+                  style={{ marginBottom: 16 }}
+                  message="Salary details are recorded per customer. Select a customer on the Employee Info step to add them, or leave this section empty to add salary later from the Salary Details page."
+                />
+              )}
+              <Row gutter={16}>
+                <Col span={6}>
+                  <Form.Item
+                    label="Basic"
+                    name={['salaryDetails', 'basic']}
+                    dependencies={[...SALARY_OPTIONAL_COMPONENTS.map((k) => ['salaryDetails', k]), 'customerId']}
+                    rules={[
+                      {
+                        validator: async (_, value) => {
+                          if (value == null) {
+                            if (salaryEntered()) throw new Error('Basic is required');
+                            return;
+                          }
+                          if (value <= 0) throw new Error('Basic must be greater than 0');
+                          if (!form.getFieldValue('customerId')) {
+                            throw new Error('Select a customer on the Employee Info step first');
+                          }
+                        },
+                      },
+                    ]}
+                  >
+                    <InputNumber style={{ width: '100%' }} min={0} precision={2} prefix="₹" placeholder="e.g. 18000" />
+                  </Form.Item>
+                </Col>
+                <Col span={6}>
+                  <Form.Item label="HRA (optional)" name={['salaryDetails', 'hra']}>
+                    <InputNumber style={{ width: '100%' }} min={0} precision={2} prefix="₹" placeholder="e.g. 3200" />
+                  </Form.Item>
+                </Col>
+                <Col span={6}>
+                  <Form.Item label="DA (optional)" name={['salaryDetails', 'da']}>
+                    <InputNumber style={{ width: '100%' }} min={0} precision={2} prefix="₹" placeholder="e.g. 1500" />
+                  </Form.Item>
+                </Col>
+                <Col span={6}>
+                  <Form.Item label="Others (optional)" name={['salaryDetails', 'others']}>
+                    <InputNumber style={{ width: '100%' }} min={0} precision={2} prefix="₹" placeholder="e.g. 500" />
+                  </Form.Item>
+                </Col>
+              </Row>
+            </Card>
+          </div>
+        )}
+
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 24 }}>
-          {step > 0 && <Button onClick={() => setStep(0)}>Back</Button>}
-          {step === 0 && (
-            <Button type="primary" onClick={handleNext}>
+          {step > 0 && <Button onClick={() => setStep(step - 1)}>Back</Button>}
+          {step < lastStep && (
+            <Button type="primary" onClick={() => goToStep(step + 1)}>
               Next
             </Button>
           )}
-          {step === 1 && (
+          {step === lastStep && (
             <Button type="primary" loading={saving} onClick={handleSubmit}>
               {isEditMode ? 'Update Employee' : 'Create Employee'}
             </Button>

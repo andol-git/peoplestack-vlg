@@ -7,7 +7,6 @@ export interface CreateEmployeeSalaryDetailRequest {
   hra?: number;
   da?: number;
   others?: number;
-  effectiveFrom: string; // YYYY-MM-DD
 }
 
 export const employeeSalaryDetailsApi = {

@@ -1,5 +1,11 @@
 import { http } from '../lib/http';
-import type { AttendanceHistoryEntry, AttendanceRecord } from '../types/models';
+import type {
+  AttendanceHistoryEntry,
+  AttendanceLockedPeriod,
+  AttendanceRecord,
+  BulkAttendanceEntry,
+  BulkAttendanceResponse,
+} from '../types/models';
 
 export interface AttendanceFilters {
   companyId: string;
@@ -27,6 +33,20 @@ export const attendanceApi = {
     formData.append('file', file);
     return http
       .post<void>('/api/attendance/upload', formData, { params: { date, companyId } })
+      .then((r) => r.data);
+  },
+  saveBulk(customerId: number, entries: BulkAttendanceEntry[], idempotencyKey: string) {
+    return http
+      .put<BulkAttendanceResponse>(
+        '/api/attendance/bulk',
+        { customerId, entries },
+        { headers: { 'X-Idempotency-Key': idempotencyKey } }
+      )
+      .then((r) => r.data);
+  },
+  getLockedPeriods(customerId: number, fromDate: string, toDate: string) {
+    return http
+      .get<AttendanceLockedPeriod[]>('/api/attendance/locked-periods', { params: { customerId, fromDate, toDate } })
       .then((r) => r.data);
   },
   getHistory(companyId: string) {

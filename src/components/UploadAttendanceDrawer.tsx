@@ -75,7 +75,11 @@ export function UploadAttendanceDrawer({ open, onClose }: Props) {
           <DatePicker style={{ width: '100%' }} placeholder="Select date" />
         </Form.Item>
 
-        <Form.Item label="Attendance File" required>
+        <Form.Item
+          label="Attendance File"
+          required
+          extra="Columns: Employee Id, Present. Present must be P (Present), A (Absent), WO (Week Off) or OT (Overtime)."
+        >
           <Upload
             beforeUpload={(f) => {
               setFile(f);

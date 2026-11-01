@@ -5,7 +5,8 @@ import dayjs, { type Dayjs } from 'dayjs';
 import { useAttendanceHistoryQuery, useAttendanceQuery } from '../../hooks/useAttendance';
 import { useCustomersQuery } from '../../hooks/useCustomers';
 import type { AttendanceFilters } from '../../api/attendance-api';
-import type { AttendanceHistoryEntry, AttendanceRecord } from '../../types/models';
+import type { AttendanceHistoryEntry, AttendanceRecord, AttendanceStatus } from '../../types/models';
+import { ATTENDANCE_STATUSES, ATTENDANCE_STATUS_META } from '../../constants/attendance';
 import { UploadAttendanceDrawer } from '../../components/UploadAttendanceDrawer';
 import { DownloadAttendanceSheetDrawer } from '../../components/DownloadAttendanceSheetDrawer';
 
@@ -32,7 +33,7 @@ export function TodayAttendancePage() {
   };
   const [pending, setPending] = useState<PendingFilters>(initial);
   const [applied, setApplied] = useState<PendingFilters>(initial);
-  const [status, setStatus] = useState<'All' | 'Present' | 'Absent'>('All');
+  const [status, setStatus] = useState<'All' | AttendanceStatus>('All');
 
   const { data: customers = [] } = useCustomersQuery();
   const companyOptions = useMemo(
@@ -59,8 +60,7 @@ export function TodayAttendancePage() {
   const { data: history = [], isLoading: isHistoryLoading } = useAttendanceHistoryQuery(applied.companyId);
 
   const filtered = useMemo(() => {
-    if (status === 'Present') return records.filter((r) => r.present);
-    if (status === 'Absent') return records.filter((r) => !r.present);
+    if (status !== 'All') return records.filter((r) => r.status === status);
     return records;
   }, [records, status]);
 
@@ -85,9 +85,9 @@ export function TodayAttendancePage() {
     { title: 'Date', dataIndex: 'attendanceDate', key: 'attendanceDate' },
     {
       title: 'Status',
-      key: 'present',
+      key: 'status',
       render: (_: unknown, r: AttendanceRecord) =>
-        r.present ? <Tag color="success">Present</Tag> : <Tag color="error">Absent</Tag>,
+        <Tag color={ATTENDANCE_STATUS_META[r.status].tagColor}>{ATTENDANCE_STATUS_META[r.status].label}</Tag>,
     },
     {
       title: 'Last Updated',
@@ -200,7 +200,10 @@ export function TodayAttendancePage() {
             onChange={setStatus}
             style={{ width: 160 }}
             showSearch={{ optionFilterProp: 'label' }}
-            options={['All', 'Present', 'Absent'].map((s) => ({ value: s, label: s }))}
+            options={[
+              { value: 'All', label: 'All' },
+              ...ATTENDANCE_STATUSES.map((s) => ({ value: s, label: ATTENDANCE_STATUS_META[s].label })),
+            ]}
           />
         </div>
 
