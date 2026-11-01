@@ -151,6 +151,15 @@ export interface Employee {
   addresses?: Address[];
   complianceDetails?: ComplianceDetails;
   workDetails?: WorkDetails;
+  /** Create-only, write-only: the employee's first salary row (requires customerId). Never returned by the API. */
+  salaryDetails?: InitialSalaryDetails;
+}
+
+export interface InitialSalaryDetails {
+  basic: number;
+  hra?: number;
+  da?: number;
+  others?: number;
 }
 
 // ─── Attendance ──────────────────────────────────────────────────────────────
@@ -211,7 +220,6 @@ export interface EmployeeSalaryDetail {
   hra?: number | null;
   da?: number | null;
   others?: number | null;
-  effectiveFrom: string; // YYYY-MM-DD
   isActive: boolean;
   createdAt?: string;
   updatedAt?: string;

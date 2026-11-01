@@ -23,7 +23,7 @@ function formatOptionalCurrency(value: number | null | undefined): string {
 
 // One row per employee of the selected customer, left-joined against
 // employee_salary_details: an employee with no salary row yet still shows
-// up, with basic as 0 and no effective-from date.
+// up, with basic as 0.
 interface SalaryRow {
   salaryDetailId?: number;
   employeeId: number;
@@ -32,7 +32,6 @@ interface SalaryRow {
   hra: number | null;
   da: number | null;
   others: number | null;
-  effectiveFrom?: string;
   hasRecord: boolean;
 }
 
@@ -51,8 +50,8 @@ export function SalaryDetailsListPage() {
     useEmployeeSalaryDetailsQuery(customerId);
   const isLoading = isLoadingEmployees || isLoadingSalaryDetails;
 
-  // Salary details come back ordered latest-effective-first, so the first
-  // match per employee is the current one.
+  // Salary details come back latest-first, so the first match per employee is
+  // the current one (only relevant for legacy employees with several rows).
   const rows: SalaryRow[] = useMemo(() => {
     const latestByEmployee = new Map<number, (typeof salaryDetails)[number]>();
     for (const detail of salaryDetails) {
@@ -73,7 +72,6 @@ export function SalaryDetailsListPage() {
           hra: detail?.hra ?? null,
           da: detail?.da ?? null,
           others: detail?.others ?? null,
-          effectiveFrom: detail?.effectiveFrom,
           hasRecord: !!detail,
         };
       });
@@ -117,12 +115,6 @@ export function SalaryDetailsListPage() {
       key: 'others',
       align: 'right' as const,
       render: formatOptionalCurrency,
-    },
-    {
-      title: 'Effective From',
-      dataIndex: 'effectiveFrom',
-      key: 'effectiveFrom',
-      render: (v: string | undefined) => v ?? '—',
     },
     {
       title: 'Status',
@@ -189,14 +181,13 @@ export function SalaryDetailsListPage() {
           employeeId={selectedForAdd.employeeId}
           employeeName={selectedForAdd.employeeName}
           existing={
-            selectedForAdd.hasRecord && selectedForAdd.salaryDetailId && selectedForAdd.effectiveFrom
+            selectedForAdd.hasRecord && selectedForAdd.salaryDetailId
               ? {
                   id: selectedForAdd.salaryDetailId,
                   basic: selectedForAdd.basic,
                   hra: selectedForAdd.hra,
                   da: selectedForAdd.da,
                   others: selectedForAdd.others,
-                  effectiveFrom: selectedForAdd.effectiveFrom,
                 }
               : undefined
           }

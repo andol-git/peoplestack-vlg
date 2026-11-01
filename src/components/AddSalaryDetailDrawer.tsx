@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
-import { Button, DatePicker, Drawer, Form, InputNumber, message } from 'antd';
-import dayjs from 'dayjs';
+import { Button, Drawer, Form, InputNumber, message } from 'antd';
 import { useCreateEmployeeSalaryDetail, useUpdateEmployeeSalaryDetail } from '../hooks/useEmployeeSalaryDetails';
 
 interface ExistingSalaryDetail {
@@ -9,7 +8,6 @@ interface ExistingSalaryDetail {
   hra?: number | null;
   da?: number | null;
   others?: number | null;
-  effectiveFrom: string; // YYYY-MM-DD
 }
 
 interface Props {
@@ -27,7 +25,6 @@ interface FormValues {
   hra?: number;
   da?: number;
   others?: number;
-  effectiveFrom: dayjs.Dayjs;
 }
 
 export function AddSalaryDetailDrawer({
@@ -52,10 +49,9 @@ export function AddSalaryDetailDrawer({
         hra: existing.hra ?? undefined,
         da: existing.da ?? undefined,
         others: existing.others ?? undefined,
-        effectiveFrom: dayjs(existing.effectiveFrom),
       });
     } else {
-      form.setFieldsValue({ basic: undefined, hra: undefined, da: undefined, others: undefined, effectiveFrom: dayjs() });
+      form.setFieldsValue({ basic: undefined, hra: undefined, da: undefined, others: undefined });
     }
   }, [open, existing, form]);
 
@@ -73,7 +69,6 @@ export function AddSalaryDetailDrawer({
         hra: values.hra,
         da: values.da,
         others: values.others,
-        effectiveFrom: values.effectiveFrom.format('YYYY-MM-DD'),
       };
 
       if (isEditMode) {
@@ -114,7 +109,7 @@ export function AddSalaryDetailDrawer({
         <div style={{ fontWeight: 600 }}>{employeeName ?? '—'}</div>
       </div>
 
-      <Form form={form} layout="vertical" initialValues={{ effectiveFrom: dayjs() }}>
+      <Form form={form} layout="vertical">
         <Form.Item
           label="Basic"
           name="basic"
@@ -139,14 +134,6 @@ export function AddSalaryDetailDrawer({
 
         <Form.Item label="Others (optional)" name="others">
           <InputNumber style={{ width: '100%' }} min={0} precision={2} prefix="₹" placeholder="e.g. 500" />
-        </Form.Item>
-
-        <Form.Item
-          label="Effective From"
-          name="effectiveFrom"
-          rules={[{ required: true, message: 'Effective from date is required' }]}
-        >
-          <DatePicker style={{ width: '100%' }} allowClear={false} />
         </Form.Item>
       </Form>
     </Drawer>

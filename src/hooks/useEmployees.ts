@@ -40,7 +40,11 @@ export function useCreateEmployee() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (employee: Employee) => employeeApi.create(employee),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['employees'] }),
+    onSuccess: (_data, employee) => {
+      qc.invalidateQueries({ queryKey: ['employees'] });
+      // Create can also insert the employee's first salary row (Salary Details step).
+      if (employee.salaryDetails) qc.invalidateQueries({ queryKey: ['employee-salary-details'] });
+    },
   });
 }
 
