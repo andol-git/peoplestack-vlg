@@ -21,6 +21,7 @@ import { RunPayrollPage } from './pages/payments/RunPayrollPage';
 import { DeductionTypesPage } from './pages/payments/DeductionTypesPage';
 import { DesignationsPage } from './pages/settings/DesignationsPage';
 import { PayrollSettingsPage } from './pages/settings/PayrollSettingsPage';
+import { IdCardGeneratorPage } from './pages/idcard/IdCardGeneratorPage';
 
 export function AppRoutes() {
   return (
@@ -62,6 +63,8 @@ export function AppRoutes() {
 
           <Route path="/settings/designations" element={<DesignationsPage />} />
           <Route path="/settings/payroll" element={<PayrollSettingsPage />} />
+
+          <Route path="/id-cards" element={<IdCardGeneratorPage />} />
         </Route>
       </Route>
 

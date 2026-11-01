@@ -4,7 +4,6 @@ import { Avatar, Button, Card, Input, Popconfirm, Select, Table, Tag } from 'ant
 import {
   DeleteOutlined,
   DownloadOutlined,
-  EditOutlined,
   EyeOutlined,
   MinusCircleOutlined,
   PlusOutlined,
@@ -118,9 +117,9 @@ export function EmployeeListPage() {
           <Link to={`/employees/${e.id}`}>
             <Button type="text" size="small" icon={<EyeOutlined />} style={{ color: '#3b82f6' }} title="View" />
           </Link>
-          <Link to={`/employees/${e.id}/edit`}>
+          {/* <Link to={`/employees/${e.id}/edit`}>
             <Button type="text" size="small" icon={<EditOutlined />} style={{ color: '#22c55e' }} title="Edit" />
-          </Link>
+          </Link> */}
           {tab === 'active' && (
             <Popconfirm title="Deactivate this employee?" onConfirm={() => inactivateMutation.mutate(e.id!)}>
               <Button type="text" size="small" icon={<MinusCircleOutlined />} style={{ color: '#f59e0b' }} title="Deactivate" />
